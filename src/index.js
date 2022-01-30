@@ -1,5 +1,4 @@
-/* eslint-disable */
-/* eslint-disable no-alert */
+/* eslint-disable no-console */
 import './style.scss';
 import { App } from './components/app';
 import Router from './components/services/router';
@@ -15,22 +14,17 @@ const router = new Router({
   root: '/'
 });
 
-router
-  .add(/about/, () => {
-    const about = new About();
-    console.log(about);
-  })
-  .add(/words\?group=(.*)&page=(.*)/, (group, page) => {
-    console.log(group, page);
+router.add(/about/, async () => {
+  const about = new About();
+  about.render();
+});
 
-  })
-  .add('', () => {
-    const container = document.querySelector('.root');
-    console.log(container);
-    const main = new Main();
-    console.log(main);
-  });
-
-
-  const words = await getWords(1, 1);
+router.add(/words\?group=(.*)&page=(.*)/, async (group, page) => {
+  const words = await getWords(group, page);
   console.log(words.items);
+});
+
+router.add('', async () => {
+  const main = new Main();
+  main.render();
+});

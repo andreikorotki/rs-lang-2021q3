@@ -1,4 +1,4 @@
-class Router {
+export default class Router {
   routes = [];
 
   mode = null;
@@ -12,12 +12,12 @@ class Router {
     this.listen();
   }
 
-  add = (path, cb) => {
-    this.routes.push({ path, cb });
+  add(path, callback) {
+    this.routes.push({ path, callback });
     return this;
-  };
+  }
 
-  remove = (path) => {
+  remove(path) {
     for (let i = 0; i < this.routes.length; i += 1) {
       if (this.routes[i].path === path) {
         this.routes.slice(i, 1);
@@ -25,16 +25,16 @@ class Router {
       }
     }
     return this;
-  };
+  }
 
-  flush = () => {
+  flush() {
     this.routes = [];
     return this;
-  };
+  }
 
   clearSlashes = (path) => path.toString().replace(/\/$/, '').replace(/^\//, '');
 
-  getFragment = () => {
+  getFragment() {
     let fragment = '';
     if (this.mode === 'history') {
       fragment = this.clearSlashes(decodeURI(window.location.pathname + window.location.search));
@@ -45,23 +45,23 @@ class Router {
       fragment = match ? match[1] : '';
     }
     return this.clearSlashes(fragment);
-  };
+  }
 
-  navigate = (path = '') => {
+  navigate(path = '') {
     if (this.mode === 'history') {
       window.history.pushState(null, null, this.root + this.clearSlashes(path));
     } else {
       window.location.href = `${window.location.href.replace(/#(.*)$/, '')}#${path}`;
     }
     return this;
-  };
+  }
 
-  listen = () => {
-    clearInterval(this.interval);
+  async listen() {
+    clearInterval(await this.interval);
     this.interval = setInterval(this.interval, 10);
-  };
+  }
 
-  interval = () => {
+  interval = async () => {
     if (this.current === this.getFragment()) return;
     this.current = this.getFragment();
 
@@ -69,12 +69,10 @@ class Router {
       const match = this.current.match(route.path);
       if (match) {
         match.shift();
-        route.cb.apply({}, match);
+        route.callback.apply({}, match);
         return match;
       }
       return false;
     });
   };
 }
-
-export default Router;
