@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
+    "target": "es2021",
     "rootDir": "./src"
   },
   "include": ["src/**/*"],

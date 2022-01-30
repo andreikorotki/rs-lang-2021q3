@@ -5,11 +5,15 @@
   },
   "extends": [
     "airbnb",
+    "plugin:prettier/recommended",
     "eslint:recommended",
     "prettier"
   ],
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
-    "project": "./jsconfig.json"
+    "ecmaVersion": 12,
+    "project": "./jsconfig.json",
+    "sourceType": "module"
   },
   "plugins": [
     "prettier"

@@ -1,5 +1,7 @@
 export class App {
-  async render() {
-    document.body.innerText = 'Hello World from RS lang App!';
+  render() {
+    const rootContainer = document.createElement('div');
+    rootContainer.classList.add('root');
+    document.body.appendChild(rootContainer);
   }
 }
