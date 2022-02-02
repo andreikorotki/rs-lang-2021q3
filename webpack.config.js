@@ -1,74 +1,75 @@
 const path = require('path');
+const { merge } = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const dev = require('./webpack.dev.config');
+const prod = require('./webpack.prod.config');
 
-const devServer = (isDev) => !isDev ? {} : {
-  devServer: {
-    open: true,
-    hot: true,
-    port: 8080,
-    contentBase: path.join(__dirname, 'assets'),
-  }
-};
+const ASSET = path.resolve(__dirname, './assets');
 
-const esLintPlugin = (isDev) => isDev ? [] : [new ESLintPlugin({ extensions: [ '.ts', '.js'] })];
-
-
-module.exports = ({ develop }) => ({
-  mode: develop ? 'development' : 'production',
-  devtool: develop ? 'inline-source-map' : false,
-  entry: {
-    app: './src/index.js',
-  },
+const baseConfig = {
+  entry: path.resolve(__dirname, './src/index.js'),
   output: {
-    filename: '[name].[contenthash].js',
-    path: path.resolve(__dirname, 'dist'),
-    assetModuleFilename: 'assets/[hash][ext]',
+    filename: 'js/bundle.js',
+    path: path.resolve(__dirname, './dist'),
+    asyncChunks: false,
+    assetModuleFilename: 'images/[hash][ext][query]'
   },
-  experiments: {
-    topLevelAwait: true,
-  },
+  mode: 'development',
   module: {
     rules: [
-      // {
-      //   test: /\.[tj]s$/,
-      //   use: 'ts-loader',
-      //   exclude: /node_modules/,
-      // },
       {
-        test: /\.(?:ico|gif|png|jpg|jpeg|svg)$/i,
-        type: 'asset/resource',
+        test: /\.(t|j)s?$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader'
+        }
       },
       {
-        test: /\.(woff(2)?|eot|ttf|otf)$/i,
-        type: 'asset/resource',
+        test: /\.(sa|sc|c)ss$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
+          'css-loader',
+          'sass-loader'
+        ]
       },
       {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
+        test: /\.(?:ico|gif|png|jpg|jpeg|svg|webp)$/i,
+        type: 'asset/resource'
       },
       {
-        test: /\.s[ac]ss$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
+        test: /\.mp3$/i,
+        include: ASSET,
+        loader: 'file-loader'
       }
-    ],
+    ]
+  },
+  resolve: {
+    extensions: ['.js', '.ts']
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: './src/index.html', favicon: './assets/favicon.ico' }),
-    new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
-    new CopyPlugin({
-      patterns: [
-        { from: 'assets' }
-      ]
+    new CleanWebpackPlugin(),
+    new ESLintPlugin({
+      extensions: ['js', 'ts'],
+      quiet: true
     }),
-    new CleanWebpackPlugin({ cleanStaleWebpackAssets: false}),
-    ...esLintPlugin(develop),
-  ],
-  resolve: {
-    extensions: ['.ts', '.js'],
-  },
-  ...devServer(develop),
-});
+    new MiniCssExtractPlugin({ filename: 'bundle.css' }),
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, './src/index.html'),
+      filename: 'index.html',
+      favicon: './assets/favicon.ico',
+      minify: true
+    })
+  ]
+};
+
+module.exports = ({ mode }) => {
+  const isProductionMode = mode === 'prod';
+  const envConfig = isProductionMode ? prod : dev;
+
+  return merge(baseConfig, envConfig);
+};
