@@ -2,17 +2,7 @@
 import { createUser, loginUser } from '../api/users';
 import User from '../models/user';
 import { updateState } from '../services/state';
-
-function filterObject(object, props) {
-  const filteredUser = Object.keys(object)
-    .filter((key) => props.includes(key))
-    .reduce((obj, key) => {
-      obj[key] = object[key];
-      return obj;
-    }, {});
-
-  return filteredUser;
-}
+import { filterObject } from '../services/utils';
 
 export async function loginUserController(userEmail, userPassword) {
   let user = new User(userEmail);

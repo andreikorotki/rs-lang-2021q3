@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import './style.scss';
+import '../assets/scss/base.scss';
 import { App } from './components/app';
 import { Router } from './components/services/router';
 import About from './components/views/about';

@@ -4,7 +4,7 @@ export const tokenExpirationPeriodMs = 14400000;
 export const messages = {
   SUCCESS: 'Success',
   LOGIN_SUCCESS: 'Success login',
-  USER_CREATED: 'User created',
+  USER_CREATED: 'User was created',
   INCORRECT_EMAIL_OR_PWD: 'Incorrect e-mail or password',
   INCORRECT_TOKEN: 'Access token is missing, expired or invalid',
   TOKEN_NOT_FOUND: 'Token not fount. Login Required.',
