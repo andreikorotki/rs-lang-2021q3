@@ -80,7 +80,8 @@ label {
   transition: all 0.1s ease-in-out;
 }
 
-.input-group input:not(:placeholder-shown) ~ label {
+.input-group input:not(:placeholder-shown) ~ label,
+.input-group input:-webkit-autofill ~ label {
   padding-top: calc(0.1rem / 4);
   padding-bottom: calc(0.5rem / 4);
   font-size: 10px;
