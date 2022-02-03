@@ -4,6 +4,17 @@ import Button from '../common/button';
 import BaseElement from '../common/base-element';
 import { getWords, getWord } from '../api/words';
 import { serverUrl } from '../services/settings';
+import { store } from '../store';
+import { setGroup, initial, nextPage, prevPage, setWords } from '../store/toolkitReducer';
+
+const bgColors = [
+  'radial-gradient(rgb(253, 233, 188, 0.5), rgb(253, 235, 180, 0.5))',
+  'radial-gradient(rgb(255, 188, 43, 0.5), rgb(255, 192, 3, 0.5))',
+  'radial-gradient(rgb(255, 119, 89, 0.5), rgb(255, 87, 51, 0.5))',
+  'radial-gradient(rgb(227, 48, 99, 0.5), rgb(199, 0, 57, 0.5))',
+  'radial-gradient(rgb(161, 44, 83, 0.5), rgb(144, 12, 63, 0.5))',
+  'radial-gradient(rgb(137, 46, 109, 0.5), rgb(88, 24, 69, 0.5))'
+];
 
 export default class Book extends BaseView {
   constructor() {
@@ -18,13 +29,14 @@ export default class Book extends BaseView {
     this.wrapper.element.append(this.buttonsGroupContainer.element);
     this.wrapper.element.append(this.cardsContainer.element);
     this.state = {
-      group: 1,
-      page: 1
+      group: store.getState().toolkit.group,
+      page: store.getState().toolkit.page
     };
     this.run();
   }
 
   run() {
+    document.body.style.background = `${bgColors[0]}`;
     this.getButtons();
     this.getWords();
     this.pagination();
@@ -46,8 +58,11 @@ export default class Book extends BaseView {
 
   getGroup = (event) => {
     const { id } = event.target;
+    store.dispatch(initial());
+    store.dispatch(setGroup(+id));
     this.state.group = +id;
     this.state.page = 1;
+    document.body.style.background = `${bgColors[+id - 1]}`;
     this.getWords();
     this.getPages();
   };
@@ -55,21 +70,23 @@ export default class Book extends BaseView {
   getWords = async () => {
     this.cardsContainer.element.innerHTML = '';
     const { group, page } = this.state;
-    const words = await getWords(group - 1, page - 1);
-    this.renderWords(words);
+    const data = await getWords(group - 1, page - 1);
+    const words = data.items;
+    store.dispatch(setWords(words));
+    this.renderWords();
     this.setActiveGroup();
   };
 
-  setActiveGroup() {
+  async setActiveGroup() {
     const { group } = this.state;
     this.buttons = document.querySelectorAll('.button-group');
     this.buttons.forEach((button) => button.classList.remove('active'));
     this.buttons[group - 1].classList.add('active');
   }
 
-  renderWords(words) {
-    this.words = words.items;
-    this.words.forEach((word) => {
+  renderWords() {
+    const { words } = store.getState().toolkit;
+    words.forEach((word) => {
       this.renderCardWord(word);
     });
     this.audioButtonClicks();
@@ -171,6 +188,7 @@ export default class Book extends BaseView {
   }
 
   getPrevPages = () => {
+    store.dispatch(prevPage());
     this.state.page -= 1;
     if (this.state.page < 1) {
       this.state.page = 1;
@@ -181,6 +199,7 @@ export default class Book extends BaseView {
   };
 
   getNextPages = () => {
+    store.dispatch(nextPage());
     this.state.page += 1;
     if (this.state.page > 30) {
       this.state.page = 30;
