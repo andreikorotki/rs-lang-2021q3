@@ -7,6 +7,7 @@ import Main from './components/views/main';
 import { getWords } from './components/api/words';
 import LoginView from './components/views/login/login-view';
 import RegisterView from './components/views/register/register-view';
+import { isAuthorized } from './components/services/state';
 
 const appPage = new App();
 appPage.render();
@@ -39,4 +40,5 @@ router.add(/words\?group=(.*)&page=(.*)/, async (group, page) => {
 router.add('', async () => {
   const main = new Main();
   main.render();
+  console.log(isAuthorized());
 });

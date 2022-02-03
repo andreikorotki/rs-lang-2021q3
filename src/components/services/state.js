@@ -26,8 +26,17 @@ export function updateUserStateProp(propName, propVal) {
 
 export function getToken() {
   const state = getState();
-  if (state.token) {
+  if (state) {
     return state.token;
   }
   throw new Error(messages.TOKEN_NOT_FOUND);
+}
+
+export function isAuthorized() {
+  const state = getState();
+  const curDate = new Date();
+  if (state) {
+    return state.token && new Date(state.tokenExpireDate) > curDate;
+  }
+  return false;
 }
