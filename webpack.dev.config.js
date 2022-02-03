@@ -1,5 +1,3 @@
-const path = require('path');
-
 module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
@@ -7,9 +5,9 @@ module.exports = {
     preset: 'minimal',
     moduleTrace: true,
     errorDetails: true,
-    warnings: false,
+    warnings: false
   },
   devServer: {
-    compress: true,
-  },
+    compress: true
+  }
 };

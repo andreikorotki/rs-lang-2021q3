@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
+
 :root {
   --bg-color: #dbdada;
   --selection-color: #c0c0c0;
@@ -6,6 +8,14 @@
   --active-color: red;
   --font-big-size: 64px;
   --font-middle-size: 32px;
+  --button-color-primary: radial-gradient(#fde9bc, #fdeab2);
+  --button-color-secondary: radial-gradient(#ffbc2b, #ffc003);
+  --button-color-third: radial-gradient(#ff7759, #ff5733);
+  --button-color-fourth: radial-gradient(#e33063, #c70039);
+  --button-color-fives: radial-gradient(#a12c53, #900c3f);
+  --button-color-sixes: radial-gradient(#892e6d, #581845);
+  --card-color-primary: radial-gradient(rgb(218, 250, 211,0.5), rgb(179, 255, 176,0.5));
+
   font-size: 12px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Roboto", sans-serif;
 }

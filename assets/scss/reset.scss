@@ -8,6 +8,16 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Roboto", sans-serif;
   color: var(--text-primary-color);
+}
+
+.wrapper {
+  position: relative;
+  @media (max-width: 1599px) {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 10px;
+  }
 }

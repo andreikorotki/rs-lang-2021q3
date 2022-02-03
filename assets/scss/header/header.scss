@@ -2,6 +2,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 1599px) {
+    max-width: 1200px;
+    padding: 0 20px;
+  }
 }
 
 .logo {
@@ -27,7 +32,7 @@
   transition: 0.25s ease-in-out;
 }
 
-.link.active {
+.link .active {
   color: var(--active-color);
 }
 
