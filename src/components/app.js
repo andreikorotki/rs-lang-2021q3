@@ -1,14 +1,13 @@
-import BaseElement from './common/base-element';
-import { Footer } from './views/footer/footer';
 import { Header } from './views/header/header';
+import { Footer } from './views/footer/footer';
 
 export class App {
   render() {
-    const rootContainer = new BaseElement('div', ['root']);
-    const header = new Header();
-    const footer = new Footer();
-    document.body.appendChild(header.render());
-    document.body.appendChild(rootContainer.element);
-    document.body.appendChild(footer.render());
+    const rootContainer = document.createElement('div');
+    rootContainer.classList.add('root');
+    this.header = new Header();
+    this.footer = new Footer();
+    document.body.append(this.header.render());
+    document.body.appendChild(rootContainer);
   }
 }

@@ -1,13 +1,23 @@
 html {
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+  color: var(--text-primary-color);
+}
+
+.wrapper {
+  position: relative;
+  @media (max-width: $screen-size-xl) {
+    max-width: $wrapper-size-xl;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--spacing-unit-2);
   }
-  
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Open Sans', sans-serif;
-    color: var(--text-primary-color);
-  }
+}

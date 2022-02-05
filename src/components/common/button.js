@@ -6,8 +6,8 @@ export default class Button {
     textContent = '',
     type = 'button',
     id = '',
-    handler = (e) => {
-      e.preventDefault();
+    handler = (event) => {
+      event.preventDefault();
     },
     isDisabled = false
   ) {

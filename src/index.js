@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
+// import './style.scss';
 import '../assets/scss/base.scss';
 import { App } from './components/app';
 import { Router } from './components/services/router';
 import About from './components/views/about';
 import Main from './components/views/main';
 import { getWords } from './components/api/words';
+import Book from './components/views/book';
 import LoginView from './components/views/login/login-view';
 import RegisterView from './components/views/register/register-view';
 import { isAuthorized } from './components/services/state';
@@ -22,6 +24,9 @@ router.add(/about/, async () => {
   about.render();
 });
 
+router.add(/book/, async () => {
+  const book = new Book();
+  book.render();
 router.add(/login/, async () => {
   const loginView = new LoginView();
   loginView.render();
