@@ -1,4 +1,4 @@
-export default class Router {
+export class Router {
   routes = [];
 
   mode = null;
@@ -75,4 +75,8 @@ export default class Router {
       return false;
     });
   };
+}
+
+export function redirect(path) {
+  window.location.href = path;
 }

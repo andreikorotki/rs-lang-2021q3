@@ -1,9 +1,12 @@
+import BaseElement from '../common/base-element';
 import BaseView from './base-view';
 
 export default class Main extends BaseView {
   constructor() {
-    const content = document.createElement('section');
-    content.innerHTML = '<h1>Main!</h1>';
-    super(content);
+    const content = new BaseElement('section', ['main']);
+    const heading = new BaseElement('h1', ['main__title'], 'RS Lang');
+
+    content.element.appendChild(heading.element);
+    super(content.element);
   }
 }
