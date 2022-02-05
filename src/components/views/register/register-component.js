@@ -4,7 +4,6 @@ import Input from '../../common/input';
 import BaseElement from '../../common/base-element';
 import { createUserController } from '../../controllers/user-controller';
 import { messages } from '../../services/settings';
-import { redirect } from '../../services/router';
 
 export class RegisterComponent {
   constructor() {
@@ -15,7 +14,6 @@ export class RegisterComponent {
       'user-register-name-input',
       'user-register-name'
     );
-    this.userNameInput.element.placeholder = 'Name';
     this.userNameLabel = new BaseElement('label', ['input-label'], 'Name');
     this.nameInputGroup = new BaseElement('div', ['input-group']);
     this.userNameLabel.element.htmlFor = 'user-register-name';
@@ -25,10 +23,7 @@ export class RegisterComponent {
       'user-register-email-input',
       'user-register-email'
     );
-    this.userEmailInput.element.placeholder = 'Email';
-    this.userEmailInput.element.autocomplete = 'username';
     this.userEmailLabel = new BaseElement('label', ['input-label'], 'Email');
-    this.userEmailLabel.element.htmlFor = 'user-register-email';
     this.emailInputGroup = new BaseElement('div', ['input-group']);
     this.userPasswordInput = new Input(
       ['input-password', 'user-password__input'],
@@ -36,38 +31,32 @@ export class RegisterComponent {
       'user-register-password-input',
       'register-password'
     );
-    this.userPasswordInput.element.placeholder = 'Password';
-    this.userPasswordInput.element.minLength = 8;
-    this.userPasswordInput.element.autocomplete = 'new-password';
     this.userPasswordLabel = new BaseElement('label', ['input-label'], 'Password');
-    this.userPasswordLabel.element.htmlFor = 'register-password';
     this.passwordInputGroup = new BaseElement('div', ['input-group']);
     this.message = new BaseElement('div', ['register-message'], '', 'register-message');
     this.registerBtn = new Button(['btn', 'register__btn'], 'register', 'button', 'register-btn', async (e) => {
       e.preventDefault();
-      const regMessage = document.getElementById('register-message');
-      if (
-        this.userNameInput.element.validity.valid &&
-        this.userEmailInput.element.validity.valid &&
-        this.userPasswordInput.element.validity.valid &&
-        this.userPasswordInput.element.value.length > 8
-      ) {
-        const regData = await createUserController(
-          this.userNameInput.element.value,
-          this.userEmailInput.element.value,
-          this.userPasswordInput.element.value
-        );
-        regMessage.innerText = regData.success ? '' : regData.message;
-        if (regData.success) {
-          redirect('#/login');
-        }
-      } else {
-        regMessage.innerText = messages.FILL_REQUIRED;
-      }
+      await this.handleRegister();
     });
     this.linkToLogin = new BaseElement('a', ['form-link'], 'Already have an account? Sing In');
+  }
+
+  render() {
+    this.userNameInput.element.placeholder = 'Name';
+    this.userEmailInput.element.placeholder = 'Email';
+    this.userEmailInput.element.autocomplete = 'username';
+    this.userPasswordInput.element.placeholder = 'Password';
+    this.userPasswordInput.element.minLength = 8;
+    this.userEmailLabel.element.htmlFor = 'user-register-email';
+    this.userPasswordInput.element.autocomplete = 'new-password';
     this.linkToLogin.element.href = '#/login';
     this.userNameInput.element.autocomplete = 'name';
+    this.userPasswordLabel.element.htmlFor = 'register-password';
+    this.build();
+    return this.registerForm.element;
+  }
+
+  build() {
     this.registerForm.element.appendChild(this.message.element);
     this.nameInputGroup.element.appendChild(this.userNameInput.element);
     this.nameInputGroup.element.appendChild(this.userNameLabel.element);
@@ -82,7 +71,23 @@ export class RegisterComponent {
     this.registerForm.element.appendChild(this.linkToLogin.element);
   }
 
-  render() {
-    return this.registerForm.element;
+  async handleRegister() {
+    const regMessage = document.getElementById('register-message');
+    if (
+      this.userNameInput.element.validity.valid &&
+      this.userEmailInput.element.validity.valid &&
+      this.userPasswordInput.element.validity.valid &&
+      this.userPasswordInput.element.value.length > 8
+    ) {
+      const regData = await createUserController(
+        this.userNameInput.element.value,
+        this.userEmailInput.element.value,
+        this.userPasswordInput.element.value
+      );
+      regMessage.innerText = regData.success ? '' : regData.message;
+      if (!regData.success) {
+        regMessage.innerText = messages.FILL_REQUIRED;
+      }
+    }
   }
 }

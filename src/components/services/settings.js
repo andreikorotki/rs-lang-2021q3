@@ -1,5 +1,5 @@
 export const serverUrl = 'https://rs-lang-vvk1978-app.herokuapp.com';
-export const tokenExpirationPeriodMs = 14400000;
+export const tokenExpirationPeriodMs = 14400000; // 4 hours
 
 export const messages = {
   SUCCESS: 'Success',
@@ -11,4 +11,14 @@ export const messages = {
   USER_ALREADY_EXISTS: 'User with given email already exists',
   USER_NOT_FOUND: 'User with given email was not found',
   FILL_REQUIRED: 'Please, fill required fields.'
+};
+
+export const ResponseStatus = {
+  SUCCESS: 200,
+  CREATED: 201,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  ALREADY_EXISTS: 417,
+  UNPROCESSABLE_DATA: 422
 };

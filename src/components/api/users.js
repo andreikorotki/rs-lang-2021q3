@@ -1,9 +1,8 @@
-/* eslint-disable no-console */
-import { serverUrl, messages } from '../services/settings';
+import { serverUrl, messages, ResponseStatus } from '../services/settings';
 import { getToken } from '../services/state';
 
 export const createUser = async (user) => {
-  const rawResponse = await fetch(`${serverUrl}/users`, {
+  const response = await fetch(`${serverUrl}/users`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -12,21 +11,21 @@ export const createUser = async (user) => {
     body: JSON.stringify(user)
   });
 
-  if (rawResponse.status === 200 || rawResponse.status === 201) {
-    const content = await rawResponse.json();
+  if (response.status === ResponseStatus.SUCCESS || response.status === ResponseStatus.CREATED) {
+    const content = await response.json();
     return { content, message: messages.USER_CREATED, success: true };
   }
-  if (rawResponse.status === 417) {
+  if (response.status === ResponseStatus.ALREADY_EXISTS) {
     return { message: messages.USER_ALREADY_EXISTS, success: false };
   }
-  if (rawResponse.status === 422) {
+  if (response.status === ResponseStatus.UNPROCESSABLE_DATA) {
     return { message: messages.INCORRECT_EMAIL_OR_PWD, success: false };
   }
-  return { message: `Unexpected Response Code ${rawResponse.status}`, success: false };
+  return { message: `Unexpected Response Code ${response.status}`, success: false };
 };
 
 export const loginUser = async (user) => {
-  const rawResponse = await fetch(`${serverUrl}/signin`, {
+  const response = await fetch(`${serverUrl}/signin`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -35,22 +34,22 @@ export const loginUser = async (user) => {
     body: JSON.stringify(user)
   });
 
-  if (rawResponse.status === 200 || rawResponse.status === 201) {
-    const content = await rawResponse.json();
+  if (response.status === ResponseStatus.SUCCESS || response.status === ResponseStatus.CREATED) {
+    const content = await response.json();
     return { content, message: messages.LOGIN_SUCCESS, success: true };
   }
-  if (rawResponse.status === 401) {
+  if (response.status === ResponseStatus.UNAUTHORIZED) {
     return { message: messages.INCORRECT_EMAIL_OR_PWD, success: false };
   }
-  if (rawResponse.status === 404) {
+  if (response.status === ResponseStatus.NOT_FOUND) {
     return { message: messages.USER_NOT_FOUND, success: false };
   }
-  return { message: `Unexpected Response Code ${rawResponse.status}`, success: false };
+  return { message: `Unexpected Response Code ${response.status}`, success: false };
 };
 
 export const getUser = async (userId) => {
   const token = getToken();
-  const rawResponse = await fetch(`${serverUrl}/users/${userId}`, {
+  const response = await fetch(`${serverUrl}/users/${userId}`, {
     method: 'GET',
     withCredentials: true,
     headers: {
@@ -59,19 +58,19 @@ export const getUser = async (userId) => {
     }
   });
 
-  if (rawResponse.status === 200 || rawResponse.status === 201) {
-    const content = await rawResponse.json();
+  if (response.status === ResponseStatus.SUCCESS || response.status === ResponseStatus.CREATED) {
+    const content = await response.json();
     return { content, message: messages.SUCCESS, success: true };
   }
-  if (rawResponse.status === 401) {
+  if (response.status === ResponseStatus.UNAUTHORIZED) {
     return { message: messages.INCORRECT_TOKEN, success: false };
   }
-  return { message: `Unexpected Response code ${rawResponse.status}`, success: false };
+  return { message: `Unexpected Response code ${response.status}`, success: false };
 };
 
 export const getUserTokens = async (userId) => {
   const token = getToken();
-  const rawResponse = await fetch(`${serverUrl}/users/${userId}/tokens`, {
+  const response = await fetch(`${serverUrl}/users/${userId}/tokens`, {
     method: 'GET',
     withCredentials: true,
     headers: {
@@ -80,19 +79,19 @@ export const getUserTokens = async (userId) => {
     }
   });
 
-  if (rawResponse.status.ok) {
-    const content = await rawResponse.json();
+  if (response.status.ok) {
+    const content = await response.json();
     return { content, message: messages.LOGIN_SUCCESS, success: true };
   }
-  if (rawResponse.status === 403) {
+  if (response.status === ResponseStatus.FORBIDDEN) {
     return { message: messages.INCORRECT_TOKEN, success: false };
   }
-  return { message: `Unexpected Response Code ${rawResponse.status}`, success: false };
+  return { message: `Unexpected Response Code ${response.status}`, success: false };
 };
 
 export const createUserWord = async ({ userId, wordId, word }) => {
   const token = getToken();
-  const rawResponse = await fetch(`${serverUrl}/users/${userId}/words/${wordId}`, {
+  const response = await fetch(`${serverUrl}/users/${userId}/words/${wordId}`, {
     method: 'POST',
     withCredentials: true,
     headers: {
@@ -102,14 +101,14 @@ export const createUserWord = async ({ userId, wordId, word }) => {
     },
     body: JSON.stringify(word)
   });
-  const content = await rawResponse.json();
+  const content = await response.json();
 
   return content;
 };
 
 export const getUserWord = async ({ userId, wordId }) => {
   const token = getToken();
-  const rawResponse = await fetch(`${serverUrl}/users/${userId}/words/${wordId}`, {
+  const response = await fetch(`${serverUrl}/users/${userId}/words/${wordId}`, {
     method: 'GET',
     withCredentials: true,
     headers: {
@@ -117,7 +116,5 @@ export const getUserWord = async ({ userId, wordId }) => {
       Accept: 'application/json'
     }
   });
-  const content = await rawResponse.json();
-
-  return content;
+  return response.json();
 };

@@ -6,20 +6,17 @@ export function updateState(state) {
 
 function getState() {
   const state = localStorage.getItem('rs-lang-user-state');
-  if (state) {
-    return JSON.parse(state);
-  }
-  return undefined;
+  return state ? JSON.parse(state) : undefined;
 }
 
-export function updateUserStateProp(propName, propVal) {
+export function updateUserStateProp(key, value) {
   const state = localStorage.getItem('rs-lang-user-state');
   if (state) {
-    state[propName] = propVal;
+    state[key] = value;
     localStorage.setItem('rs-lang-user-state', JSON.stringify(state));
   } else {
     const newState = {};
-    newState[propName] = propVal;
+    newState[key] = value;
     localStorage.setItem('rs-lang-user-state', JSON.stringify(newState));
   }
 }
@@ -34,9 +31,9 @@ export function getToken() {
 
 export function isAuthorized() {
   const state = getState();
-  const curDate = new Date();
+  const currentDate = new Date();
   if (state) {
-    return state.token && new Date(state.tokenExpireDate) > curDate;
+    return state.token && new Date(state.tokenExpireDate) > currentDate;
   }
   return false;
 }

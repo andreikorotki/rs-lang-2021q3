@@ -7,7 +7,6 @@ export default class RegisterView extends BaseView {
     const content = new BaseElement('section', ['register__section']);
     const registerWrapper = new BaseElement('div', ['register__wrapper']);
     const heading = new BaseElement('h2', ['register__title'], 'Register');
-
     registerWrapper.element.appendChild(heading.element);
     const registerComponent = new RegisterComponent();
     registerWrapper.element.appendChild(registerComponent.render());

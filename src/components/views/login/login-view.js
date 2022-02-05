@@ -7,7 +7,6 @@ export default class LoginView extends BaseView {
     const content = new BaseElement('section', ['login__section']);
     const loginWrapper = new BaseElement('div', ['login__wrapper']);
     const heading = new BaseElement('h2', ['login__title'], 'Sing In');
-
     loginWrapper.element.appendChild(heading.element);
     const loginComponent = new LoginComponent();
     loginWrapper.element.appendChild(loginComponent.render());

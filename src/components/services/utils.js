@@ -1,10 +1,18 @@
-export function filterObject(object, props) {
-  const filteredUser = Object.keys(object)
-    .filter((key) => props.includes(key))
+/**
+ * Function received originalObject and filter its properties
+ * according to filteredKeys in input
+ * @export
+ * @param {*} originalObject
+ * @param {*} filteredKeys
+ * @return {*} new object with filtredKeys only
+ */
+export function filterObject(originalObject, filteredKeys) {
+  const filteredObject = Object.keys(originalObject)
+    .filter((key) => filteredKeys.includes(key))
     .reduce((obj, key) => {
-      obj[key] = object[key];
+      obj[key] = originalObject[key];
       return obj;
     }, {});
 
-  return filteredUser;
+  return filteredObject;
 }
