@@ -5,12 +5,12 @@
 
   @media (max-width: 1599px) {
     max-width: 1200px;
-    padding: 0 20px;
+    padding: 0 var(--spacing-unit-4);
   }
 }
 
 .logo {
-  font-size: var(--font-big-size);
+  font-size: var(--font-size-xxl);
   transition: 0.25s ease-in-out;
 }
 
@@ -25,7 +25,7 @@
 }
 
 .link {
-  font-size: var(--font-middle-size);
+  font-size: var(--font-size-xl);
   font-weight: 900;
   cursor: pointer;
   text-decoration: none;

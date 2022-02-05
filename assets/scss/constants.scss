@@ -1,21 +1,51 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
 
 :root {
   --bg-color: #dbdada;
   --selection-color: #c0c0c0;
   --text-primary-color: #000000;
+  --text-secondary-color: #ffffff;
   --hover-color: #ded3ec;
-  --active-color: red;
-  --font-big-size: 64px;
-  --font-middle-size: 32px;
+  --active-color-1: red;
+  --active-color-2: rgb(0, 255, 0, 0.4);
+
+  --font-size-xxs: 12px;
+  --font-size-xs: 16px;
+  --font-size-s: 20px;
+  --font-size-l: 32px;
+  --font-size-xl: 40px;
+  --font-size-xxl: 64px;
+
   --button-color-primary: radial-gradient(rgb(253, 233, 188), rgb(253, 235, 180));
   --button-color-secondary: radial-gradient(rgb(255, 188, 43), rgb(255, 192, 3));
   --button-color-third: radial-gradient(rgb(255, 119, 89), rgb(255, 87, 51));
   --button-color-fourth: radial-gradient(rgb(227, 48, 99), rgb(199, 0, 57));
   --button-color-fives: radial-gradient(rgb(161, 44, 83), rgb(144, 12, 63));
   --button-color-sixes: radial-gradient(rgb(137, 46, 109), rgb(88, 24, 69));
-  --card-color-primary: radial-gradient(rgb(218, 250, 211,0.5), rgb(179, 255, 176,0.5));
+  --button-color-sevens: radial-gradient(rgb(118, 129, 172), rgb(23, 0, 61));
 
-  font-size: 12px;
-  font-family: "Roboto", sans-serif;
+  --card-color-primary: radial-gradient(rgb(218, 250, 211, 0.5), rgb(179, 255, 176, 0.5));
+  --bg-card-color-primary: linear-gradient(transparent, rgb(179, 255, 176));
+
+  --border-color-primary: yellowgreen;
+  --border-color-secondary: black;
+
+  --spacing-unit-1: 5px;
+  --spacing-unit-2: 10px;
+  --spacing-unit-3: 15px;
+  --spacing-unit-4: 20px;
+  --spacing-unit-5: 25px;
+
+  font-size: var(--font-size-xs);
+  font-family: 'Roboto', sans-serif;
 }
+
+$assets-path: '../';
+$screen-size-xl: 1599px;
+
+$wrapper-size-xl: 1200px;
+
+$border-radius-1: 5px;
+$border-radius-2: 10px;
+$border-radius-3: 20px;
+$border-radius-4: 50%;

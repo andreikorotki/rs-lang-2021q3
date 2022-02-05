@@ -5,16 +5,18 @@ import BaseElement from '../common/base-element';
 import { getWords, getWord } from '../api/words';
 import { serverUrl } from '../services/settings';
 import { store } from '../store';
-import { setGroup, initial, nextPage, prevPage, setWords } from '../store/toolkitReducer';
-
-const bgColors = [
-  'radial-gradient(rgb(253, 233, 188, 0.5), rgb(253, 235, 180, 0.5))',
-  'radial-gradient(rgb(255, 188, 43, 0.5), rgb(255, 192, 3, 0.5))',
-  'radial-gradient(rgb(255, 119, 89, 0.5), rgb(255, 87, 51, 0.5))',
-  'radial-gradient(rgb(227, 48, 99, 0.5), rgb(199, 0, 57, 0.5))',
-  'radial-gradient(rgb(161, 44, 83, 0.5), rgb(144, 12, 63, 0.5))',
-  'radial-gradient(rgb(137, 46, 109, 0.5), rgb(88, 24, 69, 0.5))'
-];
+import {
+  setGroup,
+  initial,
+  nextPage,
+  prevPage,
+  setWords,
+  addHardWord,
+  deleteHardWord,
+  addLearnedWord,
+  addLearnedPages
+} from '../store/toolkitReducer';
+import { bgColors } from '../constants';
 
 export default class Book extends BaseView {
   constructor() {
@@ -30,7 +32,9 @@ export default class Book extends BaseView {
     this.wrapper.element.append(this.cardsContainer.element);
     this.state = {
       group: store.getState().toolkit.group,
-      page: store.getState().toolkit.page
+      page: store.getState().toolkit.page,
+      isLogin: false,
+      isHardGroup: false
     };
     this.run();
   }
@@ -43,10 +47,10 @@ export default class Book extends BaseView {
   }
 
   getButtons() {
-    const buttonsGroup = 6;
+    const buttonsGroup = 7;
     [...Array(buttonsGroup).keys()].forEach((button) => {
       this.button = new Button(
-        ['button-group', `color-${button + 1}`],
+        ['button-group', `button-group_color-${button + 1}`],
         `${button + 1}`,
         'button',
         `${button + 1}`,
@@ -59,13 +63,25 @@ export default class Book extends BaseView {
   getGroup = (event) => {
     const { id } = event.target;
     store.dispatch(initial());
-    store.dispatch(setGroup(+id));
-    this.state.group = +id;
+    store.dispatch(setGroup(Number(id)));
+    this.state.group = Number(id);
     this.state.page = 1;
     document.body.style.background = `${bgColors[+id - 1]}`;
-    this.getWords();
-    this.getPages();
+    if (id === '7') {
+      this.getHardWordsPage();
+    } else {
+      this.getWords();
+      this.getPages();
+    }
   };
+
+  getHardWordsPage() {
+    const { hardWords } = store.getState().toolkit;
+    store.dispatch(setWords(hardWords));
+    this.cardsContainer.element.innerHTML = '';
+    this.renderWords();
+    this.setActiveGroup();
+  }
 
   getWords = async () => {
     this.cardsContainer.element.innerHTML = '';
@@ -86,14 +102,16 @@ export default class Book extends BaseView {
 
   renderWords() {
     const { words } = store.getState().toolkit;
-    words.forEach((word) => {
-      this.renderCardWord(word);
+    const { hardWords } = store.getState().toolkit;
+    const { learnedWords } = store.getState().toolkit;
+    words.forEach((word, index) => {
+      this.renderCardWord(word, index, hardWords, learnedWords);
     });
-    this.audioButtonClicks();
+    this.buttonsClicks();
   }
 
-  renderCardWord = async (data) => {
-    const {
+  renderCardWord = async (
+    {
       id,
       image,
       word,
@@ -103,28 +121,46 @@ export default class Book extends BaseView {
       textMeaning,
       textExampleTranslate,
       textMeaningTranslate
-    } = data;
+    },
+    index,
+    hardWords,
+    learnedWords
+  ) => {
+    const isHard = hardWords.findIndex((hardWord) => hardWord.id === id) === -1;
+    const isLearned = learnedWords.findIndex((learnedWord) => learnedWord.id === id) === -1;
     const html = `
       <div class="card" id="${id}">
-        <img src="${serverUrl}/${image}" class="card-image"/>
+        <div class="card-top_content">
+          <img src="${serverUrl}/${image}" class="card-image"/>
+          <button
+            class="button-word button-word_hard ${!isHard ? 'hard' : ''}"
+            id="add-hard"
+            data-card=${index}>
+              ${this.state.group === 7 ? 'Из сложных' : 'В сложные'}
+          </button>
+          <button
+            class="button-word button-word_learned ${!isLearned ? 'learned' : ''}"
+            id="add-learned"
+            data-card=${index}>
+              Изученное
+          </button>
+        </div>
         <div class="card-content">
-          <div class="card-content_header">
-            <div class="word-english">
-              <p class="card-word_english">${word}</p>
-              <button class="button audio-button" id="${id}" title="Прослушать..."></button>
-            </div>
-            <div class="word-russian">
-              <span class="card-word">${wordTranslate}</span>
-              <span class="card-word">${transcription}</span>
-            </div>
-            <div class="example-english">
-              <p class="example-text">${textMeaning}</p>
-              <p class="example-text_cursive">${textExample}</p>
-            </div>
-            <div class="example-russian">
-              <p class="example-text">${textMeaningTranslate}</p>
-              <p class="example-text_cursive">${textExampleTranslate}</p>
-            </div>
+          <div class="word-english">
+            <p class="card-word_english">${word}</p>
+            <button class="button audio-button" id="${id}" title="Прослушать..."></button>
+          </div>
+          <div class="word-russian">
+            <span class="card-word">${wordTranslate}</span>
+            <span class="card-word">${transcription}</span>
+          </div>
+          <div class="example-english">
+            <p class="example-text">${textMeaning}</p>
+            <p class="example-text_cursive">${textExample}</p>
+          </div>
+          <div class="example-russian">
+            <p class="example-text">${textMeaningTranslate}</p>
+            <p class="example-text_cursive">${textExampleTranslate}</p>
           </div>
         </div>
       </div>
@@ -132,21 +168,28 @@ export default class Book extends BaseView {
     await this.cardsContainer.element.insertAdjacentHTML('beforeend', html);
   };
 
-  audioButtonClicks() {
-    this.audioButtons = document.querySelectorAll('.audio-button');
-    this.audioButtons.forEach((audioButton) => {
+  buttonsClicks() {
+    const audioButtons = document.querySelectorAll('.audio-button');
+    audioButtons.forEach((audioButton) => {
       audioButton.addEventListener('click', this.playWord);
+    });
+    const hardButtons = document.querySelectorAll('.button-word_hard');
+    hardButtons.forEach((hardButton) => {
+      hardButton.addEventListener('click', (event) => this.addHardWord(event));
+    });
+    const learnedButtons = document.querySelectorAll('.button-word_learned');
+    learnedButtons.forEach((learnedButton) => {
+      learnedButton.addEventListener('click', (event) => this.addLearnedWord(event));
     });
   }
 
   async playWord() {
-    this.url = serverUrl;
     const { id } = this;
     const word = await getWord(id);
     const { audio, audioExample, audioMeaning } = word.items;
-    const urlAudio = `${this.url}/${audio}`;
-    const urlAudioExample = `${this.url}/${audioExample}`;
-    const urlAudioMeaning = `${this.url}/${audioMeaning}`;
+    const urlAudio = `${serverUrl}/${audio}`;
+    const urlAudioExample = `${serverUrl}/${audioExample}`;
+    const urlAudioMeaning = `${serverUrl}/${audioMeaning}`;
     const audioWord = new Audio(urlAudio);
     audioWord.play();
     audioWord.onended = () => {
@@ -161,6 +204,48 @@ export default class Book extends BaseView {
       };
     };
   }
+
+  addHardWord(event) {
+    const { target } = event;
+    const { group } = this.state;
+    const { card } = target.dataset;
+    const hardWord = store.getState().toolkit.words[card];
+    const { hardWords } = store.getState().toolkit;
+    const isId = hardWords.findIndex(({ id }) => id === hardWord.id) === -1;
+
+    if (group === 7) {
+      store.dispatch(deleteHardWord(hardWord.id));
+      this.getHardWordsPage();
+    }
+
+    target.classList.add('hard');
+    if (isId) {
+      store.dispatch(addHardWord(hardWord));
+    }
+  }
+
+  addLearnedWord = (event) => {
+    const { target } = event;
+    const { card } = target.dataset;
+    const learnedWord = store.getState().toolkit.words[card];
+    const { learnedWords } = store.getState().toolkit;
+    const isId = learnedWords.findIndex(({ id }) => id === learnedWord.id) === -1;
+    target.classList.add('learned');
+    if (isId) {
+      store.dispatch(addLearnedWord(learnedWord));
+    }
+    this.setPageColorAllLearned();
+  };
+
+  setPageColorAllLearned = () => {
+    const isAllLearnedWords = document.querySelectorAll('.learned').length === 20;
+    if (isAllLearnedWords) {
+      const pageCurrent = document.querySelector('.page-current');
+      pageCurrent.classList.add('learned');
+      const { group, page } = this.state;
+      store.dispatch(addLearnedPages({ group, page }));
+    }
+  };
 
   pagination() {
     this.html = `
@@ -177,12 +262,18 @@ export default class Book extends BaseView {
   }
 
   getPages() {
+    const { learnedPages } = store.getState().toolkit;
+    const isLearnedPages =
+      learnedPages.findIndex(({ group, page }) => this.state.group === group && this.state.page === page) !== -1;
     if (document.querySelector('.pages')) {
       document.querySelector('.pages').remove();
     }
     const { page } = this.state;
     const html = `
-      <div class="pages">${page} / 30</div>
+      <div class="pages">
+        <span class="page-current ${isLearnedPages ? 'learned' : ''}">${page}</span>
+        / 30
+      </div>
     `;
     this.buttonPrev.element.insertAdjacentHTML('afterend', html);
   }

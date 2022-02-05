@@ -3,7 +3,10 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   group: 1,
   page: 1,
-  words: []
+  words: [],
+  hardWords: [],
+  learnedWords: [],
+  learnedPages: []
 };
 
 const toolkitReducer = createSlice({
@@ -30,21 +33,33 @@ const toolkitReducer = createSlice({
     },
     setWords(state, action) {
       state.words = action.payload;
+    },
+    addHardWord(state, action) {
+      state.hardWords.push(action.payload);
+    },
+    addLearnedWord(state, action) {
+      state.learnedWords.push(action.payload);
+    },
+    deleteHardWord(state, action) {
+      const index = state.hardWords.findIndex((word) => word.id === action.payload);
+      state.hardWords.splice(index, 1);
+    },
+    addLearnedPages(state, action) {
+      state.learnedPages.push(action.payload);
     }
   }
 });
 
-/* function fetchCount(amount = 1) {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve({ data: amount }), 500);
-  });
-} */
-
 export default toolkitReducer.reducer;
 
-export const { initial, prevPage, nextPage, setGroup, setWords } = toolkitReducer.actions;
-
-/* export const thunk = (amount) => async (dispatch) => {
-  const response = await fetchCount(amount);
-  dispatch(setData(response.data));
-}; */
+export const {
+  initial,
+  prevPage,
+  nextPage,
+  setGroup,
+  setWords,
+  addHardWord,
+  addLearnedWord,
+  deleteHardWord,
+  addLearnedPages
+} = toolkitReducer.actions;
