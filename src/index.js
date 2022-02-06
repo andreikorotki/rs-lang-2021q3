@@ -27,6 +27,8 @@ router.add(/about/, async () => {
 router.add(/book/, async () => {
   const book = new Book();
   book.render();
+});
+
 router.add(/login/, async () => {
   const loginView = new LoginView();
   loginView.render();
