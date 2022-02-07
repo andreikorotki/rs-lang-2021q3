@@ -1,3 +1,9 @@
+@import "./loader.scss";
+
+.book {
+  min-height: 100%;
+}
+
 .buttons-group_container {
   max-width: 800px;
   width: 100%;
@@ -14,7 +20,7 @@
 }
 
 .button-group {
-  width: 60px;
+  width: 30px;
   height: 30px;
   border-radius: $border-radius-1;
   border: var(--border-color-secondary) 2px solid;
@@ -70,7 +76,7 @@
   gap: var(--spacing-unit-5);
   max-width: 1600px;
   margin-bottom: var(--spacing-unit-5);
-  min-height: 100vh;
+  min-height: calc(100vh - 255px);
 
   @media (max-width: $screen-size-xl) {
     max-width: $wrapper-size-xl;
@@ -82,6 +88,7 @@
   border-radius: $border-radius-3;
   background: var(--bg-card-color-primary);
   box-shadow: 4px 4px 8px 2px rgba(0, 0, 255, 0.25);
+  max-height: 670px;
 
   &-top_content {
     position: relative;

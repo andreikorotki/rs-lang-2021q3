@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 
 :root {
   --bg-color: #dbdada;
@@ -26,6 +27,7 @@
 
   --card-color-primary: radial-gradient(rgb(218, 250, 211, 0.5), rgb(179, 255, 176, 0.5));
   --bg-card-color-primary: linear-gradient(transparent, rgb(179, 255, 176));
+  --bg-game-color-primary: rgb(179, 255, 176);
 
   --border-color-primary: yellowgreen;
   --border-color-secondary: black;
@@ -37,13 +39,14 @@
   --spacing-unit-5: 25px;
 
   font-size: var(--font-size-xs);
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
-$assets-path: '../';
+$assets-path: "../";
 $screen-size-xl: 1599px;
 
 $wrapper-size-xl: 1200px;
+$wrapper-size-xxl: 1440px;
 
 $border-radius-1: 5px;
 $border-radius-2: 10px;

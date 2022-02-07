@@ -1,7 +1,7 @@
 import { BaseElement } from '../common';
 import { BaseView } from '.';
 
-export default class Main extends BaseView {
+export default class Stats extends BaseView {
   constructor() {
     const main = new BaseElement('section', ['main']);
     const wrapper = new BaseElement('div', ['wrapper']);
@@ -17,7 +17,7 @@ export default class Main extends BaseView {
 
   render = () => {
     const html = `
-      <h2>Особенности нашего приложения</h2>
+      <h2>Статистика</h2>
     `;
     this.content.element.insertAdjacentHTML('beforeend', html);
   };

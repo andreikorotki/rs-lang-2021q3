@@ -1,6 +1,6 @@
-import LoginComponent from './login-component';
-import BaseElement from '../../common/base-element';
-import BaseView from '../base-view';
+import { LoginComponent } from '.';
+import { BaseElement } from '../../common';
+import { BaseView } from '..';
 
 export default class LoginView extends BaseView {
   constructor() {

@@ -1,9 +1,7 @@
 import { createUser, loginUser } from '../api/users';
 import User from '../models/user';
-import { updateState } from '../services/state';
-import { filterObject } from '../services/utils';
+import { updateState, filterObject, redirect } from '../services';
 import { tokenExpirationPeriodMs } from '../services/settings';
-import { redirect } from '../services/router';
 
 export async function loginUserController(userEmail, userPassword) {
   let user = new User(userEmail);

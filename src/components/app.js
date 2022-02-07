@@ -8,6 +8,7 @@ export class App {
     this.header = new Header();
     this.footer = new Footer();
     document.body.append(this.header.render());
-    document.body.appendChild(rootContainer);
+    document.body.append(rootContainer);
+    document.body.append(this.footer.render());
   }
 }

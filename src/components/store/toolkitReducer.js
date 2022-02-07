@@ -6,7 +6,8 @@ const initialState = {
   words: [],
   hardWords: [],
   learnedWords: [],
-  learnedPages: []
+  learnedPages: [],
+  isStartGameFromMenu: true
 };
 
 const toolkitReducer = createSlice({
