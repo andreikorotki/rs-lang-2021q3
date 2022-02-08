@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-// import './style.scss';
 import '../assets/scss/base.scss';
 import { App } from './components/app';
 import { Router } from './components/services/router';
@@ -9,7 +8,9 @@ import { getWords } from './components/api/words';
 import Book from './components/views/book';
 import LoginView from './components/views/login/login-view';
 import RegisterView from './components/views/register/register-view';
-import { isAuthorized } from './components/services/state';
+import { AudioCallStartView } from './components/views/audiocall/audiocall-start';
+import { getWordsForGame } from './components/controllers/audiocall-controller';
+import AudioCallGameView from './components/views/audiocall/audiocall-game-view';
 
 const appPage = new App();
 appPage.render();
@@ -34,18 +35,27 @@ router.add(/login/, async () => {
   loginView.render();
 });
 
+router.add(/audiocall-start/, async () => {
+  const audioCallStartView = new AudioCallStartView();
+  audioCallStartView.render();
+});
+
+router.add(/audiocall/, async () => {
+  const words = await getWordsForGame();
+  const game = new AudioCallGameView(words);
+  game.renderRound();
+});
+
 router.add(/register/, async () => {
   const registerView = new RegisterView();
   registerView.render();
 });
 
 router.add(/words\?group=(.*)&page=(.*)/, async (group, page) => {
-  const words = await getWords(group, page);
-  console.log(words.items);
+  await getWords(group, page);
 });
 
 router.add('', async () => {
   const main = new Main();
   main.render();
-  console.log(isAuthorized());
 });
