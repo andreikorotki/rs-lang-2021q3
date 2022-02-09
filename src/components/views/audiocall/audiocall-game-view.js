@@ -107,8 +107,10 @@ export default class AudioCallGameView extends BaseView {
       // TODO set learning progress attempt, remove from learned otherwise
       new Audio(success).play();
     } else {
-      const incorrectAnswer = document.getElementById(`word-variant-${answerNum}`);
-      incorrectAnswer.classList.add('incorrect');
+      if (answerNum !== '-1') {
+        const incorrectAnswer = document.getElementById(`word-variant-${answerNum}`);
+        incorrectAnswer.classList.add('incorrect');
+      }
       new Audio(failed).play();
     }
   }
