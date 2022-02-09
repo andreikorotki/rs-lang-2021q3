@@ -30,6 +30,13 @@
   margin-bottom: var(--spacing-unit-5);
   font-size: var(--font-size-xxl);
   font-weight: 300;
+
+  @media (max-width:$screen-size-m) {
+    letter-spacing: 1px;
+    font-size: var(--font-size-xl);
+    text-align: center;
+  }
+
 }
 
 .game__description {
@@ -53,6 +60,11 @@
   width: 100%;
   display: flex;
   justify-content: space-evenly;
+
+  @media (max-width:$screen-size-m) {
+    flex-wrap: wrap;
+  }
+
 }
 
 .select-group {
@@ -73,6 +85,10 @@
   border: 1px solid var(--button-border-color);
   font-size: var(--font-size-xs);
   text-transform: uppercase;
+
+  @media (max-width:$screen-size-m) {
+    margin-right: 0;
+  }
 }
 
 .answer__btn {
@@ -154,6 +170,12 @@
   align-items: center;
   color: var(--text-secondary-color);
   font-size: var(--font-size-s);
+
+  @media (max-width:$screen-size-m) {
+    flex-direction: column;
+    height: 250px;
+  }
+
 }
 
 .variant__item {
