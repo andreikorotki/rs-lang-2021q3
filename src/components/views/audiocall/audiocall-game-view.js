@@ -104,6 +104,7 @@ export default class AudioCallGameView extends BaseView {
       const correctNumSpan = document.getElementById(`variant-num-${correctNum}`);
       correctNumSpan.innerText = '';
       correctNumSpan.innerHTML = rightWordSVG;
+      this.controller.correctlyAnsweredWords.push(this.controller.mainWord);
       // TODO set learning progress attempt, remove from learned otherwise
       new Audio(success).play();
     } else {
@@ -111,6 +112,7 @@ export default class AudioCallGameView extends BaseView {
         const incorrectAnswer = document.getElementById(`word-variant-${answerNum}`);
         incorrectAnswer.classList.add('incorrect');
       }
+      this.controller.incorrectlyAnsweredWords.push(this.controller.mainWord);
       new Audio(failed).play();
     }
   }
@@ -121,7 +123,7 @@ export default class AudioCallGameView extends BaseView {
       this.renderRound();
     } else {
       // TODO render stats
-      this.renderStarts();
+      this.renderStats();
     }
     return this;
   }
@@ -135,8 +137,54 @@ export default class AudioCallGameView extends BaseView {
     return this;
   }
 
-  renderStarts() {
-    this.content.innerText = 'Game Over!';
+  static createWordItem(word) {
+    const wordContainer = new BaseElement('div', ['word-item-container']);
+    const playWordBtn = new Button(['btn', 'play-answer__btn'], '', 'button', '', async (event) => {
+      event.preventDefault();
+      await new Audio(`${serverUrl}/${word.audio}`).play();
+    });
+    playWordBtn.element.innerHTML = playAnswerSVG;
+
+    const wordInfo = new BaseElement('div', ['word-item-info']);
+    const wordName = new BaseElement('span', ['word-item-word'], `${word.word}`);
+    const wordTranslation = new BaseElement('span', ['word-translation'], `${word.wordTranslate}`);
+    const dash = new BaseElement('span', ['dash'], ' - ');
+    wordContainer.element.appendChild(playWordBtn.element);
+    wordInfo.element.appendChild(wordName.element);
+    wordInfo.element.appendChild(dash.element);
+    wordInfo.element.appendChild(wordTranslation.element);
+    wordContainer.element.appendChild(wordInfo.element);
+
+    return wordContainer.element;
+  }
+
+  renderStats() {
+    this.content.innerHTML = '';
+    const gameResult = new BaseElement('div', ['game-result']);
+    const gameResultHeading = new BaseElement('h2', ['game-result-heading'], 'Игра окончена!');
+    gameResult.element.appendChild(gameResultHeading.element);
+    if (this.controller.correctlyAnsweredWords.length > 0) {
+      const correctList = new BaseElement('div', ['word-list']);
+      const correctHeading = new BaseElement('h3', ['word-list-heading-correct'], 'Верные ответы:');
+      correctList.element.appendChild(correctHeading.element);
+      this.controller.correctlyAnsweredWords.forEach((word) => {
+        const wordItem = AudioCallGameView.createWordItem(word);
+        correctList.element.appendChild(wordItem);
+      });
+      gameResult.element.appendChild(correctList.element);
+    }
+
+    if (this.controller.incorrectlyAnsweredWords.length > 0) {
+      const incorrectHeading = new BaseElement('h3', ['word-list-heading-incorrect'], 'Ошибки:');
+      const incorrectList = new BaseElement('div', ['word-list']);
+      incorrectList.element.appendChild(incorrectHeading.element);
+      this.controller.incorrectlyAnsweredWords.forEach((word) => {
+        const wordItem = AudioCallGameView.createWordItem(word);
+        incorrectList.element.appendChild(wordItem);
+      });
+      gameResult.element.appendChild(incorrectList.element);
+    }
+    this.content.appendChild(gameResult.element);
   }
 
   addKeyboardListeners() {

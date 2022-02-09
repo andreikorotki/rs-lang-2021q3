@@ -2,7 +2,7 @@
 .audiocall-round__section {
   position: relative;
   width: 100%;
-  height: calc(100vh - var(--header-footer-height));
+  height: calc(100vh - var(--header-height));
   background-color: var(--bg-color-dark);
   display: flex;
   align-items: center;
@@ -31,12 +31,11 @@
   font-size: var(--font-size-xxl);
   font-weight: 300;
 
-  @media (max-width:$screen-size-m) {
+  @media (max-width: $screen-size-m) {
     letter-spacing: 1px;
     font-size: var(--font-size-xl);
     text-align: center;
   }
-
 }
 
 .game__description {
@@ -61,10 +60,9 @@
   display: flex;
   justify-content: space-evenly;
 
-  @media (max-width:$screen-size-m) {
+  @media (max-width: $screen-size-m) {
     flex-wrap: wrap;
   }
-
 }
 
 .select-group {
@@ -86,7 +84,7 @@
   font-size: var(--font-size-xs);
   text-transform: uppercase;
 
-  @media (max-width:$screen-size-m) {
+  @media (max-width: $screen-size-m) {
     margin-right: 0;
   }
 }
@@ -171,11 +169,10 @@
   color: var(--text-secondary-color);
   font-size: var(--font-size-s);
 
-  @media (max-width:$screen-size-m) {
+  @media (max-width: $screen-size-m) {
     flex-direction: column;
     height: 250px;
   }
-
 }
 
 .variant__item {
@@ -254,4 +251,44 @@
 
 .incorrect {
   text-decoration: line-through;
+}
+
+.word-list {
+  margin: var(--spacing-unit-4) 0;
+}
+
+.word-item-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: var(--spacing-unit-1) 0;
+  height: 30px;
+  line-height: 30px;
+}
+
+.word-item-info {
+  position: relative;
+  padding: 0 var(--spacing-unit-1);
+  height: 100%;
+  color: var(--text-secondary-color);
+}
+
+.word-item-info span {
+  color: var(--text-secondary-color);
+}
+
+.word-list-heading-correct,
+.word-list-heading-incorrect {
+  color: var(--text-secondary-color);
+}
+
+.game-result-heading {
+  font-size: var(--font-size-l);
+  color: var(--text-secondary-color);
+}
+
+.word-item-word {
+  color: var(--word-english-color) !important;
+  font-weight: 700;
 }
