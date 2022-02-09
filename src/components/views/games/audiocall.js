@@ -1,7 +1,7 @@
 import { BaseView } from '..';
-import { BaseElement, Button } from '../../common';
+import { BaseElement } from '../../common';
 import { store } from '../../store';
-import { getWordsData, shuffle } from '../../utils';
+import { getWordsData, shuffle, getLevelGameButtons } from '../../utils';
 import { serverUrl } from '../../services/settings';
 
 export default class Audiocall extends BaseView {
@@ -20,7 +20,7 @@ export default class Audiocall extends BaseView {
 
   run() {
     this.render();
-    this.getLevelGameButtons();
+    getLevelGameButtons(this.getGameData, this.buttonsGroupContainer.element);
   }
 
   render() {
@@ -42,20 +42,6 @@ export default class Audiocall extends BaseView {
     this.wrapper.element.insertAdjacentHTML('beforeend', html);
     const gameContainer = document.querySelector('.game-container');
     gameContainer.append(this.buttonsGroupContainer.element);
-  }
-
-  getLevelGameButtons() {
-    const buttonsGroup = 6;
-    [...Array(buttonsGroup).keys()].forEach((button) => {
-      this.button = new Button(
-        ['button-group', `button-group_color-${button + 1}`],
-        `${button + 1}`,
-        'button',
-        `${button + 1}`,
-        this.getGameData
-      );
-      this.buttonsGroupContainer.element.append(this.button.element);
-    });
   }
 
   getGameData = async (event) => {
