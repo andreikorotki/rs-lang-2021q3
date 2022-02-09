@@ -1,4 +1,4 @@
-import { playAnswerSVG, playMainWordSVG, arrowSVG } from './svg';
+import { playAnswerSVG, playMainWordSVG, arrowSVG, rightWordSVG } from './svg';
 import { AudioCallGameController } from '../../controllers/audiocall-controller';
 import { serverUrl } from '../../services/settings';
 import BaseElement from '../../common/base-element';
@@ -41,8 +41,13 @@ export default class AudioCallGameView extends BaseView {
     roundWords.forEach((variant, index) => {
       const shownNumber = index + 1;
       const variantItem = new BaseElement('div', ['variant__item'], '', `word-variant-${shownNumber}`);
-      const variantNum = new BaseElement('span', ['variant-num'], `${shownNumber}`);
-      const variantTranslation = new BaseElement('span', ['variant-translation'], `${variant.wordTranslate}`);
+      const variantNum = new BaseElement('span', ['variant-num'], `${shownNumber}`, `variant-num-${shownNumber}`);
+      const variantTranslation = new BaseElement(
+        'span',
+        ['variant-translation'],
+        `${variant.wordTranslate}`,
+        `variant-translation-${shownNumber}`
+      );
       variantItem.element.appendChild(variantNum.element);
       variantItem.element.appendChild(variantTranslation.element);
       variantsContainer.element.appendChild(variantItem.element);
@@ -92,11 +97,18 @@ export default class AudioCallGameView extends BaseView {
     mainWordContainer.appendChild(mainWordInfo.element);
     proceedContainer.appendChild(answerBtn.element);
     const isSuccessRound = correctNum.toString() === answerNum.toString();
-    // TODO add answer styles
+    const correctItem = document.getElementById(`word-variant-${correctNum}`);
+    correctItem.classList.add('bold');
     if (isSuccessRound) {
+      correctItem.classList.add('correct');
+      const correctNumSpan = document.getElementById(`variant-num-${correctNum}`);
+      correctNumSpan.innerText = '';
+      correctNumSpan.innerHTML = rightWordSVG;
       // TODO set learning progress attempt, remove from learned otherwise
       new Audio(success).play();
     } else {
+      const incorrectAnswer = document.getElementById(`word-variant-${answerNum}`);
+      incorrectAnswer.classList.add('incorrect');
       new Audio(failed).play();
     }
   }

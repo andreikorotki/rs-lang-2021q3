@@ -145,7 +145,7 @@
 }
 
 .word-variants-container {
-  height: 50px;
+  height: 45px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -155,6 +155,8 @@
 }
 
 .variant__item {
+  position: relative;
+  height: 45px;
   padding: var(--spacing-unit-2);
   color: var(--text-secondary-color);
   border-radius: $border-radius-2;
@@ -202,4 +204,30 @@
   padding: var(--spacing-unit-3);
   color: var(--text-secondary-color);
   font-size: var(--font-size-s);
+}
+
+.variant-num {
+  width: 25px;
+  height: 25px;
+}
+
+.variant-num svg {
+  width: 25px;
+  height: 25px;
+  fill: var(--active-color-2);
+  stroke-width: 0;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.correct {
+  display: flex;
+  opacity: 1;
+  align-items: center;
+}
+
+.incorrect {
+  text-decoration: line-through;
 }

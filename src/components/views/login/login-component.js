@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import Form from '../../common/form';
 import Button from '../../common/button';
 import Input from '../../common/input';
