@@ -131,7 +131,6 @@ export default class AudioCallGameView extends BaseView {
       this.controller.incorrectlyAnsweredWords.push(this.controller.mainWord);
       new Audio(failed).play();
     }
-    this.controller.setMainWordAttempt(isSuccessRound);
   }
 
   nextRound() {
