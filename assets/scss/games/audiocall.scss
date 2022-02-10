@@ -43,7 +43,7 @@
   font-size: var(--font-size-xs);
   font-weight: 400;
   line-height: 2;
-  letter-spacing: 0.00938em;
+  letter-spacing: 1px;
 }
 
 .game-rules__container {
@@ -274,7 +274,8 @@
   color: var(--text-secondary-color);
 }
 
-.word-item-info span {
+.word-translation,
+.dash {
   color: var(--text-secondary-color);
 }
 
@@ -289,6 +290,6 @@
 }
 
 .word-item-word {
-  color: var(--word-english-color) !important;
+  color: var(--word-english-color);
   font-weight: 700;
 }

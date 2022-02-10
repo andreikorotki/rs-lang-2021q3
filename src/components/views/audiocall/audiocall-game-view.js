@@ -18,25 +18,8 @@ export default class AudioCallGameView extends BaseView {
     this.addKeyboardListeners();
   }
 
-  async renderRound() {
-    this.roundAnswered = false;
-    this.content.innerHTML = '';
-    this.controller.prepareRound();
+  renderVariantsContainer() {
     const roundWords = this.controller.getRoundWords();
-    const mainWordContainer = new BaseElement('div', ['main-word-container']);
-    const playMainContainer = new BaseElement('div', ['play-main-word-container']);
-    const playMainBtn = new Button(
-      ['btn', 'play-main-word__btn'],
-      '',
-      'button',
-      'play-main-word-btn',
-      async (event) => {
-        event.preventDefault();
-        await this.controller.playMainWord();
-      }
-    );
-    playMainBtn.element.innerHTML = playMainWordSVG;
-
     const variantsContainer = new BaseElement('div', ['word-variants-container']);
     roundWords.forEach((variant, index) => {
       const shownNumber = index + 1;
@@ -53,27 +36,47 @@ export default class AudioCallGameView extends BaseView {
       variantsContainer.element.appendChild(variantItem.element);
       variantItem.element.addEventListener('click', () => this.onAnswer(shownNumber), { once: true });
     });
+    return variantsContainer.element;
+  }
+
+  async renderRound() {
+    this.roundAnswered = false;
+    this.content.innerHTML = '';
+    this.controller.prepareRound();
+
+    const mainWordContainer = new BaseElement('div', ['main-word-container']);
+    const playMainContainer = new BaseElement('div', ['play-main-word-container']);
+    const playMainBtn = new Button(
+      ['btn', 'play-main-word__btn'],
+      '',
+      'button',
+      'play-main-word-btn',
+      async (event) => {
+        event.preventDefault();
+        await this.controller.playMainWord();
+      }
+    );
+    const variantsContainerElement = this.renderVariantsContainer();
 
     const proceedContainer = new BaseElement('div', ['proceed-container']);
     const answerBtn = new Button(['btn', 'answer__btn'], 'не знаю', 'button', 'answer-btn', async (event) => {
       event.preventDefault();
       this.onAnswer();
     });
+
+    playMainBtn.element.innerHTML = playMainWordSVG;
     proceedContainer.element.appendChild(answerBtn.element);
     playMainContainer.element.appendChild(playMainBtn.element);
     mainWordContainer.element.appendChild(playMainContainer.element);
     this.content.appendChild(mainWordContainer.element);
-    this.content.appendChild(variantsContainer.element);
+    this.content.appendChild(variantsContainerElement);
     this.content.appendChild(proceedContainer.element);
     await this.controller.playMainWord();
-    return this;
   }
 
-  completeRound(correctNum, answerNum) {
+  rebuildMainWordContainer() {
     const mainWordContainer = document.querySelector('.main-word-container');
-    const proceedContainer = document.querySelector('.proceed-container');
     mainWordContainer.innerHTML = '';
-    proceedContainer.innerHTML = '';
     const mainWord = this.controller.getMainWord();
 
     const mainWordImgContainer = new BaseElement('div', ['main-word-img-container']);
@@ -81,21 +84,34 @@ export default class AudioCallGameView extends BaseView {
     const mainWordInfo = new BaseElement('div', ['main-word-info']);
     const answerWord = new BaseElement('span', ['answer-word']);
     answerWord.element.innerText = mainWord.word;
+
     const playMainBtn = new Button(['btn', 'play-answer__btn'], '', 'button', 'play-answer-btn', async (event) => {
       event.preventDefault();
       await this.controller.playMainWord();
     });
     playMainBtn.element.innerHTML = playAnswerSVG;
+
+    mainWordInfo.element.appendChild(playMainBtn.element);
+    mainWordInfo.element.appendChild(answerWord.element);
+    mainWordContainer.appendChild(mainWordImgContainer.element);
+    mainWordContainer.appendChild(mainWordInfo.element);
+  }
+
+  rebuildProceedContainer() {
+    const proceedContainer = document.querySelector('.proceed-container');
+    proceedContainer.innerHTML = '';
     const answerBtn = new Button(['btn', 'answer__btn'], '', 'button', 'answer-btn', async (event) => {
       event.preventDefault();
       this.nextRound();
     });
     answerBtn.element.innerHTML = arrowSVG;
-    mainWordInfo.element.appendChild(playMainBtn.element);
-    mainWordInfo.element.appendChild(answerWord.element);
-    mainWordContainer.appendChild(mainWordImgContainer.element);
-    mainWordContainer.appendChild(mainWordInfo.element);
     proceedContainer.appendChild(answerBtn.element);
+  }
+
+  completeRound(correctNum, answerNum) {
+    this.rebuildMainWordContainer();
+    this.rebuildProceedContainer();
+
     const isSuccessRound = correctNum.toString() === answerNum.toString();
     const correctItem = document.getElementById(`word-variant-${correctNum}`);
     correctItem.classList.add('bold');
@@ -115,6 +131,7 @@ export default class AudioCallGameView extends BaseView {
       this.controller.incorrectlyAnsweredWords.push(this.controller.mainWord);
       new Audio(failed).play();
     }
+    this.controller.setMainWordAttempt(isSuccessRound);
   }
 
   nextRound() {
@@ -122,19 +139,14 @@ export default class AudioCallGameView extends BaseView {
     if (this.currentRound <= this.totalRounds) {
       this.renderRound();
     } else {
-      // TODO render stats
       this.renderStats();
     }
-    return this;
   }
 
   onAnswer(guessNum = '-1') {
-    if (!this.roundAnswered) {
-      this.roundAnswered = true;
-      const correctIndex = this.controller.getCorrectNum();
-      this.completeRound(correctIndex, guessNum);
-    }
-    return this;
+    this.roundAnswered = true;
+    const correctIndex = this.controller.getCorrectNum();
+    this.completeRound(correctIndex, guessNum);
   }
 
   static createWordItem(word) {
@@ -143,26 +155,21 @@ export default class AudioCallGameView extends BaseView {
       event.preventDefault();
       await new Audio(`${serverUrl}/${word.audio}`).play();
     });
-    playWordBtn.element.innerHTML = playAnswerSVG;
-
     const wordInfo = new BaseElement('div', ['word-item-info']);
     const wordName = new BaseElement('span', ['word-item-word'], `${word.word}`);
     const wordTranslation = new BaseElement('span', ['word-translation'], `${word.wordTranslate}`);
     const dash = new BaseElement('span', ['dash'], ' - ');
+
+    playWordBtn.element.innerHTML = playAnswerSVG;
     wordContainer.element.appendChild(playWordBtn.element);
     wordInfo.element.appendChild(wordName.element);
     wordInfo.element.appendChild(dash.element);
     wordInfo.element.appendChild(wordTranslation.element);
     wordContainer.element.appendChild(wordInfo.element);
-
     return wordContainer.element;
   }
 
-  renderStats() {
-    this.content.innerHTML = '';
-    const gameResult = new BaseElement('div', ['game-result']);
-    const gameResultHeading = new BaseElement('h2', ['game-result-heading'], 'Игра окончена!');
-    gameResult.element.appendChild(gameResultHeading.element);
+  renderCorrectStats(gameResult) {
     if (this.controller.correctlyAnsweredWords.length > 0) {
       const correctList = new BaseElement('div', ['word-list']);
       const correctHeading = new BaseElement('h3', ['word-list-heading-correct'], 'Верные ответы:');
@@ -173,7 +180,9 @@ export default class AudioCallGameView extends BaseView {
       });
       gameResult.element.appendChild(correctList.element);
     }
+  }
 
+  renderIncorrectStats(gameResult) {
     if (this.controller.incorrectlyAnsweredWords.length > 0) {
       const incorrectHeading = new BaseElement('h3', ['word-list-heading-incorrect'], 'Ошибки:');
       const incorrectList = new BaseElement('div', ['word-list']);
@@ -184,6 +193,15 @@ export default class AudioCallGameView extends BaseView {
       });
       gameResult.element.appendChild(incorrectList.element);
     }
+  }
+
+  renderStats() {
+    this.content.innerHTML = '';
+    const gameResult = new BaseElement('div', ['game-result']);
+    const gameResultHeading = new BaseElement('h2', ['game-result-heading'], 'Игра окончена!');
+    gameResult.element.appendChild(gameResultHeading.element);
+    this.renderCorrectStats(gameResult);
+    this.renderIncorrectStats(gameResult);
     this.content.appendChild(gameResult.element);
   }
 
@@ -200,7 +218,7 @@ export default class AudioCallGameView extends BaseView {
         this.controller.playMainWord();
       }
       if (event.code === 'Enter' && !this.roundAnswered) {
-        this.onAnswer('-1');
+        this.onAnswer();
       } else if (event.code === 'Enter' && this.roundAnswered) {
         this.nextRound();
       }

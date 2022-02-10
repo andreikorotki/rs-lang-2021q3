@@ -30,3 +30,11 @@ export function getUniqueRandomIndexes(requiredUniqueCount, sourceArrayLength) {
   }
   return randomIndexes;
 }
+
+export function playAudio(audioPath) {
+  const audio = new Audio(audioPath);
+  const promise = audio.play();
+  if (promise !== undefined) {
+    promise.then(() => {}).catch(() => {});
+  }
+}

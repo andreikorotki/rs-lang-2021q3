@@ -11,6 +11,7 @@ import RegisterView from './components/views/register/register-view';
 import { AudioCallStartView } from './components/views/audiocall/audiocall-start';
 import { getWordsForGame } from './components/controllers/audiocall-controller';
 import AudioCallGameView from './components/views/audiocall/audiocall-game-view';
+import { NotEnoughWordsError } from './components/common/exceptions/not-enough-words-error';
 
 const appPage = new App();
 appPage.render();
@@ -41,7 +42,16 @@ router.add(/audiocall-start/, async () => {
 });
 
 router.add(/audiocall/, async () => {
-  const words = await getWordsForGame();
+  let words;
+  try {
+    words = await getWordsForGame();
+  } catch (error) {
+    if (error instanceof NotEnoughWordsError) {
+      words = [];
+    } else {
+      throw error;
+    }
+  }
   const game = new AudioCallGameView(words);
   game.renderRound();
 });

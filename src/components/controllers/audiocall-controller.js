@@ -1,4 +1,6 @@
 import { getWords } from '../api/words';
+import { NotEnoughWordsError } from '../common/exceptions/not-enough-words-error';
+import { IncorrectRandomIndexError } from '../common/exceptions/incorrect-random-index-error';
 import {
   audioCallVariantsCount,
   gameRoundsMaxCount,
@@ -6,8 +8,9 @@ import {
   pagesInGroupCount,
   serverUrl
 } from '../services/settings';
-import { getUniqueRandomIndexes } from '../services/utils';
+import { getUniqueRandomIndexes, playAudio } from '../services/utils';
 import { store } from '../store';
+// import { registerWordAttempt } from './words-controller';
 
 export async function getWordsForGame(groupNum = 0) {
   // how many times we need to query api words for full rounds setup
@@ -15,7 +18,16 @@ export async function getWordsForGame(groupNum = 0) {
   const queriedWords = [];
   let wordsPromises = [];
   if (groupNum) {
-    const randomPages = getUniqueRandomIndexes(queryTimes, pagesInGroupCount); // random pages from group
+    let randomPages;
+    try {
+      randomPages = getUniqueRandomIndexes(queryTimes, pagesInGroupCount); // random pages from group
+    } catch (error) {
+      if (error instanceof IncorrectRandomIndexError) {
+        randomPages = [queryTimes];
+      } else {
+        throw error;
+      }
+    }
     wordsPromises = randomPages.map((pageNum) => getWords(groupNum, pageNum));
   } else {
     // get group and page from store
@@ -37,7 +49,7 @@ export async function getWordsForGame(groupNum = 0) {
 export class AudioCallGameController {
   constructor(words) {
     if (words.length < audioCallVariantsCount) {
-      throw new Error('Not enough words for AudioCall round!');
+      throw new NotEnoughWordsError('Not enough words for game');
     }
     this.roundWords = [];
     this.words = words;
@@ -101,10 +113,10 @@ export class AudioCallGameController {
   }
 
   async playMainWord() {
-    const audio = new Audio(`${serverUrl}/${this.mainWord.audio}`);
-    const promise = audio.play();
-    if (promise !== undefined) {
-      promise.then(() => {}).catch(() => {});
-    }
+    playAudio(`${serverUrl}/${this.mainWord.audio}`);
   }
+
+  // async setMainWordAttempt(isSuccess) {
+  //   return registerWordAttempt(this.mainWord.id, isSuccess);
+  // }
 }
