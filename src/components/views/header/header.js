@@ -1,4 +1,5 @@
 import { BaseElement } from '../../common';
+import { store } from '../../store';
 
 export class Header extends BaseElement {
   constructor() {
@@ -6,6 +7,9 @@ export class Header extends BaseElement {
     this.headerContainer = new BaseElement('div', ['header-container']);
     this.navContainer = new BaseElement('nav', ['nav-container']);
     this.element.append(this.headerContainer.element);
+    this.state = {
+      isLogin: store.getState().toolkit.isLogin
+    };
   }
 
   render() {
@@ -19,6 +23,13 @@ export class Header extends BaseElement {
   }
 
   getNavigationMenu = () => {
+    const stats = `
+            <li class="menu-item">
+              <a class="link stats-link" href="/#/stats">
+                Статистика
+              </a>
+            </li>
+          `;
     const html = `
     <nav class="nav-container">
       <div class="logo">
@@ -31,28 +42,24 @@ export class Header extends BaseElement {
 
       <ul class="nav-menu">
         <li class="menu-item">
-          <a class="about-link link" href="/#/about">О нас</a>
+          <a class="link about-link" href="/#/about">О нас</a>
         </li>
         <li class="menu-item">
-          <a class="book-link link" href="/#/book" id="book">
+          <a class="link book-link" href="/#/book" id="book">
             Электронный учебник
           </a>
         </li>
         <li class="menu-item">
-          <a class="games-link link" href="/#/games" id="games">
+          <a class="link games-link" href="/#/games" id="games">
             Мини-игры
           </a>
         </li>
+        ${this.state.isLogin ? stats : ''}
         <li class="menu-item">
-          <a class="stats-link link" href="/#/stats">
-            Статистика
-          </a>
+          <a class="link login-link" href="/#/login">Войти</a>
         </li>
         <li class="menu-item">
-          <a class="link" href="/#/login">Войти</a>
-        </li>
-        <li class="menu-item">
-          <a class="link" href="/#/register">Регистрация</a>
+          <a class="link register-link" href="/#/register">Регистрация</a>
         </li>
       </ul>
     </nav>
@@ -64,17 +71,10 @@ export class Header extends BaseElement {
     this.headerContainer.element.addEventListener('click', (event) => this.handleEvents(event));
   }
 
-  handleEvents = (event) => {
-    const { target } = event;
-    const links = document.querySelectorAll('.link');
+  handleEvents = ({ target }) => {
     const footer = document.querySelector('.footer');
     if (target.classList.contains('link') || target.classList.contains('logo')) {
-      links.forEach((link) => {
-        if (link.classList.contains('active')) {
-          link.classList.remove('active');
-        }
-      });
-      target.classList.add('active');
+      this.setRemoveActiveLink(target);
       if (target.id === 'games') {
         footer.style.display = 'none';
       } else {
@@ -84,5 +84,15 @@ export class Header extends BaseElement {
         document.body.style.background = '#ffffff';
       }
     }
+  };
+
+  setRemoveActiveLink = (target) => {
+    const links = document.querySelectorAll('.link');
+    links.forEach((link) => {
+      if (link.classList.contains('active')) {
+        link.classList.remove('active');
+      }
+    });
+    target.classList.add('active');
   };
 }

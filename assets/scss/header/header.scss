@@ -15,7 +15,8 @@
 }
 
 .logo {
-  font-family: "Pacifico", cursive;
+  font-family: $secondary-font-family;
+  font-style: italic;
   font-size: var(--font-size-xl);
   transition: 0.25s ease-in-out;
   width: 160px;

@@ -1,8 +1,8 @@
-
 .register__section,
-.login__section  {
+.login__section {
   position: relative;
-  height: calc(100vh - var(--header-footer-height));
+  min-height: 79vh;
+  // height: calc(100vh - var(--header-footer-height));
   background-color: var(--bg-color);
   display: flex;
   justify-content: center;
@@ -35,7 +35,7 @@
 }
 
 .register__form,
-.login__form  {
+.login__form {
   width: 100%;
 }
 
@@ -65,7 +65,6 @@
   cursor: pointer;
 }
 
-
 .input-group > label {
   position: absolute;
   top: 0;
@@ -88,7 +87,6 @@
   color: var(--input-group-color);
   height: auto;
 }
-
 
 .input-group input:placeholder-shown ~ label {
   color: var(--input-group-color);

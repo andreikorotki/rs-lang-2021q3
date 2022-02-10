@@ -1,5 +1,5 @@
-@import './audiocall.scss';
-@import './sprint.scss';
+@import "./audiocall.scss";
+@import "./sprint.scss";
 
 .games {
   &-container {
@@ -8,8 +8,6 @@
     justify-content: space-evenly;
     align-items: center;
     min-height: 80vh;
-  }
-  &-title {
   }
 }
 
@@ -36,7 +34,7 @@
 
   &-title {
     text-align: center;
-    font-family: 'Pacifico', sans-serif;
+    font-family: $secondary-font-family;
     font-size: var(--font-size-l);
     margin-top: var(--spacing-unit-5);
   }

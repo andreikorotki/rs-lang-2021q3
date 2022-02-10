@@ -1,18 +1,19 @@
 import { BaseView } from '.';
 import { BaseElement } from '../common';
+import { store } from '../store';
+import { setGameStartFromMenu } from '../store/toolkitReducer';
 
 export default class Games extends BaseView {
   constructor() {
-    const contentElement = document.createElement('section');
-    contentElement.classList.add('games');
-    super(contentElement);
+    const contentElement = new BaseElement('section', ['games']);
+    super(contentElement.element);
     this.wrapper = new BaseElement('div', ['wrapper']);
-    contentElement.append(this.wrapper.element);
+    contentElement.element.append(this.wrapper.element);
   }
 
   run() {
     this.render();
-    this.handleClick();
+    this.handleClicks();
   }
 
   render() {
@@ -37,13 +38,12 @@ export default class Games extends BaseView {
     this.wrapper.element.insertAdjacentHTML('beforeend', html);
   }
 
-  handleClick() {
-    const gamesContainer = document.querySelector('.games-container');
-    gamesContainer.addEventListener('click', (event) => this.handleEvents(event));
+  handleClicks() {
+    this.gameContainer = document.querySelector('.games-container');
+    this.gameContainer.addEventListener('click', () => this.startGame());
   }
 
-  handleEvents = (event) => {
-    const { target } = event;
-    console.log(target);
+  startGame = () => {
+    store.dispatch(setGameStartFromMenu(true));
   };
 }

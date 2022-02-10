@@ -38,7 +38,7 @@
   top: -90px;
   color: var(--text-secondary-color);
   font-size: var(--font-size-xxl);
-  font-family: 'Pacifico', sans-serif;
+  font-family: $secondary-font-family;
 }
 
 .timer {
@@ -75,7 +75,7 @@
   }
   &-small {
     font-size: var(--font-size-xl);
-    font-family: 'Pacifico', sans-serif;
+    font-family: $secondary-font-family;
   }
 }
 
@@ -94,7 +94,7 @@
   font-size: var(--font-size-s);
   font-weight: 500;
   transition: 0.2s ease-in-out;
-  font-family: 'Pacifico', sans-serif;
+  font-family: $secondary-font-family;
 }
 
 .button-answer.false {
@@ -113,7 +113,8 @@
 
 .result {
   &-game_title {
-    font-family: 'Pacifico', sans-serif;
+    margin-bottom: var(--spacing-unit-1);
+    font-family: $secondary-font-family;
     text-align: center;
   }
   &-item {

@@ -13,7 +13,8 @@ import {
   addHardWord,
   deleteHardWord,
   addLearnedWord,
-  addLearnedPages
+  addLearnedPages,
+  setGameStartFromMenu
 } from '../store/toolkitReducer';
 import { bgColors } from '../constants';
 
@@ -25,15 +26,17 @@ export default class Book extends BaseView {
     this.wrapper = new BaseElement('div', ['wrapper']);
     this.content.append(this.wrapper.element);
     this.buttonsGroupContainer = new BaseElement('div', ['buttons-group_container']);
+    this.buttonsGameContainer = new BaseElement('div', ['buttons-games_container']);
     this.cardsContainer = new BaseElement('div', ['cards-container']);
     this.wrapper.element.append(this.buttonsGroupContainer.element);
+    this.wrapper.element.append(this.buttonsGameContainer.element);
     this.wrapper.element.append(this.cardsContainer.element);
     this.paginationContainer = new BaseElement('div', ['pagination-container']);
     this.wrapper.element.append(this.paginationContainer.element);
     this.state = {
       group: store.getState().toolkit.group,
       page: store.getState().toolkit.page,
-      isLogin: false,
+      isLogin: store.getState().toolkit.isLogin,
       isHardGroup: false
     };
   }
@@ -43,6 +46,9 @@ export default class Book extends BaseView {
     this.loader = new BaseElement('div', ['loader']);
     this.cardsContainer.element.append(this.loader.element);
     this.getGroupButtons();
+    if (this.state.isLogin) {
+      this.getGamesButtons();
+    }
     this.getWords();
     this.getPaginationButtons();
     this.getPages();
@@ -61,6 +67,26 @@ export default class Book extends BaseView {
       this.buttonsGroupContainer.element.append(this.button.element);
     });
   }
+
+  getGamesButtons() {
+    const buttonsGame = 2;
+    const games = ['Аудиовызов', 'Спринт'];
+    const href = ['/#/audiocall', '/#/sprint'];
+    [...Array(buttonsGame).keys()].forEach((button, index) => {
+      this.button = new BaseElement('a', ['button-game'], `${games[index]}`, `${button + 1}`);
+      this.button.element.href = `${href[index]}`;
+      this.buttonsGameContainer.element.append(this.button.element);
+    });
+    this.gameClicks();
+  }
+
+  gameClicks = () => {
+    this.buttonsGameContainer.element.addEventListener('click', () => this.startGame());
+  };
+
+  startGame = () => {
+    store.dispatch(setGameStartFromMenu(false));
+  };
 
   getGroup = (event) => {
     const { id } = event.target;
@@ -132,22 +158,28 @@ export default class Book extends BaseView {
   ) => {
     const isHard = hardWords.findIndex((hardWord) => hardWord.id === id) === -1;
     const isLearned = learnedWords.findIndex((learnedWord) => learnedWord.id === id) === -1;
+    const buttonLearned = `
+            <button
+              class="button-word button-word_learned ${!isLearned ? 'learned' : ''}"
+              id="add-learned"
+              data-card=${index}>
+                Изученное
+            </button>
+          `;
+    const buttonHard = `
+            <button
+              class="button-word button-word_hard ${!isHard ? 'hard' : ''}"
+              id="add-hard"
+              data-card=${index}>
+                ${this.state.group === 7 ? 'Из сложных' : 'В сложные'}
+            </button>
+          `;
     const html = `
       <div class="card" id="${id}">
         <div class="card-top_content">
           <img src="${serverUrl}/${image}" class="card-image"/>
-          <button
-            class="button-word button-word_hard ${!isHard ? 'hard' : ''}"
-            id="add-hard"
-            data-card=${index}>
-              ${this.state.group === 7 ? 'Из сложных' : 'В сложные'}
-          </button>
-          <button
-            class="button-word button-word_learned ${!isLearned ? 'learned' : ''}"
-            id="add-learned"
-            data-card=${index}>
-              Изученное
-          </button>
+          ${this.state.isLogin ? buttonHard : ''}
+          ${this.state.isLogin ? buttonLearned : ''}
         </div>
         <div class="card-content">
           <div class="word-english">
