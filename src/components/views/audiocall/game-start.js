@@ -8,7 +8,7 @@ export class GameStartView extends BaseView {
     const normalizedName = name.toString().toLowerCase();
     const startContent = new BaseElement('section', [`${normalizedName}-start`, 'game__section']);
     const gameWrapper = new BaseElement('div', [`${normalizedName}-wrapper`, 'game__wrapper']);
-    const heading = new BaseElement('h2', [`${normalizedName}__title`, 'game__title'], title);
+    const heading = new BaseElement('h2', [`${normalizedName}__title`, 'game-title'], title);
     gameWrapper.element.appendChild(heading.element);
     startContent.element.appendChild(gameWrapper.element);
     super(startContent.element);

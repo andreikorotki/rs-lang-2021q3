@@ -1,11 +1,24 @@
 .footer {
   height: 30px;
-  margin-top: var(--spacing-unit-4);
+  margin-top: var(--spacing-unit-1);
+}
+
+.footer-container {
+  margin: 0 auto;
+  margin-top: var(--spacing-unit-1);
+  max-width: $wrapper-size-xxl;
+  height: 100%;
+
+  @media (max-width: $screen-size-xl) {
+    max-width: $wrapper-size-xl;
+    padding: 0 var(--spacing-unit-4);
+  }
 }
 
 .nav-container.footer {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .nav-menu_footer {
@@ -20,4 +33,12 @@
 
 .school-logo:hover {
   opacity: 0.7;
+}
+
+.school-year {
+  position: relative;
+  width: 120px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

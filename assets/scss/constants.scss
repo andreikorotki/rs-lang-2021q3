@@ -2,14 +2,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 
 :root {
-  --bg-color: rgb(253, 233, 188);
+  --bg-color: #ffffff;
   --bg-color-dark: #474747;
   --input-group-color: #777;
   --selection-color: #c0c0c0;
   --button-border-color: #ced4da;
   --text-primary-color: #000000;
   --text-secondary-color: #ffffff;
-  --light-form-color:#ffffff;
+  --light-form-color:rgb(253, 233, 188);
   --hover-color: #ded3ec;
   --active-color-1: red;
   --word-english-color: #295ef0;
@@ -19,6 +19,7 @@
   --font-size-xxs: 12px;
   --font-size-xs: 16px;
   --font-size-s: 20px;
+  --font-size-m: 24px;
   --font-size-l: 32px;
   --font-size-xl: 40px;
   --font-size-xxl: 64px;
@@ -49,8 +50,8 @@
   --spacing-unit-20: 100px;
   --spacing-unit-30: 150px;
   --spacing-unit-50: 250px;
-  --header-footer-height: 155px;
-  --header-height: 50px;
+  --header-footer-height: 95px;
+  --header-height: 55px;
 
   font-size: var(--font-size-xs);
   font-family: "Roboto", sans-serif;
