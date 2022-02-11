@@ -69,24 +69,24 @@ router.add(/audiocall/, async () => {
   }
   const game = new AudioCallGameView(words);
   game.renderRound();
+});
 
-  router.add(/stats/, async () => {
-    const games = new Stats();
-    games.render();
-  });
+router.add(/stats/, async () => {
+  const games = new Stats();
+  games.render();
+});
 
-  router.add(/register/, async () => {
-    const registerView = new RegisterView();
-    registerView.render();
-  });
+router.add(/register/, async () => {
+  const registerView = new RegisterView();
+  registerView.render();
+});
 
-  router.add(/words\?group=(.*)&page=(.*)/, async (group, page) => {
-    await getWords(group, page);
-  });
+router.add(/words\?group=(.*)&page=(.*)/, async (group, page) => {
+  await getWords(group, page);
+});
 
-  router.add('', async () => {
-    const main = new Main();
-    main.run();
-    console.log(isAuthorized());
-  });
+router.add('', async () => {
+  const main = new Main();
+  main.render();
+  console.log(isAuthorized());
 });
