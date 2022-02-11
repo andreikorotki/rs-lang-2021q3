@@ -16,3 +16,25 @@ export function filterObject(originalObject, filteredKeys) {
 
   return filteredObject;
 }
+
+export function getUniqueRandomIndexes(requiredUniqueCount, sourceArrayLength) {
+  if (requiredUniqueCount >= sourceArrayLength) {
+    throw new Error('requiredUniqueCount should be less then sourceArrayLength');
+  }
+  const randomIndexes = [];
+  while (randomIndexes.length < requiredUniqueCount) {
+    const randomIndex = Math.floor(Math.random() * sourceArrayLength);
+    if (!randomIndexes.includes(randomIndex)) {
+      randomIndexes.push(randomIndex);
+    }
+  }
+  return randomIndexes;
+}
+
+export function playAudio(audioPath) {
+  const audio = new Audio(audioPath);
+  const promise = audio.play();
+  if (promise !== undefined) {
+    promise.then(() => {}).catch(() => {});
+  }
+}

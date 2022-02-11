@@ -4,7 +4,7 @@ export function updateState(state) {
   localStorage.setItem('rs-lang-user-state', JSON.stringify(state));
 }
 
-function getState() {
+export function getState() {
   const state = localStorage.getItem('rs-lang-user-state');
   return state ? JSON.parse(state) : undefined;
 }

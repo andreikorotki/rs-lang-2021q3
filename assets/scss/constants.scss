@@ -3,11 +3,13 @@
 
 :root {
   --bg-color: #dbdada;
+  --bg-color-dark: #474747;
   --selection-color: #c0c0c0;
   --text-primary-color: #000000;
   --text-secondary-color: #ffffff;
   --hover-color: #ded3ec;
   --active-color-1: red;
+  --word-english-color: #295ef0;
   --active-color-2: rgb(0, 255, 0);
 
   --font-size-xxs: 12px;
@@ -38,10 +40,13 @@
   --spacing-unit-3: 15px;
   --spacing-unit-4: 20px;
   --spacing-unit-5: 25px;
+  --spacing-unit-6: 40px;
   --spacing-unit-10: 50px;
   --spacing-unit-20: 100px;
   --spacing-unit-30: 150px;
   --spacing-unit-50: 250px;
+  --header-footer-height: 100px;
+  --header-height: 50px;
 
   font-size: var(--font-size-xs);
   font-family: "Roboto", sans-serif;
@@ -52,6 +57,7 @@ $secondary-font-family: "Pacifico", sans-serif;
 
 $assets-path: "../";
 $screen-size-xl: 1599px;
+$screen-size-m: 720px;
 
 $wrapper-size-xl: 1200px;
 $wrapper-size-xxl: 1440px;

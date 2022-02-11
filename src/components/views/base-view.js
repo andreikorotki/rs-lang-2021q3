@@ -1,10 +1,4 @@
 export default class BaseView {
-  content;
-
-  header;
-
-  footer;
-
   element;
 
   constructor(contentElement) {
@@ -13,6 +7,8 @@ export default class BaseView {
     this.content = contentElement;
     container.append(this.content);
     this.element = container;
+    this.element.appendChild(contentElement);
+    this.content = this.element.firstChild;
   }
 
   render() {

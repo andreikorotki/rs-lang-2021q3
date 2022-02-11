@@ -7,6 +7,10 @@ import { getWords } from './components/api/words';
 import { Main, Book, Games, Stats } from './components/views';
 import { LoginView } from './components/views/login';
 import RegisterView from './components/views/register/register-view';
+import { AudioCallStartView } from './components/views/audiocall/audiocall-start';
+import { getWordsForGame } from './components/controllers/audiocall-controller';
+import AudioCallGameView from './components/views/audiocall/audiocall-game-view';
+import { NotEnoughWordsError } from './components/common/exceptions/not-enough-words-error';
 import Audiocall from './components/views/games/audiocall';
 import Sprint from './components/views/games/sprint';
 
@@ -47,7 +51,26 @@ router.add(/login/, async () => {
   loginView.render();
 });
 
-router.add(/stats/, async () => {
+router.add(/audiocall-start/, async () => {
+  const audioCallStartView = new AudioCallStartView();
+  audioCallStartView.render();
+});
+
+router.add(/audiocall/, async () => {
+  let words;
+  try {
+    words = await getWordsForGame();
+  } catch (error) {
+    if (error instanceof NotEnoughWordsError) {
+      words = [];
+    } else {
+      throw error;
+    }
+  }
+  const game = new AudioCallGameView(words);
+  game.renderRound();
+
+  router.add(/stats/, async () => {
   const games = new Stats();
   games.render();
 });
@@ -58,8 +81,7 @@ router.add(/register/, async () => {
 });
 
 router.add(/words\?group=(.*)&page=(.*)/, async (group, page) => {
-  const words = await getWords(group, page);
-  console.log(words.items);
+  await getWords(group, page);
 });
 
 router.add('', async () => {
