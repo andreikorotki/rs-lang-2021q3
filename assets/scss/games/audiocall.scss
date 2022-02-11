@@ -38,6 +38,12 @@
   }
 }
 
+.game {
+  &-container.audiocall {
+    background-image: url(#{$assets-path}images/audiocall.jpg);
+  }
+}
+
 .game__description {
   color: var(--text-secondary-color);
   font-size: var(--font-size-xs);
@@ -292,35 +298,22 @@
 .word-item-word {
   color: var(--word-english-color);
   font-weight: 700;
+}
 
-  .game {
-    &-container {
-      width: 100%;
-      height: 100vh;
-      padding: var(--spacing-unit-5);
-      position: fixed;
-      top: 0;
-      left: 0;
-      background: var(--bg-game-color-primary);
-    }
-
-    &-text_level {
-      font-size: var(--font-size-l);
-      text-align: center;
-      margin: var(--spacing-unit-5) auto;
-    }
+.game {
+  &-container {
+    width: 100%;
+    height: 100vh;
+    padding: var(--spacing-unit-5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: var(--bg-game-color-primary);
   }
 
-  .close {
-    position: absolute;
-    font-size: var(--font-size-xl);
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    transition: 0.25s ease-in-out;
-  }
-
-  .close:hover {
-    color: var(--hover-color);
+  &-text_level {
+    font-size: var(--font-size-l);
+    text-align: center;
+    margin: var(--spacing-unit-5) auto;
   }
 }

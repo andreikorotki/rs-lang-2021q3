@@ -3,6 +3,7 @@ import { BaseElement } from '../../common';
 import { store } from '../../store';
 import { getWordsData, shuffle, getLevelGameButtons } from '../../utils';
 import { serverUrl } from '../../services/settings';
+import { settings } from '../../templates';
 
 export default class Audiocall extends BaseView {
   constructor() {
@@ -25,10 +26,8 @@ export default class Audiocall extends BaseView {
 
   render() {
     const html = `
-      <div class="game-container">
-        <a href="/#/games">
-          <div class="close">X</div>
-        </a>
+      <div class="game-container audiocall">
+        ${settings}
         <div class="game-content">
           <h2 class="game-title">
             Аудиовызов

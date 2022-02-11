@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { BaseView } from '.';
 import { Button, BaseElement } from '../common';
-import { getWords, getWord } from '../api/words';
+import { getWord } from '../api/words';
 import { serverUrl } from '../services/settings';
 import { store } from '../store';
 import {
@@ -17,6 +17,7 @@ import {
   setGameStartFromMenu
 } from '../store/toolkitReducer';
 import { bgColors } from '../constants';
+import { getWordsData } from '../utils';
 
 export default class Book extends BaseView {
   constructor() {
@@ -115,10 +116,8 @@ export default class Book extends BaseView {
 
   getWords = async () => {
     const { group, page } = this.state;
-    const data = await getWords(group - 1, page - 1);
-    const words = data.items;
+    await getWordsData(group, page);
     this.cardsContainer.element.innerHTML = '';
-    store.dispatch(setWords(words));
     this.renderWords();
     this.setActiveGroup();
   };
@@ -132,10 +131,8 @@ export default class Book extends BaseView {
 
   renderWords() {
     const { words } = store.getState().toolkit;
-    const { hardWords } = store.getState().toolkit;
-    const { learnedWords } = store.getState().toolkit;
     words.forEach((word, index) => {
-      this.renderCardWord(word, index, hardWords, learnedWords);
+      this.renderCardWord(word, index);
     });
     this.buttonsClicks();
   }
@@ -150,30 +147,30 @@ export default class Book extends BaseView {
       textExample,
       textMeaning,
       textExampleTranslate,
-      textMeaningTranslate
+      textMeaningTranslate,
+      difficulty,
+      optional
     },
-    index,
-    hardWords,
-    learnedWords
+    index
   ) => {
-    const isHard = hardWords.findIndex((hardWord) => hardWord.id === id) === -1;
-    const isLearned = learnedWords.findIndex((learnedWord) => learnedWord.id === id) === -1;
+    const isHard = difficulty === 'easy';
+    const { isLearned } = optional;
     const buttonLearned = `
-            <button
-              class="button-word button-word_learned ${!isLearned ? 'learned' : ''}"
-              id="add-learned"
-              data-card=${index}>
-                Изученное
-            </button>
-          `;
+      <button
+        class="button-word button-word_learned ${isLearned ? 'learned' : ''}"
+        id="add-learned"
+        data-card=${index}>
+          Изученное
+      </button>
+    `;
     const buttonHard = `
-            <button
-              class="button-word button-word_hard ${!isHard ? 'hard' : ''}"
-              id="add-hard"
-              data-card=${index}>
-                ${this.state.group === 7 ? 'Из сложных' : 'В сложные'}
-            </button>
-          `;
+      <button
+        class="button-word button-word_hard ${isHard ? 'hard' : ''}"
+        id="add-hard"
+        data-card=${index}>
+          ${this.state.group === 7 ? 'Из сложных' : 'В сложные'}
+      </button>
+    `;
     const html = `
       <div class="card" id="${id}">
         <div class="card-top_content">
@@ -245,7 +242,10 @@ export default class Book extends BaseView {
     const { target } = event;
     const { group } = this.state;
     const { card } = target.dataset;
-    const hardWord = store.getState().toolkit.words[card];
+    const hardWord = { ...store.getState().toolkit.words[card] };
+    hardWord.difficulty = 'hard';
+    target.classList.add('hard');
+
     const { hardWords } = store.getState().toolkit;
     const isId = hardWords.findIndex(({ id }) => id === hardWord.id) === -1;
 
@@ -254,7 +254,6 @@ export default class Book extends BaseView {
       this.getHardWordsPage();
     }
 
-    target.classList.add('hard');
     if (isId) {
       store.dispatch(addHardWord(hardWord));
     }
