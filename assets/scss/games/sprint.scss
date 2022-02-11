@@ -1,0 +1,154 @@
+.game {
+  &-container {
+    background: none;
+    background-image: url(#{$assets-path}images/savanna-1.jpg);
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &-board {
+    position: relative;
+    max-width: 600px;
+    width: 100%;
+    height: 450px;
+    margin-top: var(--spacing-unit-20);
+    margin-left: var(--spacing-unit-50);
+    background: var(--bg-game-color-secondary);
+    border-radius: 10%;
+    padding: var(--spacing-unit-5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.table {
+  position: absolute;
+  top: -90px;
+  color: var(--text-secondary-color);
+  font-size: var(--font-size-xxl);
+  font-family: $secondary-font-family;
+}
+
+.timer {
+  left: 0;
+}
+
+.result {
+  right: 0;
+}
+
+.answers-container_trues {
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.answer-led {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--text-secondary-color);
+}
+
+.answer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.word {
+  &-big {
+    font-size: var(--font-size-xxl);
+  }
+  &-small {
+    font-size: var(--font-size-xl);
+    font-family: $secondary-font-family;
+  }
+}
+
+.buttons-container_answers {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.button-answer {
+  width: 150px;
+  padding: var(--spacing-unit-1);
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary-color);
+  font-size: var(--font-size-s);
+  font-weight: 500;
+  transition: 0.2s ease-in-out;
+  font-family: $secondary-font-family;
+}
+
+.button-answer.false {
+  background-color: var(--active-color-1);
+  margin-right: var(--spacing-unit-10);
+}
+
+.button-answer.true {
+  background-color: var(--active-color-2);
+  margin-left: var(--spacing-unit-10);
+}
+
+.button-answer:hover {
+  opacity: 0.6;
+}
+
+.result {
+  &-game_title {
+    margin-bottom: var(--spacing-unit-1);
+    font-family: $secondary-font-family;
+    text-align: center;
+  }
+  &-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-unit-1);
+  }
+  &-content {
+    width: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  &-title.success {
+    font-size: var(--font-size-l);
+    color: var(--active-color-2);
+    margin: var(--spacing-unit-1) auto;
+  }
+  &-title.wrong {
+    font-size: var(--font-size-l);
+    color: var(--active-color-1);
+    margin: var(--spacing-unit-1) auto;
+  }
+}
+
+.word {
+  &-english_result,
+  &-russian_result,
+  &-transcription {
+    width: 150px;
+  }
+}
+
+.audio-button {
+  margin-left: 0;
+}

@@ -1,5 +1,5 @@
 import { serverUrl, messages, ResponseStatus } from '../services/settings';
-import { getToken } from '../services/state';
+import { getToken } from '../services';
 
 export const createUser = async (user) => {
   const response = await fetch(`${serverUrl}/users`, {

@@ -6,7 +6,9 @@ const initialState = {
   words: [],
   hardWords: [],
   learnedWords: [],
-  learnedPages: []
+  learnedPages: [],
+  isStartGameFromMenu: true,
+  isLogin: false
 };
 
 const toolkitReducer = createSlice({
@@ -46,6 +48,12 @@ const toolkitReducer = createSlice({
     },
     addLearnedPages(state, action) {
       state.learnedPages.push(action.payload);
+    },
+    setGameStartFromMenu(state, action) {
+      state.isStartGameFromMenu = action.payload;
+    },
+    setAuthorized(state, action) {
+      state.isLogin = action.payload;
     }
   }
 });
@@ -61,5 +69,7 @@ export const {
   addHardWord,
   addLearnedWord,
   deleteHardWord,
-  addLearnedPages
+  addLearnedPages,
+  setGameStartFromMenu,
+  setAuthorized
 } = toolkitReducer.actions;

@@ -1,7 +1,5 @@
-import Form from '../../common/form';
-import Button from '../../common/button';
-import Input from '../../common/input';
-import BaseElement from '../../common/base-element';
+/* eslint-disable no-console */
+import { Form, Button, Input, BaseElement } from '../../common';
 import { loginUserController } from '../../controllers/user-controller';
 import { messages } from '../../services/settings';
 

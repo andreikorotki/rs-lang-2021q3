@@ -1,24 +1,24 @@
 /* eslint-disable no-console */
 import '../assets/scss/base.scss';
 import { App } from './components/app';
-import { Router } from './components/services/router';
+import { Router, isAuthorized } from './components/services';
 import About from './components/views/about';
-import Main from './components/views/main';
 import { getWords } from './components/api/words';
-import Book from './components/views/book';
-import LoginView from './components/views/login/login-view';
+import { Main, Book, Games, Stats } from './components/views';
+import { LoginView } from './components/views/login';
 import RegisterView from './components/views/register/register-view';
 import { AudioCallStartView } from './components/views/audiocall/audiocall-start';
 import { getWordsForGame } from './components/controllers/audiocall-controller';
 import AudioCallGameView from './components/views/audiocall/audiocall-game-view';
 import { NotEnoughWordsError } from './components/common/exceptions/not-enough-words-error';
+import Audiocall from './components/views/games/audiocall';
+import Sprint from './components/views/games/sprint';
 
 const appPage = new App();
 appPage.render();
 
 const router = new Router({
-  mode: 'hash',
-  root: '/'
+  mode: 'hash'
 });
 
 router.add(/about/, async () => {
@@ -28,7 +28,22 @@ router.add(/about/, async () => {
 
 router.add(/book/, async () => {
   const book = new Book();
-  book.render();
+  book.run();
+});
+
+router.add(/games/, async () => {
+  const games = new Games();
+  games.run();
+});
+
+router.add(/audiocall/, async () => {
+  const audiocall = new Audiocall();
+  audiocall.run();
+});
+
+router.add(/sprint/, async () => {
+  const sprint = new Sprint();
+  sprint.run();
 });
 
 router.add(/login/, async () => {
@@ -54,6 +69,10 @@ router.add(/audiocall/, async () => {
   }
   const game = new AudioCallGameView(words);
   game.renderRound();
+
+  router.add(/stats/, async () => {
+  const games = new Stats();
+  games.render();
 });
 
 router.add(/register/, async () => {
@@ -67,5 +86,6 @@ router.add(/words\?group=(.*)&page=(.*)/, async (group, page) => {
 
 router.add('', async () => {
   const main = new Main();
-  main.render();
+  main.run();
+  console.log(isAuthorized());
 });

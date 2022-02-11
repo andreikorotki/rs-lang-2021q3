@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
-import BaseView from './base-view';
-import Button from '../common/button';
-import BaseElement from '../common/base-element';
+import { BaseView } from '.';
+import { Button, BaseElement } from '../common';
 import { getWords, getWord } from '../api/words';
 import { serverUrl } from '../services/settings';
 import { store } from '../store';
@@ -14,7 +13,8 @@ import {
   addHardWord,
   deleteHardWord,
   addLearnedWord,
-  addLearnedPages
+  addLearnedPages,
+  setGameStartFromMenu
 } from '../store/toolkitReducer';
 import { bgColors } from '../constants';
 
@@ -25,28 +25,36 @@ export default class Book extends BaseView {
     super(contentElement);
     this.wrapper = new BaseElement('div', ['wrapper']);
     this.content.append(this.wrapper.element);
-    this.wrapper.element.innerHTML = '<h2>Электронный учебник</h2>';
     this.buttonsGroupContainer = new BaseElement('div', ['buttons-group_container']);
+    this.buttonsGameContainer = new BaseElement('div', ['buttons-games_container']);
     this.cardsContainer = new BaseElement('div', ['cards-container']);
     this.wrapper.element.append(this.buttonsGroupContainer.element);
+    this.wrapper.element.append(this.buttonsGameContainer.element);
     this.wrapper.element.append(this.cardsContainer.element);
+    this.paginationContainer = new BaseElement('div', ['pagination-container']);
+    this.wrapper.element.append(this.paginationContainer.element);
     this.state = {
       group: store.getState().toolkit.group,
       page: store.getState().toolkit.page,
-      isLogin: false,
+      isLogin: store.getState().toolkit.isLogin,
       isHardGroup: false
     };
-    this.run();
   }
 
   run() {
-    document.body.style.background = `${bgColors[0]}`;
-    this.getButtons();
+    document.body.style.background = `${bgColors[this.state.group - 1]}`;
+    this.loader = new BaseElement('div', ['loader']);
+    this.cardsContainer.element.append(this.loader.element);
+    this.getGroupButtons();
+    if (this.state.isLogin) {
+      this.getGamesButtons();
+    }
     this.getWords();
-    this.pagination();
+    this.getPaginationButtons();
+    this.getPages();
   }
 
-  getButtons() {
+  getGroupButtons() {
     const buttonsGroup = 7;
     [...Array(buttonsGroup).keys()].forEach((button) => {
       this.button = new Button(
@@ -60,6 +68,26 @@ export default class Book extends BaseView {
     });
   }
 
+  getGamesButtons() {
+    const buttonsGame = 2;
+    const games = ['Аудиовызов', 'Спринт'];
+    const href = ['/#/audiocall', '/#/sprint'];
+    [...Array(buttonsGame).keys()].forEach((button, index) => {
+      this.button = new BaseElement('a', ['button-game'], `${games[index]}`, `${button + 1}`);
+      this.button.element.href = `${href[index]}`;
+      this.buttonsGameContainer.element.append(this.button.element);
+    });
+    this.gameClicks();
+  }
+
+  gameClicks = () => {
+    this.buttonsGameContainer.element.addEventListener('click', () => this.startGame());
+  };
+
+  startGame = () => {
+    store.dispatch(setGameStartFromMenu(false));
+  };
+
   getGroup = (event) => {
     const { id } = event.target;
     store.dispatch(initial());
@@ -68,8 +96,10 @@ export default class Book extends BaseView {
     this.state.page = 1;
     document.body.style.background = `${bgColors[+id - 1]}`;
     if (id === '7') {
+      this.paginationContainer.element.style.display = 'none';
       this.getHardWordsPage();
     } else {
+      this.paginationContainer.element.style.display = 'flex';
       this.getWords();
       this.getPages();
     }
@@ -84,10 +114,10 @@ export default class Book extends BaseView {
   }
 
   getWords = async () => {
-    this.cardsContainer.element.innerHTML = '';
     const { group, page } = this.state;
     const data = await getWords(group - 1, page - 1);
     const words = data.items;
+    this.cardsContainer.element.innerHTML = '';
     store.dispatch(setWords(words));
     this.renderWords();
     this.setActiveGroup();
@@ -128,22 +158,28 @@ export default class Book extends BaseView {
   ) => {
     const isHard = hardWords.findIndex((hardWord) => hardWord.id === id) === -1;
     const isLearned = learnedWords.findIndex((learnedWord) => learnedWord.id === id) === -1;
+    const buttonLearned = `
+            <button
+              class="button-word button-word_learned ${!isLearned ? 'learned' : ''}"
+              id="add-learned"
+              data-card=${index}>
+                Изученное
+            </button>
+          `;
+    const buttonHard = `
+            <button
+              class="button-word button-word_hard ${!isHard ? 'hard' : ''}"
+              id="add-hard"
+              data-card=${index}>
+                ${this.state.group === 7 ? 'Из сложных' : 'В сложные'}
+            </button>
+          `;
     const html = `
       <div class="card" id="${id}">
         <div class="card-top_content">
           <img src="${serverUrl}/${image}" class="card-image"/>
-          <button
-            class="button-word button-word_hard ${!isHard ? 'hard' : ''}"
-            id="add-hard"
-            data-card=${index}>
-              ${this.state.group === 7 ? 'Из сложных' : 'В сложные'}
-          </button>
-          <button
-            class="button-word button-word_learned ${!isLearned ? 'learned' : ''}"
-            id="add-learned"
-            data-card=${index}>
-              Изученное
-          </button>
+          ${this.state.isLogin ? buttonHard : ''}
+          ${this.state.isLogin ? buttonLearned : ''}
         </div>
         <div class="card-content">
           <div class="word-english">
@@ -247,18 +283,11 @@ export default class Book extends BaseView {
     }
   };
 
-  pagination() {
-    this.html = `
-      <div class="pagination-container">
-      </div>
-    `;
-    this.wrapper.element.insertAdjacentHTML('beforeend', this.html);
+  getPaginationButtons() {
     this.buttonPrev = new Button(['button', 'arrow-prev', 'arrow'], '', 'button', 'prev', this.getPrevPages);
     this.buttonNext = new Button(['button', 'arrow-next', 'arrow'], '', 'button', 'next', this.getNextPages);
-    const pagination = document.querySelector('.pagination-container');
-    pagination.insertAdjacentElement('afterbegin', this.buttonPrev.element);
-    pagination.insertAdjacentElement('beforeend', this.buttonNext.element);
-    this.getPages();
+    this.paginationContainer.element.append(this.buttonPrev.element);
+    this.paginationContainer.element.append(this.buttonNext.element);
   }
 
   getPages() {
