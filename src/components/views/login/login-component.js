@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Form, Button, Input, BaseElement } from '../../common';
 import { loginUserController } from '../../controllers/user-controller';
 import { messages } from '../../services/settings';

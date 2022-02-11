@@ -4,6 +4,8 @@ export const wordsPerPageCount = 20;
 export const gameRoundsMaxCount = 12;
 export const audioCallVariantsCount = 5; // each audiocall game round contains such options count to select
 export const pagesInGroupCount = 30;
+export const hardWordLearnedAttempts = 5;
+export const easyWordLearnedAttempts = 3;
 
 export const messages = {
   SUCCESS: 'Success',

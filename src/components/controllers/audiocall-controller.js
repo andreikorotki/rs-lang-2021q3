@@ -10,7 +10,7 @@ import {
 } from '../services/settings';
 import { getUniqueRandomIndexes, playAudio } from '../services/utils';
 import { store } from '../store';
-// import { registerWordAttempt } from './words-controller';
+import { createUpdateWordAttempt } from './words-controller';
 
 export async function getWordsForGame(groupNum = 0) {
   // how many times we need to query api words for full rounds setup
@@ -116,7 +116,7 @@ export class AudioCallGameController {
     playAudio(`${serverUrl}/${this.mainWord.audio}`);
   }
 
-  // async setMainWordAttempt(isSuccess) {
-  //   return registerWordAttempt(this.mainWord.id, isSuccess);
-  // }
+  async setMainWordAttempt(isSuccess) {
+    return createUpdateWordAttempt(this.mainWord.id, isSuccess);
+  }
 }

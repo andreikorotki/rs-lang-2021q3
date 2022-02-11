@@ -121,7 +121,7 @@ export default class AudioCallGameView extends BaseView {
       correctNumSpan.innerText = '';
       correctNumSpan.innerHTML = rightWordSVG;
       this.controller.correctlyAnsweredWords.push(this.controller.mainWord);
-      // TODO set learning progress attempt, remove from learned otherwise
+      this.controller.setMainWordAttempt(isSuccessRound);
       new Audio(success).play();
     } else {
       if (answerNum !== '-1') {
