@@ -1,11 +1,11 @@
 import { playAnswerSVG, playMainWordSVG, arrowSVG, rightWordSVG } from './svg';
-import { AudioCallGameController } from '../../controllers/audiocall-controller';
-import { serverUrl } from '../../services/settings';
-import BaseElement from '../../common/base-element';
-import Button from '../../common/button';
-import BaseView from '../base-view';
-import failed from '../../../../assets/sounds/wrong.mp3';
-import success from '../../../../assets/sounds/correct.mp3';
+import { AudioCallGameController } from '../../../controllers/audiocall-controller';
+import { serverUrl } from '../../../services/settings';
+import BaseElement from '../../../common/base-element';
+import Button from '../../../common/button';
+import BaseView from '../../base-view';
+import failed from '../../../../../assets/sounds/wrong.mp3';
+import success from '../../../../../assets/sounds/correct.mp3';
 
 export default class AudioCallGameView extends BaseView {
   constructor(words) {
@@ -143,9 +143,11 @@ export default class AudioCallGameView extends BaseView {
   }
 
   onAnswer(guessNum = '-1') {
-    this.roundAnswered = true;
-    const correctIndex = this.controller.getCorrectNum();
-    this.completeRound(correctIndex, guessNum);
+    if (!this.roundAnswered) {
+      this.roundAnswered = true;
+      const correctIndex = this.controller.getCorrectNum();
+      this.completeRound(correctIndex, guessNum);
+    }
   }
 
   static createWordItem(word) {

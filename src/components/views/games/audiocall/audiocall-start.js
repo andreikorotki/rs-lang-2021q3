@@ -1,6 +1,6 @@
 import { GameStartView } from './game-start';
-import BaseElement from '../../common/base-element';
-import { getLevelGameButtons } from '../../utils/getAudiocallButtons';
+import BaseElement from '../../../common/base-element';
+import { getLevelGameButtons } from '../../../utils/getAudiocallButtons';
 
 export class AudioCallStartView extends GameStartView {
   constructor() {

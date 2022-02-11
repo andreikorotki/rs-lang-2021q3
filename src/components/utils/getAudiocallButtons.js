@@ -1,6 +1,6 @@
 import { Button } from '../common';
 import { getWordsForGame } from '../controllers/audiocall-controller';
-import AudioCallGameView from '../views/audiocall/audiocall-game-view';
+import AudioCallGameView from '../views/games/audiocall/audiocall-game-view';
 
 export function getLevelGameButtons(buttonsGroupContainer) {
   const buttonsGroup = 6;

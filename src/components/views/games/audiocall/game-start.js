@@ -1,7 +1,7 @@
-import BaseView from '../base-view';
-import BaseElement from '../../common/base-element';
-import Form from '../../common/form';
-import Button from '../../common/button';
+import BaseView from '../../base-view';
+import BaseElement from '../../../common/base-element';
+import Form from '../../../common/form';
+import Button from '../../../common/button';
 
 export class GameStartView extends BaseView {
   constructor(name, title) {
