@@ -8,15 +8,15 @@ export const hardWordLearnedAttempts = 5;
 export const easyWordLearnedAttempts = 3;
 
 export const messages = {
-  SUCCESS: 'Success',
-  LOGIN_SUCCESS: 'Success login',
-  USER_CREATED: 'User was created',
-  INCORRECT_EMAIL_OR_PWD: 'Incorrect e-mail or password',
-  INCORRECT_TOKEN: 'Access token is missing, expired or invalid',
-  TOKEN_NOT_FOUND: 'Token not fount. Login Required.',
-  USER_ALREADY_EXISTS: 'User with given email already exists',
-  USER_NOT_FOUND: 'User with given email was not found',
-  FILL_REQUIRED: 'Please, fill required fields.'
+  SUCCESS: 'Успешно',
+  LOGIN_SUCCESS: 'Успешный вход',
+  USER_CREATED: 'Пользователь был успешно создан',
+  INCORRECT_EMAIL_OR_PWD: 'Некорректый email или пароль',
+  INCORRECT_TOKEN: 'Неверный токен',
+  TOKEN_NOT_FOUND: 'Токен не найден. Выполните вход',
+  USER_ALREADY_EXISTS: 'Пользователь с данным email уже существует',
+  USER_NOT_FOUND: 'Пользователь с данным адресом электронной почты не существует',
+  FILL_REQUIRED: 'Пожалуйста, заполните необходимые поля'
 };
 
 export const ResponseStatus = {
