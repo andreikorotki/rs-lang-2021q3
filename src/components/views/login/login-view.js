@@ -1,6 +1,7 @@
-import LoginComponent from './login-component';
-import BaseElement from '../../common/base-element';
-import BaseView from '../base-view';
+import { LoginComponent } from '.';
+import { BaseElement } from '../../common';
+import { BaseView } from '..';
+import { setResetActiveLink } from '../../utils';
 
 export default class LoginView extends BaseView {
   constructor() {
@@ -12,5 +13,11 @@ export default class LoginView extends BaseView {
     loginWrapper.element.appendChild(loginComponent.render());
     content.element.appendChild(loginWrapper.element);
     super(content.element);
+    this.handleClick();
   }
+
+  handleClick = () => {
+    const register = document.querySelector('.form-link');
+    register.addEventListener('click', () => setResetActiveLink('.register-link'));
+  };
 }

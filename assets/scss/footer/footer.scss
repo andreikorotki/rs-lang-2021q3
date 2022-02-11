@@ -1,0 +1,23 @@
+.footer {
+  height: 30px;
+  margin-top: var(--spacing-unit-4);
+}
+
+.nav-container.footer {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.nav-menu_footer {
+  display: flex;
+}
+
+.school-logo {
+  width: 64px;
+  height: 16px;
+  transition: 0.25s ease-in-out;
+}
+
+.school-logo:hover {
+  opacity: 0.7;
+}

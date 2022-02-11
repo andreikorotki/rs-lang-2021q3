@@ -1,7 +1,4 @@
-import Form from '../../common/form';
-import Button from '../../common/button';
-import Input from '../../common/input';
-import BaseElement from '../../common/base-element';
+import { Form, Button, Input, BaseElement } from '../../common';
 import { createUserController } from '../../controllers/user-controller';
 import { messages } from '../../services/settings';
 
