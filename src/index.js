@@ -71,8 +71,8 @@ router.add(/audiocall/, async () => {
 });
 
 router.add(/stats/, async () => {
-  const games = new Stats();
-  games.render();
+  const stats = new Stats();
+  await stats.run();
 });
 
 router.add(/register/, async () => {
