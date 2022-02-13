@@ -130,7 +130,7 @@ export const getUserWord = async ({ userId, wordId }) => {
   });
   if (response.status === ResponseStatus.SUCCESS) {
     const content = await response.json();
-    return { content, success: true };
+    return { success: true, content };
   }
   return { success: false, content: null };
 };
@@ -159,7 +159,7 @@ export const updateUserWord = async (userId, wordId, word) => {
   });
   if (response.status === ResponseStatus.SUCCESS) {
     const content = await response.json();
-    return { content, success: true };
+    return { success: true, content };
   }
   return { success: false, content: null };
 };
@@ -174,5 +174,48 @@ export const getUserWords = async (userId) => {
       Accept: 'application/json'
     }
   });
-  return response.json();
+  if (response.status === ResponseStatus.SUCCESS) {
+    const content = await response.json();
+    return { success: true, content };
+  }
+  return { success: false, content: null };
+};
+
+export const getUserStatistics = async (userId) => {
+  const token = getToken();
+  const response = await fetch(`${serverUrl}/users/${userId}/statistics`, {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json'
+    }
+  });
+  if (response.status === ResponseStatus.SUCCESS) {
+    const content = await response.json();
+    return { success: true, content };
+  }
+  return { success: false, content: null };
+};
+
+export const setUserStatistics = async (userId, statistics) => {
+  if ('id' in statistics) {
+    delete statistics.id;
+  }
+  const token = getToken();
+  const response = await fetch(`${serverUrl}/users/${userId}/statistics`, {
+    method: 'PUT',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(statistics)
+  });
+  if (response.status === ResponseStatus.SUCCESS) {
+    const content = await response.json();
+    return { success: true, content };
+  }
+  return { success: false, content: null };
 };

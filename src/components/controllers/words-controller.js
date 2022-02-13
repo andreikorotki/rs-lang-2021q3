@@ -46,9 +46,11 @@ export async function createWordController(wordId) {
   return word;
 }
 
-export async function createUpdateWordAttempt(wordId, isSuccessAttempt) {
+export async function calculateUserWord(wordId, isSuccessAttempt) {
   const attempt = new Attempt(isSuccessAttempt);
   let updatedWord;
+  let isNew = false;
+  let isNewLearned = false;
   if (isAuthorized()) {
     const state = getState();
     const { userId } = state;
@@ -59,13 +61,19 @@ export async function createUpdateWordAttempt(wordId, isSuccessAttempt) {
     if (response.success) {
       word = response.content;
     } else {
+      isNew = true;
       word = await createWordController(wordId);
     }
-
+    const initiallyLearned = word.isLearned;
     word = setWordAttempt(word, attempt);
+    const newLearned = word.isLearned;
+    // isLearned: false changed to isLeaned: true
+    if (!initiallyLearned && newLearned) {
+      isNewLearned = true;
+    }
     updatedWord = await updateUserWord(userId, wordId, word);
-    return updatedWord.content;
+    return { word: updatedWord.content, isNew, isNewLearned };
   }
   redirect('#/login');
-  return updatedWord;
+  return { word: updatedWord, isNew, isNewLearned };
 }

@@ -121,7 +121,6 @@ export default class AudioCallGameView extends BaseView {
       correctNumSpan.innerText = '';
       correctNumSpan.innerHTML = rightWordSVG;
       this.controller.correctlyAnsweredWords.push(this.controller.mainWord);
-      this.controller.setMainWordAttempt(isSuccessRound);
       new Audio(success).play();
     } else {
       if (answerNum !== '-1') {
@@ -131,13 +130,15 @@ export default class AudioCallGameView extends BaseView {
       this.controller.incorrectlyAnsweredWords.push(this.controller.mainWord);
       new Audio(failed).play();
     }
+    this.controller.onAttempt(isSuccessRound);
   }
 
-  nextRound() {
+  async nextRound() {
     this.currentRound++;
     if (this.currentRound <= this.totalRounds) {
       this.renderRound();
     } else {
+      await this.controller.addGameToUserStats();
       this.renderStats();
     }
   }
