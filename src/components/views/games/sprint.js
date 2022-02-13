@@ -5,7 +5,7 @@ import { store } from '../../store';
 import failed from '../../../../assets/sounds/wrong.mp3';
 import success from '../../../../assets/sounds/correct.mp3';
 import { settings } from '../../templates';
-import { addUserWords } from '../../store/toolkitReducer';
+import { setUserWords } from '../../store/toolkitReducer';
 
 export default class Sprint extends BaseView {
   constructor() {
@@ -79,7 +79,7 @@ export default class Sprint extends BaseView {
     const { userWords } = store.getState().toolkit;
     const { words } = store.getState().toolkit;
     const newWords = Array.from(new Set([...userWords, ...words].map(JSON.stringify))).map(JSON.parse);
-    store.dispatch(addUserWords(newWords));
+    store.dispatch(setUserWords(newWords));
   };
 
   startGame() {

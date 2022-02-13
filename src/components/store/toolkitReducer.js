@@ -4,12 +4,10 @@ const initialState = {
   group: 1,
   page: 1,
   words: [],
-  hardWords: [],
-  learnedWords: [],
   learnedPages: [],
   userWords: [],
   isStartGameFromMenu: true,
-  isLogin: true
+  isLogin: false
 };
 
 const toolkitReducer = createSlice({
@@ -37,19 +35,15 @@ const toolkitReducer = createSlice({
     setWords(state, action) {
       state.words = action.payload;
     },
-    addUserWords(state, action) {
+    setUserWords(state, action) {
       state.userWords = action.payload;
     },
-    addHardWord(state, action) {
-      // console.log(action);
-      state.hardWords.push(action.payload);
+    addUserWords(state, action) {
+      state.userWords.push(action.payload);
     },
-    addLearnedWord(state, action) {
-      state.learnedWords.push(action.payload);
-    },
-    deleteHardWord(state, action) {
-      const index = state.hardWords.findIndex((word) => word.id === action.payload);
-      state.hardWords.splice(index, 1);
+    updateUserWordProperty(state, action) {
+      const index = state.userWords.findIndex((word) => word.wordId === action.payload.wordId);
+      state.userWords[index] = action.payload;
     },
     addLearnedPages(state, action) {
       state.learnedPages.push(action.payload);
@@ -71,10 +65,9 @@ export const {
   nextPage,
   setGroup,
   setWords,
+  setUserWords,
   addUserWords,
-  addHardWord,
-  addLearnedWord,
-  deleteHardWord,
+  updateUserWordProperty,
   addLearnedPages,
   setGameStartFromMenu,
   setAuthorized

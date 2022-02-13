@@ -36,6 +36,10 @@
   padding: 0 var(--spacing-unit-2);
 }
 
+.item-hidden {
+  display: none;
+}
+
 .link {
   font-size: var(--font-size-l);
   font-weight: 500;

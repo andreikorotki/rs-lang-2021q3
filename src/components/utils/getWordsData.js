@@ -1,6 +1,7 @@
 import { store } from '../store';
 import { getWords } from '../api/words';
 import { setWords } from '../store/toolkitReducer';
+import { getWordsProperty } from '.';
 
 export async function getWordsData(group, page) {
   const data = await getWords(group - 1, page - 1);
@@ -9,7 +10,7 @@ export async function getWordsData(group, page) {
     ...word,
     difficulty: 'easy',
     optional: {
-      isLearned: true,
+      isLearned: false,
       startDate: date,
       successAttempts: 0,
       failedAttempts: 0,
@@ -17,5 +18,6 @@ export async function getWordsData(group, page) {
       lastAttemptDate: date
     }
   }));
-  store.dispatch(setWords(words));
+  const wordsModified = getWordsProperty(words);
+  store.dispatch(setWords(wordsModified));
 }
