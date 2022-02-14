@@ -11,6 +11,9 @@
   flex-wrap: nowrap;
   padding: var(--spacing-unit-5) 0;
   transition: box-shadow 0.3s ease;
+  background-image: url(#{$assets-path}images/audiocall-bg.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .btn {
@@ -290,7 +293,9 @@
   color: var(--text-secondary-color);
 }
 
+
 .game-result-heading {
+  font-family: $secondary-font-family;
   font-size: var(--font-size-l);
   color: var(--text-secondary-color);
 }
@@ -316,4 +321,25 @@
     text-align: center;
     margin: var(--spacing-unit-5) auto;
   }
+}
+
+.game__wrapper h2 {
+  color: var(--text-secondary-color);
+  font-size: var(--font-size-xxl);
+  @media (max-width: $screen-size-m) {
+    font-size: var(--font-size-xl);
+  }
+}
+
+.close {
+  position: absolute;
+  font-size: var(--font-size-xl);
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  transition: 0.25s ease-in-out;
+}
+
+.close:hover {
+  color: var(--hover-color);
 }

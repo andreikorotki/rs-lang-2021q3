@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Form, Button, Input, BaseElement } from '../../common';
 import { loginUserController } from '../../controllers/user-controller';
 import { messages } from '../../services/settings';
@@ -17,11 +16,11 @@ export default class LoginComponent {
       'user-password-input',
       'password'
     );
-    this.userPasswordLabel = new BaseElement('label', ['input-label'], 'Password');
+    this.userPasswordLabel = new BaseElement('label', ['input-label'], 'Пароль');
     this.userPasswordGroup = new BaseElement('div', ['input-group']);
-    this.linkToRegister = new BaseElement('a', ['form-link'], 'Register');
+    this.linkToRegister = new BaseElement('a', ['form-link'], 'Регистрация');
     this.linkToRegister.element.href = '#/register';
-    this.loginBtn = new Button(['btn', 'login__btn'], 'login', 'submit', 'login-btn', async (event) => {
+    this.loginBtn = new Button(['btn', 'login__btn'], 'войти', 'submit', 'login-btn', async (event) => {
       event.preventDefault();
       await this.handleLogin();
     });
@@ -35,7 +34,7 @@ export default class LoginComponent {
     this.userPasswordLabel.element.htmlFor = 'password';
     this.userPasswordInput.element.required = true;
     this.userPasswordInput.element.autocomplete = 'current-password';
-    this.userPasswordInput.element.placeholder = 'Password';
+    this.userPasswordInput.element.placeholder = 'Пароль';
     this.build();
     return this.loginForm.element;
   }
