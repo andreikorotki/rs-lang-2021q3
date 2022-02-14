@@ -1,9 +1,12 @@
 import { BaseView } from '..';
 import { BaseElement } from '../../common';
-import { getWordsData, getLevelGameButtons, gameTimer, playWord, setResetActiveLink } from '../../utils';
+import { getWordsData, getLevelGameButtons, gameTimer, playAudio, setResetActiveLink, getAudioUrl } from '../../utils';
 import { store } from '../../store';
 import failed from '../../../../assets/sounds/wrong.mp3';
 import success from '../../../../assets/sounds/correct.mp3';
+import { settings } from '../../templates';
+import { setUserWords } from '../../store/toolkitReducer';
+import { pagesInGroupCount, wordsPerPageCount } from '../../services/settings';
 
 export default class Sprint extends BaseView {
   constructor() {
@@ -14,14 +17,20 @@ export default class Sprint extends BaseView {
     contentElement.element.append(this.wrapper.element);
     this.state = {
       isStartGameFromMenu: store.getState().toolkit.isStartGameFromMenu,
-      countTime: 20,
+      countTime: 30,
       answers: null,
       question: 1,
       result: 0,
+      prize: 10,
+      level: 1,
       indexEnglishWord: null,
       indexRussianWord: null,
       wrongAnswers: [],
-      successAnswers: []
+      successAnswers: [],
+      wrongAnswersSeries: 0,
+      successAnswersSeries: 0,
+      lastQuestion: 20,
+      isAudio: true
     };
   }
 
@@ -45,10 +54,8 @@ export default class Sprint extends BaseView {
             </h3>
           `;
     const html = `
-      <div class="game-container">
-        <a href="/#/games">
-          <div class="close">X</div>
-        </a>
+      <div class="game-container sprint">
+        ${settings}
         <div class="game-content">
           ${this.state.isStartGameFromMenu ? gameContent : ''}
         </div>
@@ -57,13 +64,23 @@ export default class Sprint extends BaseView {
     this.wrapper.element.insertAdjacentHTML('beforeend', html);
     const gameContainer = document.querySelector('.game-container');
     gameContainer.append(this.buttonsGroupContainer.element);
+    this.settingsClick();
   }
 
   getGameData = async ({ target: { id } }) => {
     const group = Number(id);
-    const page = Math.floor(Math.random() * 30) + 1;
+    this.state.level = group;
+    const page = Math.floor(Math.random() * pagesInGroupCount) + 1;
     await getWordsData(group, page);
+    this.setUsersWords();
     this.startGame();
+  };
+
+  setUsersWords = () => {
+    const { userWords } = store.getState().toolkit;
+    const { words } = store.getState().toolkit;
+    const newWords = Array.from(new Set([...userWords, ...words].map(JSON.stringify))).map(JSON.parse);
+    store.dispatch(setUserWords(newWords));
   };
 
   startGame() {
@@ -86,12 +103,12 @@ export default class Sprint extends BaseView {
 
   getAnswers = (answerIndex) => {
     const answers = [];
-    const isTrueAnswer = Math.floor(Math.random() * 2) === 1;
-    if (isTrueAnswer) {
+    const isTruePressedButton = Math.floor(Math.random() * 2) === 1;
+    const answer = Math.floor(Math.random() * wordsPerPageCount);
+    if (isTruePressedButton) {
       answers.push(answerIndex);
       answers.push(answerIndex);
     } else {
-      const answer = Math.floor(Math.random() * 20);
       answers.push(answerIndex);
       answers.push(answer);
     }
@@ -104,7 +121,7 @@ export default class Sprint extends BaseView {
         <div class="table timer">${this.state.countTime}</div>
         <div class="table result">${this.state.result}</div>
         <div class="answers-container_trues">
-          <div class="answer-led" id="1"></div>
+          <div class="answer-led on" id="1"></div>
           <div class="answer-led" id="2"></div>
           <div class="answer-led" id="3"></div>
         </div>
@@ -123,7 +140,7 @@ export default class Sprint extends BaseView {
   getQuestion = () => {
     const answerContent = document.querySelector('.answer-content');
     answerContent.innerHTML = '';
-    if (this.state.question === 21) {
+    if (this.state.question > this.state.lastQuestion) {
       this.endGame();
     } else {
       const html = this.renderQuestion();
@@ -150,9 +167,32 @@ export default class Sprint extends BaseView {
   `;
   }
 
+  settingsClick = () => {
+    this.settings = document.querySelector('.settings');
+    this.settings.addEventListener('click', this.setSettings);
+  };
+
+  setSettings = ({ target }) => {
+    if (target.classList.contains('button-volume')) {
+      target.classList.toggle('mute');
+      this.state.isAudio = !this.state.isAudio;
+    }
+    if (target.classList.contains('button-full-screen')) {
+      document.documentElement.requestFullscreen().catch();
+    }
+  };
+
   audioClick = () => {
     const audioButtons = document.querySelectorAll('.audio-button');
-    audioButtons.forEach((audioButton) => audioButton.addEventListener('click', (event) => playWord(event)));
+    audioButtons.forEach((audioButton) =>
+      audioButton.addEventListener('click', (event) => {
+        if (this.state.isAudio) {
+          const wordId = event.target.id;
+          const url = getAudioUrl(wordId);
+          playAudio(url);
+        }
+      })
+    );
   };
 
   handleClick() {
@@ -192,15 +232,36 @@ export default class Sprint extends BaseView {
   }
 
   setNewResult() {
-    new Audio(success).play();
+    if (this.state.isAudio) {
+      playAudio(success);
+    }
+    this.state.successAnswersSeries += 1;
+    this.state.wrongAnswersSeries = 0;
+    const { successAnswersSeries } = this.state;
+    switch (true) {
+      case successAnswersSeries > 5:
+        this.state.prize = 30;
+        break;
+      case successAnswersSeries > 2:
+        this.state.prize = 20;
+        break;
+      default:
+        this.state.prize = 10;
+    }
     this.result = document.querySelector('.result');
-    this.state.result += 10;
+    this.state.result += this.state.prize * this.state.level;
     this.state.successAnswers.push(this.state.indexEnglishWord);
     this.result.textContent = this.state.result;
   }
 
   setWrongResult() {
-    new Audio(failed).play();
+    if (this.state.isAudio) {
+      playAudio(failed);
+    }
+    this.state.successAnswersSeries -= 3;
+    const isSuccessLessZero = this.state.successAnswersSeries < 0;
+    this.state.successAnswersSeries = isSuccessLessZero ? 0 : this.state.successAnswersSeries;
+    this.state.wrongAnswersSeries += 1;
     this.state.wrongAnswers.push(this.state.indexEnglishWord);
   }
 
@@ -214,6 +275,7 @@ export default class Sprint extends BaseView {
     this.gameBoard.innerHTML = '';
     const html = `
       <h2 class="result-game_title">Игра окончена!</h2>
+      <h3>Вы набрали ${this.state.result} очков</h3>
       <div class="result-content">
         <h3 class="result-title success">Верно:</h3>
         <ul class="result-table_success" id="success">

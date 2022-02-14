@@ -41,6 +41,12 @@
   }
 }
 
+.game {
+  &-container.audiocall {
+    background-image: url(#{$assets-path}images/audiocall.jpg);
+  }
+}
+
 .game__description {
   color: var(--text-secondary-color);
   font-size: var(--font-size-xs);

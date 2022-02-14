@@ -178,12 +178,14 @@ export const getUserWords = async (userId) => {
       Accept: 'application/json'
     }
   });
+
   if (response.status === ResponseStatus.SUCCESS) {
     const content = await response.json();
     return { success: true, content };
   }
   return { success: false, content: null };
 };
+
 
 export const getUserStatistics = async (userId) => {
   const token = getToken();
@@ -201,6 +203,19 @@ export const getUserStatistics = async (userId) => {
   }
   return { success: false, content: null };
 };
+
+
+export const getUserWords = async (userId) => {
+  const token = getToken();
+  const response = await fetch(`${serverUrl}/users/${userId}/words`, {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json'
+    }
+  });
+  return response.json();
 
 export const setUserStatistics = async (userId, statistics) => {
   if ('id' in statistics) {
