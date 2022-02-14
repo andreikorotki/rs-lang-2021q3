@@ -1,6 +1,6 @@
 import { GameStartView } from './game-start';
 import BaseElement from '../../../common/base-element';
-import { getLevelGameButtons } from '../../../utils/getAudiocallButtons';
+import { getLevelGameButtons } from '../../../controllers/audiocall-controller';
 
 export class AudioCallStartView extends GameStartView {
   constructor() {
@@ -24,7 +24,6 @@ export class AudioCallStartView extends GameStartView {
     gameWrapper.appendChild(gameRules.element);
     getLevelGameButtons(this.buttonsGroupContainer.element);
     gameWrapper.appendChild(this.buttonsGroupContainer.element);
-    return this.element;
   }
 
   render() {

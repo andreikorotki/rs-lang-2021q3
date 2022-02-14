@@ -120,17 +120,21 @@ export const createUserWord = async (userId, wordId, word) => {
 
 export const getUserWord = async ({ userId, wordId }) => {
   const token = getToken();
-  const response = await fetch(`${serverUrl}/users/${userId}/words/${wordId}`, {
-    method: 'GET',
-    withCredentials: true,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json'
+  try {
+    const response = await fetch(`${serverUrl}/users/${userId}/words/${wordId}`, {
+      method: 'GET',
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+      }
+    });
+    if (response.status === ResponseStatus.SUCCESS) {
+      const content = await response.json();
+      return { success: true, content };
     }
-  });
-  if (response.status === ResponseStatus.SUCCESS) {
-    const content = await response.json();
-    return { success: true, content };
+  } catch (error) {
+    return { success: false, content: error };
   }
   return { success: false, content: null };
 };

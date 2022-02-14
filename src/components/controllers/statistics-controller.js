@@ -4,6 +4,32 @@ import { getUserStatistics, getUserWords, setUserStatistics } from '../api/users
 import UserStatistic from '../models/user-statistic';
 import { isAuthorized } from '../services';
 import { getState } from '../services/state';
+import { drawMessageInSelector } from '../utils/drawMessageInSelector';
+
+function updateStatCounters(gameStat, dbStat) {
+  if (gameStat.dateKey in dbStat.optional[gameStat.game]) {
+    const dbGameDate = dbStat.optional[gameStat.game][gameStat.dateKey];
+    // update existing day stat
+    if (gameStat.longestSeries > dbGameDate.longestSeries) {
+      dbGameDate.longestSeries = gameStat.longestSeries;
+    }
+    dbGameDate.correctAnswers += gameStat.correctAnswers;
+    dbGameDate.wrongAnswers += gameStat.wrongAnswers;
+    dbGameDate.learnedWords += gameStat.learnedWords;
+    dbGameDate.newWords += gameStat.newWords;
+  } else {
+    // add new day for game
+    const { wrongAnswers, correctAnswers, learnedWords, newWords, longestSeries } = gameStat;
+    dbStat.optional[gameStat.game][gameStat.dateKey] = {
+      wrongAnswers,
+      correctAnswers,
+      learnedWords,
+      newWords,
+      longestSeries
+    };
+  }
+  return dbStat;
+}
 
 export async function updateGameStatistic(gameStat) {
   if (isAuthorized()) {
@@ -11,32 +37,11 @@ export async function updateGameStatistic(gameStat) {
     const { userId } = state;
     const response = await getUserStatistics(userId);
     if (response.success) {
-      const dbStat = response.content;
-      if (gameStat.dateKey in dbStat.optional[gameStat.game]) {
-        const dbGameDate = dbStat.optional[gameStat.game][gameStat.dateKey];
-        // update existing day stat
-        if (gameStat.longestSeries > dbGameDate.longestSeries) {
-          dbGameDate.longestSeries = gameStat.longestSeries;
-        }
-        dbGameDate.correctAnswers += gameStat.correctAnswers;
-        dbGameDate.wrongAnswers += gameStat.wrongAnswers;
-        dbGameDate.learnedWords += gameStat.learnedWords;
-        dbGameDate.newWords += gameStat.newWords;
-      } else {
-        // add new day for game
-        const { wrongAnswers, correctAnswers, learnedWords, newWords, longestSeries } = gameStat;
-        dbStat.optional[gameStat.game][gameStat.dateKey] = {
-          wrongAnswers,
-          correctAnswers,
-          learnedWords,
-          newWords,
-          longestSeries
-        };
-      }
+      let dbStat = response.content;
+      dbStat = updateStatCounters(gameStat, dbStat);
       const updateStatResponse = await setUserStatistics(userId, dbStat);
       return updateStatResponse;
     }
-    // create new statistic for user
     const userStat = new UserStatistic();
     const createStatResponse = await setUserStatistics(userId, userStat);
     if (createStatResponse.success) {
@@ -52,21 +57,11 @@ export async function getStatisticsData() {
     const { userId } = state;
     const statResponse = await getUserStatistics(userId);
     const wordsResponse = await getUserWords(userId);
-    let stats;
-    let words;
     if (statResponse.success && wordsResponse.success) {
-      stats = statResponse.content;
-      words = wordsResponse.content;
-      return { stats, words };
+      return { stats: statResponse.content, words: wordsResponse.content };
     }
   }
   return {};
-}
-
-function drawMessageInSelector(querySelector, message) {
-  const charts = document.querySelector(`${querySelector}`);
-  charts.innerHTML = '';
-  charts.innerHTML = `<p>${message}</p>`;
 }
 
 function calculateTotals(todaysKey, statsContent) {
@@ -87,57 +82,61 @@ function calculateTotals(todaysKey, statsContent) {
   return totalResults;
 }
 
+function drawChart(chartData, chartRoot, game, gameChart) {
+  const { correctAnswers, wrongAnswers, newWords, learnedWords, longestSeries } = chartData;
+  const totalAnswers = correctAnswers + wrongAnswers;
+  const successRate = Math.round((correctAnswers * 100) / totalAnswers);
+  const newWordsSpan = chartRoot.querySelector('.game-daily-new-words .change-stats');
+  const learnedWordsSpan = chartRoot.querySelector('.game-daily-learned-words .change-stats');
+  const longestSeriesSpan = chartRoot.querySelector('.game-daily-longest-series .change-stats');
+
+  newWordsSpan.innerText = newWords;
+  learnedWordsSpan.innerText = learnedWords;
+  longestSeriesSpan.innerText = longestSeries;
+  const data = {
+    labels: [`Correct Answers ${successRate}%`, `Wrong Answers ${100 - successRate}%`],
+    datasets: [
+      {
+        label: 'Rate',
+        data: [correctAnswers, wrongAnswers],
+        backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+        hoverOffset: 4
+      }
+    ]
+  };
+  const chartTitle = `${game} Daily`.toLocaleUpperCase();
+  const chartConfig = {
+    type: 'doughnut',
+    data,
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: chartTitle
+        }
+      }
+    }
+  };
+  const chart = new Chart(gameChart, chartConfig); /* eslint-disable-line no-unused-vars */
+}
+
 function buildGameChart(game, gameTranslation, statsContent) {
   const chartRoot = document.getElementById(`${game}-stats`);
   const gameChart = document.getElementById(`daily-${game}-chart`);
   const todaysKey = moment(new Date()).format('DD_MM_YYYY');
-  if (game === 'total' || todaysKey in statsContent.stats.optional[`${game}`]) {
-    let { correctAnswers, wrongAnswers, newWords, learnedWords, longestSeries } = {};
+  if (game === 'total' || statsContent.stats.optional[`${game}`][todaysKey]) {
+    let chartData = {};
     if (game === 'total') {
-      ({ correctAnswers, wrongAnswers, newWords, learnedWords, longestSeries } = calculateTotals(
-        todaysKey,
-        statsContent
-      ));
+      chartData = calculateTotals(todaysKey, statsContent);
     } else {
-      ({ correctAnswers, wrongAnswers, newWords, learnedWords, longestSeries } =
-        statsContent.stats.optional[`${game}`][todaysKey]);
+      chartData = statsContent.stats.optional[`${game}`][todaysKey];
     }
+    const { correctAnswers, wrongAnswers } = chartData;
     const totalAnswers = correctAnswers + wrongAnswers;
-    const successRate = Math.round((correctAnswers * 100) / totalAnswers);
-    const newWordsSpan = chartRoot.querySelector('.game-daily-new-words .change-stats');
-    newWordsSpan.innerText = newWords;
-    const learnedWordsSpan = chartRoot.querySelector('.game-daily-learned-words .change-stats');
-    learnedWordsSpan.innerText = learnedWords;
-    const longestSeriesSpan = chartRoot.querySelector('.game-daily-longest-series .change-stats');
-    longestSeriesSpan.innerText = longestSeries;
-    const data = {
-      labels: [`Correct Answers ${successRate}%`, `Wrong Answers ${100 - successRate}%`],
-      datasets: [
-        {
-          label: 'Rate',
-          data: [correctAnswers, wrongAnswers],
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
-          hoverOffset: 4
-        }
-      ]
-    };
-    const chartTitle = `${game} Daily`.toLocaleUpperCase();
-    const chartConfig = {
-      type: 'doughnut',
-      data,
-      options: {
-        plugins: {
-          title: {
-            display: true,
-            text: chartTitle
-          }
-        }
-      }
-    };
-    const chart = new Chart(gameChart, chartConfig); /* eslint-disable-line no-unused-vars */
+    drawChart(chartData, chartRoot, game, gameChart);
     if (!totalAnswers) {
-      const zeroAttmpts = `Пользователь не играл в ${gameTranslation} сегодня.`;
-      drawMessageInSelector(`#${game}-stats`, zeroAttmpts);
+      const zeroAttempts = `Пользователь не играл в ${gameTranslation} сегодня.`;
+      drawMessageInSelector(`#${game}-stats`, zeroAttempts);
     }
   } else {
     const notEnoughData = `Недостаточно данных. Пользователь не играл в ${gameTranslation} сегодня.`;

@@ -1,11 +1,10 @@
 .footer {
   height: 30px;
-  margin-top: var(--spacing-unit-1);
 }
 
 .footer-container {
   margin: 0 auto;
-  margin-top: var(--spacing-unit-1);
+  padding-top: var(--spacing-unit-1);
   max-width: $wrapper-size-xxl;
   height: 100%;
 

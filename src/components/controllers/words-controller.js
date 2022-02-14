@@ -1,4 +1,5 @@
 import { getUserWord, updateUserWord, createUserWord } from '../api/users';
+import { Difficulties } from '../constants/Difficulties';
 import Attempt from '../models/attempt';
 import UserWord from '../models/user-word';
 import { redirect } from '../services';
@@ -13,10 +14,10 @@ function setWordAttempt(word, attempt) {
       word.optional.successAttempts += 1;
       if (
         word.optional.successAttempts >= hardWordLearnedAttempts ||
-        (word.difficulty === 'easy' && word.optional.successAttempts >= easyWordLearnedAttempts)
+        (word.difficulty === Difficulties.easy && word.optional.successAttempts >= easyWordLearnedAttempts)
       ) {
         word.optional.isLearned = true;
-        word.difficulty = 'easy';
+        word.difficulty = Difficulties.easy;
       }
     } else {
       word.optional.failedAttempts += 1;
@@ -37,8 +38,7 @@ export async function createWordController(wordId) {
     word = new UserWord(wordId);
     const response = await createUserWord(userId, wordId, word);
     if (response.success) {
-      word.id = response.content.id;
-      return word;
+      return { id: response.content.id, ...word };
     }
   } else {
     redirect('#/login');
@@ -67,7 +67,6 @@ export async function calculateUserWord(wordId, isSuccessAttempt) {
     const initiallyLearned = word.isLearned;
     word = setWordAttempt(word, attempt);
     const newLearned = word.isLearned;
-    // isLearned: false changed to isLeaned: true
     if (!initiallyLearned && newLearned) {
       isNewLearned = true;
     }

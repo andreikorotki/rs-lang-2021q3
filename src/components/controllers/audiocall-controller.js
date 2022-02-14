@@ -14,6 +14,8 @@ import { store } from '../store';
 import { calculateUserWord } from './words-controller';
 import GameStatistic from '../models/game-statistic';
 import { updateGameStatistic } from './statistics-controller';
+import { Button } from '../common';
+import AudioCallGameView from '../views/games/audiocall/audiocall-game-view';
 
 export async function getWordsForGame(groupNum = 0) {
   // how many times we need to query api words for full rounds setup
@@ -47,6 +49,24 @@ export async function getWordsForGame(groupNum = 0) {
   responses.forEach((response) => queriedWords.push(response.items));
   // TODO filter learned words
   return Array.prototype.concat.apply([], queriedWords);
+}
+
+export function getLevelGameButtons(buttonsGroupContainer) {
+  const buttonsGroup = 6;
+  [...Array(buttonsGroup).keys()].forEach((group) => {
+    const button = new Button(
+      ['button-group', `button-group_color-${group + 1}`],
+      `${group + 1}`,
+      'button',
+      `${group + 1}`,
+      async () => {
+        const words = await getWordsForGame(+group);
+        const game = new AudioCallGameView(words);
+        game.renderRound();
+      }
+    );
+    buttonsGroupContainer.append(button.element);
+  });
 }
 
 export class AudioCallGameController {
