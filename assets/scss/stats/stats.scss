@@ -1,0 +1,36 @@
+.stats-heading {
+  position: relative;
+  width: 100%;
+  font-family: $secondary-font-family;
+  font-size: var(--font-size-xl);
+  font-weight: 100;
+  text-align: center;
+  padding-top: var(--spacing-unit-1);
+}
+
+.charts {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.chart-item-wrapper {
+  position: relative;
+  padding: 0 var(--spacing-unit-2);
+  width: 33%;
+  height: auto;
+}
+
+.game-daily-info {
+  position: relative;
+  margin-top: var(--spacing-unit-1);
+  width: 100%;
+}
+
+.game-daily-info div {
+  position: relative;
+  margin: 0 var(--spacing-unit-2);
+  display: flex;
+  justify-content: space-between;
+}

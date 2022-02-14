@@ -11,7 +11,7 @@ export class RegisterComponent {
       'user-register-name-input',
       'user-register-name'
     );
-    this.userNameLabel = new BaseElement('label', ['input-label'], 'Name');
+    this.userNameLabel = new BaseElement('label', ['input-label'], 'Имя пользователя');
     this.nameInputGroup = new BaseElement('div', ['input-group']);
     this.userNameLabel.element.htmlFor = 'user-register-name';
     this.userEmailInput = new Input(
@@ -28,21 +28,27 @@ export class RegisterComponent {
       'user-register-password-input',
       'register-password'
     );
-    this.userPasswordLabel = new BaseElement('label', ['input-label'], 'Password');
+    this.userPasswordLabel = new BaseElement('label', ['input-label'], 'Пароль');
     this.passwordInputGroup = new BaseElement('div', ['input-group']);
     this.message = new BaseElement('div', ['register-message'], '', 'register-message');
-    this.registerBtn = new Button(['btn', 'register__btn'], 'register', 'button', 'register-btn', async (e) => {
-      e.preventDefault();
-      await this.handleRegister();
-    });
-    this.linkToLogin = new BaseElement('a', ['form-link'], 'Already have an account? Sing In');
+    this.registerBtn = new Button(
+      ['btn', 'register__btn'],
+      'Зарегистироваться',
+      'button',
+      'register-btn',
+      async (e) => {
+        e.preventDefault();
+        await this.handleRegister();
+      }
+    );
+    this.linkToLogin = new BaseElement('a', ['form-link'], 'Уже зарегистированы?');
   }
 
   render() {
-    this.userNameInput.element.placeholder = 'Name';
+    this.userNameInput.element.placeholder = 'Имя пользователя';
     this.userEmailInput.element.placeholder = 'Email';
     this.userEmailInput.element.autocomplete = 'username';
-    this.userPasswordInput.element.placeholder = 'Password';
+    this.userPasswordInput.element.placeholder = 'Пароль';
     this.userPasswordInput.element.minLength = 8;
     this.userEmailLabel.element.htmlFor = 'user-register-email';
     this.userPasswordInput.element.autocomplete = 'new-password';
@@ -83,8 +89,10 @@ export class RegisterComponent {
       );
       regMessage.innerText = regData.success ? '' : regData.message;
       if (!regData.success) {
-        regMessage.innerText = messages.FILL_REQUIRED;
+        regMessage.innerText = regData.message;
       }
+    } else {
+      regMessage.innerText = messages.FILL_REQUIRED;
     }
   }
 }

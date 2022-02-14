@@ -1,5 +1,7 @@
-import { BaseElement } from '../common';
-import { BaseView } from '.';
+import { BaseElement } from '../../common';
+import { BaseView } from '..';
+import { buildDailyCharts } from '../../controllers/statistics-controller';
+import { getStatsTemplate } from './stats-template';
 
 export default class Stats extends BaseView {
   constructor() {
@@ -11,14 +13,13 @@ export default class Stats extends BaseView {
     wrapper.element.append(this.content.element);
   }
 
-  run() {
+  async run() {
     this.render();
+    await buildDailyCharts();
   }
 
   render = () => {
-    const html = `
-      <h2>Статистика</h2>
-    `;
+    const html = getStatsTemplate();
     this.content.element.insertAdjacentHTML('beforeend', html);
   };
 }

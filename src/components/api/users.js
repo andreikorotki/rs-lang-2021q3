@@ -89,7 +89,7 @@ export const getUserTokens = async (userId) => {
   return { message: `Unexpected Response Code ${response.status}`, success: false };
 };
 
-export const createUserWord = async ({ userId, wordId, word }) => {
+export const createUserWord = async (userId, wordId, word) => {
   const token = getToken();
   const response = await fetch(`${serverUrl}/users/${userId}/words/${wordId}`, {
     method: 'POST',
@@ -99,16 +99,78 @@ export const createUserWord = async ({ userId, wordId, word }) => {
       Accept: 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(word)
+    body: JSON.stringify(word, [
+      'difficulty',
+      'optional',
+      'attempts',
+      'isLearned',
+      'startDate',
+      'successAttempts',
+      'failedAttempts',
+      'lastAttemptSuccess',
+      'lastAttemptDate'
+    ])
   });
-  const content = await response.json();
-
-  return content;
+  if (response.status === ResponseStatus.SUCCESS) {
+    const content = await response.json();
+    return { content, success: true };
+  }
+  return { success: false, content: null };
 };
 
 export const getUserWord = async ({ userId, wordId }) => {
   const token = getToken();
+  try {
+    const response = await fetch(`${serverUrl}/users/${userId}/words/${wordId}`, {
+      method: 'GET',
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+      }
+    });
+    if (response.status === ResponseStatus.SUCCESS) {
+      const content = await response.json();
+      return { success: true, content };
+    }
+  } catch (error) {
+    return { success: false, content: error };
+  }
+  return { success: false, content: null };
+};
+
+export const updateUserWord = async (userId, wordId, word) => {
+  const token = getToken();
   const response = await fetch(`${serverUrl}/users/${userId}/words/${wordId}`, {
+    method: 'PUT',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(word, [
+      'difficulty',
+      'optional',
+      'attempts',
+      'isLearned',
+      'startDate',
+      'successAttempts',
+      'failedAttempts',
+      'lastAttemptSuccess',
+      'lastAttemptDate'
+    ])
+  });
+  if (response.status === ResponseStatus.SUCCESS) {
+    const content = await response.json();
+    return { success: true, content };
+  }
+  return { success: false, content: null };
+};
+
+export const getUserWords = async (userId) => {
+  const token = getToken();
+  const response = await fetch(`${serverUrl}/users/${userId}/words`, {
     method: 'GET',
     withCredentials: true,
     headers: {
@@ -116,5 +178,48 @@ export const getUserWord = async ({ userId, wordId }) => {
       Accept: 'application/json'
     }
   });
-  return response.json();
+  if (response.status === ResponseStatus.SUCCESS) {
+    const content = await response.json();
+    return { success: true, content };
+  }
+  return { success: false, content: null };
+};
+
+export const getUserStatistics = async (userId) => {
+  const token = getToken();
+  const response = await fetch(`${serverUrl}/users/${userId}/statistics`, {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json'
+    }
+  });
+  if (response.status === ResponseStatus.SUCCESS) {
+    const content = await response.json();
+    return { success: true, content };
+  }
+  return { success: false, content: null };
+};
+
+export const setUserStatistics = async (userId, statistics) => {
+  if ('id' in statistics) {
+    delete statistics.id;
+  }
+  const token = getToken();
+  const response = await fetch(`${serverUrl}/users/${userId}/statistics`, {
+    method: 'PUT',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(statistics)
+  });
+  if (response.status === ResponseStatus.SUCCESS) {
+    const content = await response.json();
+    return { success: true, content };
+  }
+  return { success: false, content: null };
 };

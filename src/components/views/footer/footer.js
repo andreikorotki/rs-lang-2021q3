@@ -33,10 +33,12 @@ export class Footer extends BaseElement {
             </a>
           </li>
         </ul>
+        <div class="school-year">
         <p class="app-year">2022</p>
         <a class="link" href="https://rs.school/js/">
           <img src="${logo}" class="school-logo"/>
         </a>
+        </div>
       </nav>
     `;
     this.footerContainer.element.insertAdjacentHTML('beforeend', html);

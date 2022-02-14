@@ -1,12 +1,22 @@
+
+
 .header-container {
   margin: 0 auto;
-  margin-top: var(--spacing-unit-4);
+  padding: var(--spacing-unit-1) 0;
   max-width: $wrapper-size-xxl;
+  height: 55px;
 
   @media (max-width: $screen-size-xl) {
     max-width: $wrapper-size-xl;
     padding: 0 var(--spacing-unit-4);
   }
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
 }
 
 .logo-link {
@@ -17,7 +27,7 @@
 .logo {
   font-family: $secondary-font-family;
   font-style: italic;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-l);
   transition: 0.25s ease-in-out;
   width: 160px;
 }
@@ -29,6 +39,8 @@
 .nav-menu {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  height: 100%;
 }
 
 .menu-item {
@@ -37,8 +49,8 @@
 }
 
 .link {
-  font-size: var(--font-size-l);
-  font-weight: 500;
+  font-size: var(--font-size-m);
+  font-weight: 400;
   cursor: pointer;
   text-decoration: none;
   transition: 0.2s ease-in-out;

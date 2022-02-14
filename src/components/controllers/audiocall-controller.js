@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { getWords } from '../api/words';
 import { NotEnoughWordsError } from '../common/exceptions/not-enough-words-error';
 import { IncorrectRandomIndexError } from '../common/exceptions/incorrect-random-index-error';
@@ -10,7 +11,11 @@ import {
 } from '../services/settings';
 import { getUniqueRandomIndexes, playAudio } from '../services/utils';
 import { store } from '../store';
-// import { registerWordAttempt } from './words-controller';
+import { calculateUserWord } from './words-controller';
+import GameStatistic from '../models/game-statistic';
+import { updateGameStatistic } from './statistics-controller';
+import { Button } from '../common';
+import AudioCallGameView from '../views/games/audiocall/audiocall-game-view';
 
 export async function getWordsForGame(groupNum = 0) {
   // how many times we need to query api words for full rounds setup
@@ -46,6 +51,24 @@ export async function getWordsForGame(groupNum = 0) {
   return Array.prototype.concat.apply([], queriedWords);
 }
 
+export function getLevelGameButtons(buttonsGroupContainer) {
+  const buttonsGroup = 6;
+  [...Array(buttonsGroup).keys()].forEach((group) => {
+    const button = new Button(
+      ['button-group', `button-group_color-${group + 1}`],
+      `${group + 1}`,
+      'button',
+      `${group + 1}`,
+      async () => {
+        const words = await getWordsForGame(+group);
+        const game = new AudioCallGameView(words);
+        game.renderRound();
+      }
+    );
+    buttonsGroupContainer.append(button.element);
+  });
+}
+
 export class AudioCallGameController {
   constructor(words) {
     if (words.length < audioCallVariantsCount) {
@@ -55,6 +78,10 @@ export class AudioCallGameController {
     this.words = words;
     this.correctlyAnsweredWords = [];
     this.incorrectlyAnsweredWords = [];
+    this.learnedWordsCount = 0;
+    this.newWordsCount = 0;
+    this.longestSeries = 0;
+    this.gameDateKey = moment(new Date()).format('DD_MM_YYYY');
   }
 
   calculateRoundsCount() {
@@ -116,7 +143,32 @@ export class AudioCallGameController {
     playAudio(`${serverUrl}/${this.mainWord.audio}`);
   }
 
-  // async setMainWordAttempt(isSuccess) {
-  //   return registerWordAttempt(this.mainWord.id, isSuccess);
-  // }
+  async onAttempt(isSuccess) {
+    const content = await calculateUserWord(this.mainWord.id, isSuccess);
+    if (isSuccess) {
+      this.longestSeries += 1;
+    } else {
+      this.longestSeries = 0;
+    }
+    if (content.isNew) {
+      this.newWordsCount += 1;
+    }
+    if (content.isNewLearned) {
+      this.learnedWordsCount += 1;
+    }
+    return content.word;
+  }
+
+  async addGameToUserStats() {
+    const gameStat = new GameStatistic(
+      'audiocall',
+      this.gameDateKey,
+      this.correctlyAnsweredWords.length,
+      this.incorrectlyAnsweredWords.length,
+      this.learnedWordsCount,
+      this.newWordsCount,
+      this.longestSeries
+    );
+    await updateGameStatistic(gameStat);
+  }
 }

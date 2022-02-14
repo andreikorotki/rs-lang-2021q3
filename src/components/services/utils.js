@@ -4,7 +4,7 @@
  * @export
  * @param {*} originalObject
  * @param {*} filteredKeys
- * @return {*} new object with filtredKeys only
+ * @return {*} new object with filteredKeys only
  */
 export function filterObject(originalObject, filteredKeys) {
   const filteredObject = Object.keys(originalObject)
