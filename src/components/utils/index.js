@@ -3,7 +3,7 @@ import { getWordsProperty } from './getWordsProperty';
 import { shuffle } from './shuffle';
 import { getLevelGameButtons } from './getLevelGameButtons';
 import { gameTimer } from './gameTimer';
-import { playWord } from './playWord';
+import { playAudio } from './playAudio';
 import { getAudioUrl } from './getAudioUrl';
 import { setResetActiveLink } from './setResetActiveLink';
 import { renderHeader } from './renderHeader';
@@ -14,7 +14,7 @@ export {
   shuffle,
   getLevelGameButtons,
   gameTimer,
-  playWord,
+  playAudio,
   getAudioUrl,
   setResetActiveLink,
   renderHeader

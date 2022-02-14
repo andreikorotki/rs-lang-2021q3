@@ -16,7 +16,7 @@ import {
   setUserWords,
   addUserWords
 } from '../store/toolkitReducer';
-import { bgColors } from '../constants';
+import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP } from '../constants';
 import { getWordsData } from '../utils';
 import { getState } from '../services';
 import { getUserWords, createUserWord, updateUserWord, getUserWord } from '../api/users';
@@ -61,13 +61,12 @@ export default class Book extends BaseView {
   }
 
   getUserWords = async () => {
-    const data = await getUserWords(this.state.userId);
-    store.dispatch(setUserWords(data));
+    const userWords = await getUserWords(this.state.userId);
+    store.dispatch(setUserWords(userWords));
   };
 
   getGroupButtons() {
-    const buttonsGroup = 7;
-    [...Array(buttonsGroup).keys()].forEach((button) => {
+    [...Array(BUTTONS_GROUP).keys()].forEach((button) => {
       this.button = new Button(
         ['button-group', `button-group_color-${button + 1}`],
         `${button + 1}`,
@@ -83,10 +82,9 @@ export default class Book extends BaseView {
   }
 
   getGamesButtons() {
-    const buttonsGame = 2;
     const games = ['Аудиовызов', 'Спринт'];
     const href = ['/#/audiocall', '/#/sprint'];
-    [...Array(buttonsGame).keys()].forEach((button, index) => {
+    [...Array(BUTTONS_GAME).keys()].forEach((button, index) => {
       this.button = new BaseElement('a', ['button-game'], `${games[index]}`, `${button + 1}`);
       this.button.element.href = `${href[index]}`;
       this.buttonsGameContainer.element.append(this.button.element);
@@ -109,7 +107,7 @@ export default class Book extends BaseView {
     this.state.group = Number(id);
     this.state.page = 1;
     document.body.style.background = `${bgColors[+id - 1]}`;
-    if (id === '7') {
+    if (id === HARD_GROUP.toString()) {
       this.paginationContainer.element.style.display = 'none';
       this.getHardWordsPage();
     } else {
@@ -125,19 +123,18 @@ export default class Book extends BaseView {
       const word = await getWord(wordId);
       return { ...word.items, difficulty, optional };
     });
-    Promise.all(hardWords)
-      .then((data) => store.dispatch(setWords(data)))
-      .then(() => {
-        this.cardsContainer.element.innerHTML = '';
-        this.renderHardWords();
-        this.setActiveGroup();
-      });
+    Promise.all(hardWords).then((data) => {
+      store.dispatch(setWords(data));
+      this.cardsContainer.element.innerHTML = '';
+      this.renderHardWords();
+      this.setActiveGroup();
+    });
   }
 
   renderHardWords = () => {
     const { words } = store.getState().toolkit;
     words.forEach((word, index) => {
-      if (word.difficulty === 'hard') {
+      if (word.difficulty === DIFFICULTIES.hard) {
         this.renderCardWord(word, index);
       }
     });
@@ -183,7 +180,7 @@ export default class Book extends BaseView {
     },
     index
   ) => {
-    const isHard = difficulty === 'hard';
+    const isHard = difficulty === DIFFICULTIES.hard;
     const { isLearned } = optional;
     const { isLogin } = this.state;
     const buttonLearned = `
@@ -199,7 +196,7 @@ export default class Book extends BaseView {
         class="button-word button-word_hard ${isHard ? 'hard' : ''}"
         id="add-hard"
         data-card=${index}>
-          ${this.state.group === 7 ? 'Из сложных' : 'В сложные'}
+          ${this.state.group === HARD_GROUP ? 'Из сложных' : 'В сложные'}
       </button>
     `;
     const html = `
@@ -295,26 +292,25 @@ export default class Book extends BaseView {
     const { group } = this.state;
     const word = JSON.parse(JSON.stringify(store.getState().toolkit.words[card]));
     const { optional } = word;
-    if (target.classList.contains('hard') && group !== 7) {
+    if (target.classList.contains(DIFFICULTIES.hard) && group !== HARD_GROUP) {
       return;
     }
-    if (group !== 7) {
+    if (group !== HARD_GROUP) {
       const wordsLearned = document.querySelectorAll('.button-word_learned');
       wordsLearned[card].classList.remove('learned');
       optional.isLearned = false;
-    }
-    if (group === 7) {
+    } else {
       this.removeDifficulty(word);
       return;
     }
     target.classList.add('hard');
-    const userWordProperty = { difficulty: 'hard', optional };
+    const userWordProperty = { difficulty: DIFFICULTIES.hard, optional };
     this.updateUserWordData(word, userWordProperty);
   }
 
   removeDifficulty = (word) => {
     const { id } = word;
-    const userWordData = { difficulty: 'easy', optional: word.optional };
+    const userWordData = { difficulty: DIFFICULTIES.easy, optional: word.optional };
     updateUserWord(this.state.userId, id, userWordData);
     store.dispatch(updateUserWordProperty({ wordId: id, ...userWordData }));
     this.getHardWordsPage();
@@ -324,13 +320,10 @@ export default class Book extends BaseView {
     const { target } = event;
     const { card } = target.dataset;
     const { group } = this.state;
-    if (group === 7) {
+    if (group === HARD_GROUP || target.classList.contains('learned')) {
       return;
     }
-    if (target.classList.contains('learned')) {
-      return;
-    }
-    if (group !== 7) {
+    if (group !== HARD_GROUP) {
       const wordsHard = document.querySelectorAll('.button-word_hard');
       wordsHard[card].classList.remove('hard');
     }
@@ -338,7 +331,7 @@ export default class Book extends BaseView {
     const word = JSON.parse(JSON.stringify(store.getState().toolkit.words[card]));
     const { optional } = word;
     optional.isLearned = true;
-    const userWordProperty = { difficulty: 'easy', optional };
+    const userWordProperty = { difficulty: DIFFICULTIES.easy, optional };
     this.updateUserWordData(word, userWordProperty);
     this.setPageColorAllLearned();
   }
@@ -351,7 +344,7 @@ export default class Book extends BaseView {
       store.dispatch(updateUserWordProperty({ wordId: id, ...userWordProperty }));
     } else {
       createUserWord(this.state.userId, id, userWordProperty);
-      store.dispatch(addUserWords({ ...userWordProperty, wordId: id }));
+      store.dispatch(addUserWords({ wordId: id, ...userWordProperty }));
     }
   }
 

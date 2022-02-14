@@ -1,11 +1,12 @@
 import { BaseView } from '..';
 import { BaseElement } from '../../common';
-import { getWordsData, getLevelGameButtons, gameTimer, playWord, setResetActiveLink } from '../../utils';
+import { getWordsData, getLevelGameButtons, gameTimer, playAudio, setResetActiveLink, getAudioUrl } from '../../utils';
 import { store } from '../../store';
 import failed from '../../../../assets/sounds/wrong.mp3';
 import success from '../../../../assets/sounds/correct.mp3';
 import { settings } from '../../templates';
 import { setUserWords } from '../../store/toolkitReducer';
+import { pagesInGroupCount, wordsPerPageCount } from '../../services/settings';
 
 export default class Sprint extends BaseView {
   constructor() {
@@ -69,7 +70,7 @@ export default class Sprint extends BaseView {
   getGameData = async ({ target: { id } }) => {
     const group = Number(id);
     this.state.level = group;
-    const page = Math.floor(Math.random() * 30) + 1;
+    const page = Math.floor(Math.random() * pagesInGroupCount) + 1;
     await getWordsData(group, page);
     this.setUsersWords();
     this.startGame();
@@ -103,17 +104,13 @@ export default class Sprint extends BaseView {
   getAnswers = (answerIndex) => {
     const answers = [];
     const isTruePressedButton = Math.floor(Math.random() * 2) === 1;
-    const answer = Math.floor(Math.random() * 20);
-    switch (isTruePressedButton) {
-      case true:
-        answers.push(answerIndex);
-        answers.push(answerIndex);
-        break;
-      case false:
-        answers.push(answerIndex);
-        answers.push(answer);
-        break;
-      default:
+    const answer = Math.floor(Math.random() * wordsPerPageCount);
+    if (isTruePressedButton) {
+      answers.push(answerIndex);
+      answers.push(answerIndex);
+    } else {
+      answers.push(answerIndex);
+      answers.push(answer);
     }
     return answers;
   };
@@ -172,7 +169,7 @@ export default class Sprint extends BaseView {
 
   settingsClick = () => {
     this.settings = document.querySelector('.settings');
-    this.settings.addEventListener('click', (event) => this.setSettings(event));
+    this.settings.addEventListener('click', this.setSettings);
   };
 
   setSettings = ({ target }) => {
@@ -190,7 +187,9 @@ export default class Sprint extends BaseView {
     audioButtons.forEach((audioButton) =>
       audioButton.addEventListener('click', (event) => {
         if (this.state.isAudio) {
-          playWord(event);
+          const wordId = event.target.id;
+          const url = getAudioUrl(wordId);
+          playAudio(url);
         }
       })
     );
@@ -234,7 +233,7 @@ export default class Sprint extends BaseView {
 
   setNewResult() {
     if (this.state.isAudio) {
-      new Audio(success).play();
+      playAudio(success);
     }
     this.state.successAnswersSeries += 1;
     this.state.wrongAnswersSeries = 0;
@@ -257,7 +256,7 @@ export default class Sprint extends BaseView {
 
   setWrongResult() {
     if (this.state.isAudio) {
-      new Audio(failed).play();
+      playAudio(failed);
     }
     this.state.successAnswersSeries -= 3;
     const isSuccessLessZero = this.state.successAnswersSeries < 0;
