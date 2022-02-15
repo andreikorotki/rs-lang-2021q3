@@ -46,8 +46,29 @@
   &-title {
     text-align: center;
     font-family: $secondary-font-family;
-    font-size: var(--font-size-l);
-    margin-top: var(--spacing-unit-5);
+    font-size: var(--font-size-xxl);
+    margin: var(--spacing-unit-5) auto;
+  }
+
+  &-title_description {
+    font-size: var(--font-size-s);
+    font-weight: 700;
+    margin-bottom: var(--spacing-unit-3);
+  }
+
+  &-options {
+    font-size: var(--font-size-s);
+    font-weight: 800;
+    text-align: center;
+    margin: var(--spacing-unit-3) 0;
+    padding: 0;
+
+    &_container {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      justify-content: start;
+    }
   }
 }
 

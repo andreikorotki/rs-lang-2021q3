@@ -45,6 +45,11 @@ const toolkitReducer = createSlice({
       const index = state.userWords.findIndex((word) => word.wordId === action.payload.wordId);
       state.userWords[index] = action.payload;
     },
+    updateWordProperty(state, action) {
+      const index = state.words.findIndex(({ id }) => id === action.payload.id);
+      state.words[index] = action.payload;
+      console.log(action.payload, index);
+    },
     addLearnedPages(state, action) {
       state.learnedPages.push(action.payload);
     },
@@ -68,6 +73,7 @@ export const {
   setUserWords,
   addUserWords,
   updateUserWordProperty,
+  updateWordProperty,
   addLearnedPages,
   setGameStartFromMenu,
   setAuthorized

@@ -2,7 +2,7 @@
 import { BaseView } from '.';
 import { Button, BaseElement } from '../common';
 import { getWord } from '../api/words';
-import { serverUrl } from '../services/settings';
+import { pagesInGroupCount, serverUrl, wordsPerPageCount } from '../services/settings';
 import { store } from '../store';
 import {
   setGroup,
@@ -11,7 +11,7 @@ import {
   prevPage,
   setWords,
   updateUserWordProperty,
-  addLearnedPages,
+  updateWordProperty,
   setGameStartFromMenu,
   setUserWords,
   addUserWords
@@ -48,8 +48,8 @@ export default class Book extends BaseView {
 
   async run() {
     if (this.state.isLogin) {
-      this.getGamesButtons();
       await this.getUserWords();
+      this.getGamesButtons();
     }
     document.body.style.background = `${bgColors[this.state.group - 1]}`;
     this.loader = new BaseElement('div', ['loader']);
@@ -57,7 +57,6 @@ export default class Book extends BaseView {
     this.getGroupButtons();
     this.getWords();
     this.getPaginationButtons();
-    this.getPages();
   }
 
   getUserWords = async () => {
@@ -93,31 +92,30 @@ export default class Book extends BaseView {
   }
 
   gameClicks = () => {
-    this.buttonsGameContainer.element.addEventListener('click', () => this.startGame());
+    this.buttonsGameContainer.element.addEventListener('click', this.startGame);
   };
 
   startGame = () => {
     store.dispatch(setGameStartFromMenu(false));
   };
 
-  getGroup = (event) => {
-    const { id } = event.target;
+  getGroup = ({ target: { id } }) => {
     store.dispatch(initial());
     store.dispatch(setGroup(Number(id)));
     this.state.group = Number(id);
     this.state.page = 1;
-    document.body.style.background = `${bgColors[+id - 1]}`;
+    document.body.style.background = `${bgColors[this.state.group - 1]}`;
     if (id === HARD_GROUP.toString()) {
       this.paginationContainer.element.style.display = 'none';
       this.getHardWordsPage();
     } else {
       this.paginationContainer.element.style.display = 'flex';
       this.getWords();
-      this.getPages();
     }
   };
 
   getHardWordsPage() {
+    this.buttonsGameContainer.element.style.display = 'none';
     const words = store.getState().toolkit.userWords;
     const hardWords = words.map(async ({ wordId, difficulty, optional }) => {
       const word = await getWord(wordId);
@@ -147,6 +145,7 @@ export default class Book extends BaseView {
     this.cardsContainer.element.innerHTML = '';
     this.renderWords();
     this.setActiveGroup();
+    this.getPages();
   };
 
   async setActiveGroup() {
@@ -286,8 +285,8 @@ export default class Book extends BaseView {
     };
   }
 
-  async addRemoveDifficulty(event) {
-    const { target } = event;
+  async addRemoveDifficulty({ target }) {
+    this.setPageColorAllLearned();
     const { card } = target.dataset;
     const { group } = this.state;
     const word = JSON.parse(JSON.stringify(store.getState().toolkit.words[card]));
@@ -308,16 +307,14 @@ export default class Book extends BaseView {
     this.updateUserWordData(word, userWordProperty);
   }
 
-  removeDifficulty = (word) => {
-    const { id } = word;
-    const userWordData = { difficulty: DIFFICULTIES.easy, optional: word.optional };
+  removeDifficulty = ({ id, optional }) => {
+    const userWordData = { difficulty: DIFFICULTIES.easy, optional };
     updateUserWord(this.state.userId, id, userWordData);
     store.dispatch(updateUserWordProperty({ wordId: id, ...userWordData }));
     this.getHardWordsPage();
   };
 
-  async addLearnedWord(event) {
-    const { target } = event;
+  async addLearnedWord({ target }) {
     const { card } = target.dataset;
     const { group } = this.state;
     if (group === HARD_GROUP || target.classList.contains('learned')) {
@@ -332,12 +329,12 @@ export default class Book extends BaseView {
     const { optional } = word;
     optional.isLearned = true;
     const userWordProperty = { difficulty: DIFFICULTIES.easy, optional };
+    store.dispatch(updateWordProperty(word, userWordProperty));
     this.updateUserWordData(word, userWordProperty);
     this.setPageColorAllLearned();
   }
 
-  async updateUserWordData(word, userWordProperty) {
-    const { id } = word;
+  async updateUserWordData({ id }, userWordProperty) {
     const isUserWordCreated = (await getUserWord({ userId: this.state.userId, wordId: id })).success;
     if (isUserWordCreated) {
       updateUserWord(this.state.userId, id, userWordProperty);
@@ -349,12 +346,14 @@ export default class Book extends BaseView {
   }
 
   setPageColorAllLearned = () => {
-    const isAllLearnedWords = document.querySelectorAll('.learned').length === 20;
+    const isAllLearnedWords = document.querySelectorAll('.learned').length === wordsPerPageCount;
+    const pageCurrent = document.querySelector('.page-current');
     if (isAllLearnedWords) {
-      const pageCurrent = document.querySelector('.page-current');
       pageCurrent.classList.add('learned');
-      const { group, page } = this.state;
-      store.dispatch(addLearnedPages({ group, page }));
+      this.buttonsGameContainer.element.style.display = 'none';
+    } else {
+      pageCurrent.classList.remove('learned');
+      this.buttonsGameContainer.element.style.display = 'flex';
     }
   };
 
@@ -366,20 +365,18 @@ export default class Book extends BaseView {
   }
 
   getPages() {
-    const { learnedPages } = store.getState().toolkit;
-    const isLearnedPages =
-      learnedPages.findIndex(({ group, page }) => this.state.group === group && this.state.page === page) !== -1;
     if (document.querySelector('.pages')) {
       document.querySelector('.pages').remove();
     }
     const { page } = this.state;
     const html = `
       <div class="pages">
-        <span class="page-current ${isLearnedPages ? 'learned' : ''}">
-          ${page}</span> / 30
+        <span class="page-current ">
+          ${page}</span> / ${pagesInGroupCount}
       </div>
     `;
     this.buttonPrev.element.insertAdjacentHTML('afterend', html);
+    this.setPageColorAllLearned();
   }
 
   getPrevPages = () => {
@@ -389,18 +386,16 @@ export default class Book extends BaseView {
       this.state.page = 1;
       return;
     }
-    this.getPages();
     this.getWords();
   };
 
   getNextPages = () => {
     store.dispatch(nextPage());
     this.state.page += 1;
-    if (this.state.page > 30) {
-      this.state.page = 30;
+    if (this.state.page > pagesInGroupCount) {
+      this.state.page = pagesInGroupCount;
       return;
     }
-    this.getPages();
     this.getWords();
   };
 }

@@ -21,14 +21,19 @@
     align-items: center;
   }
 
+  &-content * {
+    color: var(--text-secondary-color);
+  }
+
   &-board {
     position: relative;
     max-width: 600px;
     width: 100%;
     height: 450px;
     background: var(--bg-game-color-secondary);
-    border-radius: 10%;
-    padding: var(--spacing-unit-5);
+    border-radius: 5%;
+    padding: var(--spacing-unit-4);
+    margin-top: var(--spacing-unit-20);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -74,6 +79,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.answer-content * {
+  color: var(--text-primary-color);
 }
 
 .word {
@@ -123,6 +132,11 @@
     margin-bottom: var(--spacing-unit-1);
     font-family: $secondary-font-family;
     text-align: center;
+    color: initial;
+  }
+  &-game_points {
+    color: initial;
+    margin-bottom: var(--spacing-unit-2);
   }
   &-item {
     display: flex;
@@ -153,6 +167,7 @@
   &-russian_result,
   &-transcription {
     width: 150px;
+    color: var(--text-primary-color);
   }
 }
 

@@ -168,7 +168,7 @@ export const updateUserWord = async (userId, wordId, word) => {
   return { success: false, content: null };
 };
 
-export const getUserWords = async (userId) => {
+/* export const getUserWords = async (userId) => {
   const token = getToken();
   const response = await fetch(`${serverUrl}/users/${userId}/words`, {
     method: 'GET',
@@ -185,7 +185,7 @@ export const getUserWords = async (userId) => {
   }
   return { success: false, content: null };
 };
-
+ */
 
 export const getUserStatistics = async (userId) => {
   const token = getToken();
@@ -204,7 +204,6 @@ export const getUserStatistics = async (userId) => {
   return { success: false, content: null };
 };
 
-
 export const getUserWords = async (userId) => {
   const token = getToken();
   const response = await fetch(`${serverUrl}/users/${userId}/words`, {
@@ -216,6 +215,7 @@ export const getUserWords = async (userId) => {
     }
   });
   return response.json();
+};
 
 export const setUserStatistics = async (userId, statistics) => {
   if ('id' in statistics) {
