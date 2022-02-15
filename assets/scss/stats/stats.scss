@@ -1,3 +1,19 @@
+.stats {
+  position: relative;
+}
+
+.stats-content {
+  position: relative;
+  margin: 0 auto;
+  padding: var(--spacing-unit-1) 0;
+  max-width: $wrapper-size-xxl;
+
+  @media (max-width: $screen-size-xl) {
+    max-width: $wrapper-size-xl;
+    padding: 0 var(--spacing-unit-4);
+  }
+}
+
 .stats-heading {
   position: relative;
   width: 100%;

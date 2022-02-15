@@ -5,11 +5,11 @@ import { getStatsTemplate } from './stats-template';
 
 export default class Stats extends BaseView {
   constructor() {
-    const main = new BaseElement('section', ['main']);
+    const main = new BaseElement('section', ['stats']);
     const wrapper = new BaseElement('div', ['wrapper']);
     main.element.append(wrapper.element);
     super(main.element);
-    this.content = new BaseElement('div', ['main-content']);
+    this.content = new BaseElement('div', ['stats-content']);
     wrapper.element.append(this.content.element);
   }
 

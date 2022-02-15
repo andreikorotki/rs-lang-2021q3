@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { Chart, registerables } from 'chart.js';
-import { getUserStatistics, getUserWords, setUserStatistics } from '../api/users';
+import { getUserStatistics, setUserStatistics } from '../api/users';
 import UserStatistic from '../models/user-statistic';
 import { isAuthorized } from '../services';
 import { getState } from '../services/state';
@@ -56,9 +56,8 @@ export async function getStatisticsData() {
     const state = getState();
     const { userId } = state;
     const statResponse = await getUserStatistics(userId);
-    const wordsResponse = await getUserWords(userId);
-    if (statResponse.success && wordsResponse) {
-      return { stats: statResponse.content, words: wordsResponse };
+    if (statResponse.success) {
+      return { stats: statResponse.content };
     }
   }
   return {};
@@ -260,7 +259,7 @@ export async function buildCharts() {
   Chart.register(...registerables);
   const statsContent = await getStatisticsData();
   buildCommonCharts(statsContent);
-  if ('stats' in statsContent && 'words' in statsContent) {
+  if ('stats' in statsContent) {
     buildGameChart('total', 'Игры', statsContent);
     buildGameChart('audiocall', 'Аудиовызов', statsContent);
     buildGameChart('sprint', 'Спринт', statsContent);
