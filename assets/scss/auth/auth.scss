@@ -1,7 +1,7 @@
 .register__section,
 .login__section {
   position: relative;
-  min-height: 79vh;
+  min-height: calc(100vh - var(--header-footer-height));
   padding: var(--spacing-unit-10) 0;
   display: flex;
   justify-content: center;
@@ -96,7 +96,7 @@
 .input-password:focus {
   line-height: 1;
   color: var(--text-primary-color);
-  background-color: var(--light-form-color);
+  background-color: rgb(0 123 255 / 15%);
   border-color: var(--light-form-color);
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
