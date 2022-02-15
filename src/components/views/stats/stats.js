@@ -1,6 +1,6 @@
 import { BaseElement } from '../../common';
 import { BaseView } from '..';
-import { buildDailyCharts } from '../../controllers/statistics-controller';
+import { buildCharts } from '../../controllers/statistics-controller';
 import { getStatsTemplate } from './stats-template';
 
 export default class Stats extends BaseView {
@@ -15,7 +15,7 @@ export default class Stats extends BaseView {
 
   async run() {
     this.render();
-    await buildDailyCharts();
+    await buildCharts();
   }
 
   render = () => {
