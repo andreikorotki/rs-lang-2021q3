@@ -1,8 +1,10 @@
 .game__section,
 .audiocall-round__section {
-  position: relative;
   width: 100%;
-  height: calc(100vh - var(--header-height));
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
   background-color: var(--bg-color-dark);
   display: flex;
   align-items: center;
@@ -14,6 +16,16 @@
   background-image: url(#{$assets-path}images/audiocall-bg.jpg);
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.audiocall__wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  flex-wrap: nowrap;
+  padding: var(--spacing-unit-5) 0;
+  transition: box-shadow 0.3s ease;
 }
 
 .btn {
