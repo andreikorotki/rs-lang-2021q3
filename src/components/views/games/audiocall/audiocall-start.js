@@ -8,6 +8,22 @@ export class AudioCallStartView extends GameStartView {
     this.buttonsGroupContainer = new BaseElement('div', ['buttons-group_container']);
   }
 
+  settingsClick = () => {
+    this.settings = document.querySelector('.settings');
+    this.volume = document.querySelector('.button-volume');
+    this.volume.style.display = 'none';
+  };
+
+  setSettings = ({ target }) => {
+    if (target.classList.contains('button-volume')) {
+      target.classList.toggle('mute');
+      this.state.isAudio = !this.state.isAudio;
+    }
+    if (target.classList.contains('button-full-screen')) {
+      document.documentElement.requestFullscreen().catch();
+    }
+  };
+
   setDescription() {
     const gameWrapper = document.querySelector(`.${this.name}-wrapper`);
     const gameDescription = new BaseElement('div', ['game__description']);
@@ -28,6 +44,7 @@ export class AudioCallStartView extends GameStartView {
 
   render() {
     this.setDescription();
+    this.settingsClick();
     return this.element;
   }
 }

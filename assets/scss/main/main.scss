@@ -1,8 +1,138 @@
 .main {
-  background-repeat: no-repeat;
-  background-size: cover;
+  position: relative;
+}
+
+.main-wrapper {
+  position: relative;
+  margin: 0 auto;
+  padding: var(--spacing-unit-1) 0;
+  max-width: $wrapper-size-xxl;
+
+  @media (max-width: $screen-size-xl) {
+    max-width: $wrapper-size-xl;
+    padding: 0 var(--spacing-unit-4);
+  }
 }
 
 .main-content {
-  min-height: 86vh;
+  min-height: calc(100vh - var(--header-footer-height));
+}
+
+.start-group {
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (max-width: $screen-size-m) {
+    flex-direction: column;
+  }
+}
+
+.description-container {
+  display: block;
+  padding: var(--spacing-unit-6) 0;
+
+  @media (max-width: $screen-size-m) {
+    padding: var(--spacing-unit-1) 0;
+    text-align: center;
+  }
+}
+
+.description {
+  line-height: 1.5;
+  font-size: var(--font-size-s);
+}
+
+.main-heading {
+  font-family: $secondary-font-family;
+  font-size: var(--font-size-xxl);
+  font-weight: 100;
+
+  @media (max-width: $screen-size-m) {
+    text-align: center;
+  }
+}
+
+.main-image-container {
+  position: relative;
+  background-image: url(#{$assets-path}images/learn.png);
+  background-size: contain;
+  background-position: center right;
+  background-repeat: no-repeat;
+  height: calc(100vh - var(--header-footer-height));
+  min-width: 55%;
+
+  @media (max-width: $screen-size-m) {
+    width: 100%;
+    height: 100vw;
+  }
+}
+
+.benefits {
+  display: flex;
+  padding-top: var(--spacing-unit-5);
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
+  column-gap: var(--spacing-unit-2);
+  row-gap: var(--spacing-unit-2);
+
+  @media (max-width: $screen-size-xl) {
+    padding-top: var(--spacing-unit-1);
+  }
+
+  @media (max-width: $screen-size-m) {
+    display: none;
+  }
+}
+
+.benefit-item {
+  position: relative;
+  padding: var(--spacing-unit-1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: 150px;
+  height: 180px;
+  border-radius: $border-radius-2;
+  background-color: var(--main-tile-color);
+  border: 1px solid var(--button-border-color);
+}
+
+.benefit-text {
+  margin-top: var(--spacing-unit-1);
+  font-family: $secondary-font-family;
+  font-weight: 100;
+  text-align: center;
+}
+
+.benefit-icon {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.free-icon-item {
+  background-image: url(#{$assets-path}icons/free.png);
+}
+
+.play-icon-item {
+  background-image: url(#{$assets-path}icons/puzzle.png);
+}
+
+.progress-icon-item {
+  background-image: url(#{$assets-path}icons/grow.png);
+}
+
+.words-icon-item {
+  background-image: url(#{$assets-path}icons/scrabble.png);
 }

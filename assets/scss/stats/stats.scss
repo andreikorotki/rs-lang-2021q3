@@ -1,3 +1,19 @@
+.stats {
+  position: relative;
+}
+
+.stats-content {
+  position: relative;
+  margin: 0 auto;
+  padding: var(--spacing-unit-1) 0;
+  max-width: $wrapper-size-xxl;
+
+  @media (max-width: $screen-size-xl) {
+    max-width: $wrapper-size-xl;
+    padding: 0 var(--spacing-unit-4);
+  }
+}
+
 .stats-heading {
   position: relative;
   width: 100%;
@@ -8,11 +24,23 @@
   padding-top: var(--spacing-unit-1);
 }
 
-.charts {
+.daily-charts-heading,
+.common-charts-heading {
+  width: 100%;
+  font-family: $secondary-font-family;
+  font-size: var(--font-size-m);
+  font-weight: 100;
+  text-align: center;
+  padding-top: var(--spacing-unit-1);
+}
+
+
+.daily-charts {
   position: relative;
   width: 100%;
   display: flex;
   justify-content: flex-start;
+  padding-bottom: var(--spacing-unit-2);
 }
 
 .chart-item-wrapper {
@@ -33,4 +61,30 @@
   margin: 0 var(--spacing-unit-2);
   display: flex;
   justify-content: space-between;
+}
+
+.chart-message p {
+  margin: 0 var(--spacing-unit-2);
+  color: var(--active-color-1);
+  font-size: var(--font-size-xxs);
+  text-align: center;
+}
+
+
+.notification-message {
+  position: relative;
+  padding-top: var(--spacing-unit-1);
+}
+
+.common-charts {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.common-chart-item {
+  position: relative;
+  width: 48%;
+  height: auto;
 }

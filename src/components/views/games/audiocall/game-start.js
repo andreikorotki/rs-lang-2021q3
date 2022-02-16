@@ -2,12 +2,14 @@ import BaseView from '../../base-view';
 import BaseElement from '../../../common/base-element';
 import Form from '../../../common/form';
 import Button from '../../../common/button';
+import { settings } from '../../../templates';
 
 export class GameStartView extends BaseView {
   constructor(name, title) {
     const normalizedName = name.toString().toLowerCase();
     const startContent = new BaseElement('section', [`${normalizedName}-start`, 'game__section']);
     const gameWrapper = new BaseElement('div', [`${normalizedName}-wrapper`, 'game__wrapper']);
+    gameWrapper.element.innerHTML = settings;
     const heading = new BaseElement('h2', [`${normalizedName}__title`, 'game-title'], title);
     gameWrapper.element.appendChild(heading.element);
     startContent.element.appendChild(gameWrapper.element);

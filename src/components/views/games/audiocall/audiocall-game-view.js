@@ -6,17 +6,39 @@ import Button from '../../../common/button';
 import BaseView from '../../base-view';
 import failed from '../../../../../assets/sounds/wrong.mp3';
 import success from '../../../../../assets/sounds/correct.mp3';
+import { settings } from '../../../templates';
 
 export default class AudioCallGameView extends BaseView {
   constructor(words) {
     const roundContainer = new BaseElement('section', ['audiocall-round__section']);
     super(roundContainer.element);
+    const wrapper = new BaseElement('div', ['audiocall__wrapper']);
+    this.content.innerHTML = settings;
+    this.content.appendChild(wrapper.element);
+    this.wrapper = this.content.lastChild;
     this.controller = new AudioCallGameController(words);
     this.currentRound = 1;
     this.roundAnswered = false;
     this.totalRounds = this.controller.calculateRoundsCount();
     this.addKeyboardListeners();
   }
+
+  settingsClick = () => {
+    this.settings = document.querySelector('.settings');
+    this.volume = document.querySelector('.button-volume');
+    this.volume.style.display = 'none';
+    this.settings.addEventListener('click', this.setSettings);
+  };
+
+  setSettings = ({ target }) => {
+    if (target.classList.contains('button-volume')) {
+      target.classList.toggle('mute');
+      this.state.isAudio = !this.state.isAudio;
+    }
+    if (target.classList.contains('button-full-screen')) {
+      document.documentElement.requestFullscreen().catch();
+    }
+  };
 
   renderVariantsContainer() {
     const roundWords = this.controller.getRoundWords();
@@ -41,7 +63,8 @@ export default class AudioCallGameView extends BaseView {
 
   async renderRound() {
     this.roundAnswered = false;
-    this.content.innerHTML = '';
+    this.settingsClick();
+    this.wrapper.innerHTML = '';
     this.controller.prepareRound();
 
     const mainWordContainer = new BaseElement('div', ['main-word-container']);
@@ -68,9 +91,9 @@ export default class AudioCallGameView extends BaseView {
     proceedContainer.element.appendChild(answerBtn.element);
     playMainContainer.element.appendChild(playMainBtn.element);
     mainWordContainer.element.appendChild(playMainContainer.element);
-    this.content.appendChild(mainWordContainer.element);
-    this.content.appendChild(variantsContainerElement);
-    this.content.appendChild(proceedContainer.element);
+    this.wrapper.appendChild(mainWordContainer.element);
+    this.wrapper.appendChild(variantsContainerElement);
+    this.wrapper.appendChild(proceedContainer.element);
     await this.controller.playMainWord();
   }
 
@@ -198,13 +221,13 @@ export default class AudioCallGameView extends BaseView {
   }
 
   renderStats() {
-    this.content.innerHTML = '';
+    this.wrapper.innerHTML = '';
     const gameResult = new BaseElement('div', ['game-result']);
     const gameResultHeading = new BaseElement('h2', ['game-result-heading'], 'Игра окончена!');
     gameResult.element.appendChild(gameResultHeading.element);
     this.renderCorrectStats(gameResult);
     this.renderIncorrectStats(gameResult);
-    this.content.appendChild(gameResult.element);
+    this.wrapper.appendChild(gameResult.element);
   }
 
   addKeyboardListeners() {

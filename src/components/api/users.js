@@ -168,39 +168,40 @@ export const updateUserWord = async (userId, wordId, word) => {
   return { success: false, content: null };
 };
 
-export const getUserWords = async (userId) => {
-  const token = getToken();
-  const response = await fetch(`${serverUrl}/users/${userId}/words`, {
-    method: 'GET',
-    withCredentials: true,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json'
-    }
-  });
-
-  if (response.status === ResponseStatus.SUCCESS) {
+export const getUserStatistics = async (userId) => {
+  try {
+    const token = getToken();
+    const response = await fetch(`${serverUrl}/users/${userId}/statistics`, {
+      method: 'GET',
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+      }
+    });
     const content = await response.json();
     return { success: true, content };
+  } catch (error) {
+    return { success: false, content: error };
   }
-  return { success: false, content: null };
 };
 
-export const getUserStatistics = async (userId) => {
-  const token = getToken();
-  const response = await fetch(`${serverUrl}/users/${userId}/statistics`, {
-    method: 'GET',
-    withCredentials: true,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json'
-    }
-  });
-  if (response.status === ResponseStatus.SUCCESS) {
+export const getUserWords = async (userId) => {
+  try {
+    const token = getToken();
+    const response = await fetch(`${serverUrl}/users/${userId}/words`, {
+      method: 'GET',
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+      }
+    });
     const content = await response.json();
     return { success: true, content };
+  } catch (error) {
+    return { success: false, content: error };
   }
-  return { success: false, content: null };
 };
 
 export const setUserStatistics = async (userId, statistics) => {
