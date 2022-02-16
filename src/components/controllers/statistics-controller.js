@@ -71,11 +71,16 @@ function calculateTotals(todaysKey, statsContent) {
     if (todaysKey in statsContent.stats.optional[`${game}`]) {
       keys.forEach((key) => {
         if (key in totalResults) {
-          totalResults[key] += statsContent.stats.optional[game][todaysKey][key];
+          totalResults[key] += statsContent.stats.optional[game][todaysKey][key] || 0;
         } else {
-          totalResults[key] = statsContent.stats.optional[game][todaysKey][key];
+          totalResults[key] = statsContent.stats.optional[game][todaysKey][key] || 0;
         }
       });
+    }
+  });
+  keys.forEach((key) => {
+    if (!totalResults[key]) {
+      totalResults[key] = 0;
     }
   });
   return totalResults;
@@ -258,8 +263,8 @@ export function buildCommonCharts(statsContent) {
 export async function buildCharts() {
   Chart.register(...registerables);
   const statsContent = await getStatisticsData();
-  buildCommonCharts(statsContent);
-  if ('stats' in statsContent) {
+  if (statsContent?.stats) {
+    buildCommonCharts(statsContent);
     buildGameChart('total', 'Игры', statsContent);
     buildGameChart('audiocall', 'Аудиовызов', statsContent);
     buildGameChart('sprint', 'Спринт', statsContent);

@@ -96,10 +96,10 @@
 .input-password:focus {
   line-height: 1;
   color: var(--text-primary-color);
-  background-color: rgb(0 123 255 / 15%);
+  background-color: var(--input-focus);
   border-color: var(--light-form-color);
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
+  box-shadow: 0 0 0 0.2rem var(--input-focus-shadow);
 }
 
 .register__btn,
