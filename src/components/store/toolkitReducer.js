@@ -4,10 +4,11 @@ const initialState = {
   group: 1,
   page: 1,
   words: [],
-  learnedPages: [],
   userWords: [],
   isStartGameFromMenu: true,
-  isLogin: false
+  isLogin: false,
+  startLearnedWords: 0,
+  endLearnedWords: 0
 };
 
 const toolkitReducer = createSlice({
@@ -35,6 +36,9 @@ const toolkitReducer = createSlice({
     setWords(state, action) {
       state.words = action.payload;
     },
+    updateWord(state, action) {
+      state.words = action.payload;
+    },
     setUserWords(state, action) {
       state.userWords = action.payload;
     },
@@ -49,14 +53,17 @@ const toolkitReducer = createSlice({
       const index = state.words.findIndex(({ id }) => id === action.payload.id);
       state.words[index] = action.payload;
     },
-    addLearnedPages(state, action) {
-      state.learnedPages.push(action.payload);
-    },
     setGameStartFromMenu(state, action) {
       state.isStartGameFromMenu = action.payload;
     },
     setAuthorized(state, action) {
       state.isLogin = action.payload;
+    },
+    setStartLearnedWords(state, action) {
+      state.startLearnedWords = action.payload;
+    },
+    setEndLearnedWords(state, action) {
+      state.endLearnedWords = action.payload;
     }
   }
 });
@@ -73,7 +80,8 @@ export const {
   addUserWords,
   updateUserWordProperty,
   updateWordProperty,
-  addLearnedPages,
   setGameStartFromMenu,
-  setAuthorized
+  setAuthorized,
+  setStartLearnedWords,
+  setEndLearnedWords
 } = toolkitReducer.actions;

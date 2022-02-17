@@ -9,17 +9,20 @@ import {
   setResetActiveLink,
   getAudioUrl,
   getResultTable,
-  getGameBoard
+  getGameBoard,
+  getWordsLearned,
+  getAttemptsCount
 } from '../../utils';
 import { store } from '../../store';
 import failed from '../../../../assets/sounds/wrong.mp3';
 import success from '../../../../assets/sounds/correct.mp3';
 import { settings, gameContent } from '../../templates';
-import { setUserWords } from '../../store/toolkitReducer';
+import { setEndLearnedWords, setStartLearnedWords, setUserWords } from '../../store/toolkitReducer';
 import { pagesInGroupCount, wordsPerPageCount } from '../../services/settings';
 import { updateGameStatistic } from '../../controllers/statistics-controller';
-import { createUserWord, getUserWord, updateUserWord } from '../../api/users';
+import { createUserWord, getUserWord, getUserWords, updateUserWord } from '../../api/users';
 import { getState } from '../../services';
+import { DIFFICULTIES, WORDS_LEARNED } from '../../constants';
 
 export default class Sprint extends BaseView {
   constructor() {
@@ -49,19 +52,30 @@ export default class Sprint extends BaseView {
       longestSeries: 0,
       lastQuestion: wordsPerPageCount,
       newWords: 0,
-      isAudio: true
+      isAudio: true,
+      isEndGame: false
     };
   }
 
   run() {
     setResetActiveLink('.games-link');
     this.render();
-    if (this.state.isStartGameFromMenu) {
+    const { isLogin, isStartGameFromMenu } = this.state;
+    if (isStartGameFromMenu) {
+      if (isLogin) {
+        this.getUserWords();
+      }
       getLevelGameButtons(this.getGameData, this.buttonsGroupContainer.element);
     } else {
       this.startGame();
     }
   }
+
+  getUserWords = async () => {
+    const { userId } = getState();
+    const userWords = await getUserWords(userId);
+    store.dispatch(setUserWords(userWords.content));
+  };
 
   render() {
     const html = `
@@ -80,10 +94,11 @@ export default class Sprint extends BaseView {
 
   getGameData = async ({ target: { id } }) => {
     const group = Number(id);
-    this.state.level = group;
     const page = Math.floor(Math.random() * pagesInGroupCount) + 1;
+    this.state.group = group;
+    this.state.page = 1;
     await getWordsData(group, page);
-    this.setUsersWords();
+    // this.setUsersWords();
     this.startGame();
   };
 
@@ -95,17 +110,18 @@ export default class Sprint extends BaseView {
   };
 
   async startGame() {
-    const { group, page } = this.state;
+    const { group, page, isStartGameFromMenu, isEndGame } = this.state;
     await getWordsData(group, page);
     const { words } = store.getState().toolkit;
-    const noLearnedWords = words.filter((word) => word.optional.isLearned !== true);
-    let wordsForGame = this.state.isStartGameFromMenu ? words : noLearnedWords;
+    const noLearnedWords = words.filter(({ optional }) => optional.isLearned !== true);
+    let wordsForGame = isStartGameFromMenu ? words : noLearnedWords;
     this.state.wordsForGame = wordsForGame;
     if (wordsForGame.length < wordsPerPageCount) {
       wordsForGame = await this.addWordsForGame(wordsForGame);
     }
     const answers = this.state.wordsForGame.map((_, index) => this.getAnswers(index));
     this.state.answers = answers;
+    getWordsLearned(isEndGame);
     this.renderGame(answers);
   }
 
@@ -234,7 +250,9 @@ export default class Sprint extends BaseView {
   }
 
   closeGame = () => {
+    this.state.isEndGame = true;
     document.removeEventListener('keydown', this.keyboardEvents);
+    this.setUserStatistics();
   };
 
   keyboardEvents = (event) => {
@@ -285,7 +303,6 @@ export default class Sprint extends BaseView {
       default:
     }
     this.state.question += 1;
-    this.getQuestion();
   }
 
   setCorrectResult() {
@@ -316,20 +333,35 @@ export default class Sprint extends BaseView {
   }
 
   updateUserWordData = async (result) => {
-    const words = this.state.wordsForGame[this.state.question - 1];
-    const attempts = words.optional.attempts + Number(result);
-    console.log(attempts);
-    const { id, difficulty } = words;
-    const optional = { ...words.optional, attempts };
+    const word = this.state.wordsForGame[this.state.question - 1];
+    const attempts = word.optional.attempts + Number(result);
+    const { id } = word;
+    let { difficulty } = word;
+    let { isLearned } = word.optional;
+    const isHard = difficulty === DIFFICULTIES.easy;
+    const correctAttemptsCount = getAttemptsCount(attempts);
+    console.log(correctAttemptsCount);
+    if (correctAttemptsCount === WORDS_LEARNED.easy && isHard) {
+      isLearned = true;
+    }
+    if (correctAttemptsCount === WORDS_LEARNED.hard && !isHard) {
+      isLearned = true;
+      difficulty = 'easy';
+    }
+    if (correctAttemptsCount.toString() === WORDS_LEARNED.error) {
+      isLearned = false;
+    }
+    const optional = { ...word.optional, attempts, isLearned };
     const userWordProperty = { difficulty, optional };
     const { userId } = getState();
     const isUserWordCreated = (await getUserWord({ userId, wordId: id })).success;
     if (isUserWordCreated) {
-      updateUserWord(userId, id, userWordProperty);
+      await updateUserWord(userId, id, userWordProperty);
     } else {
-      createUserWord(userId, id, userWordProperty);
+      await createUserWord(userId, id, userWordProperty);
       this.state.newWords += 1;
     }
+    this.getQuestion();
   };
 
   setWrongResult() {
@@ -347,6 +379,7 @@ export default class Sprint extends BaseView {
   }
 
   endGame = () => {
+    this.state.isEndGame = true;
     this.renderFinalResult();
   };
 
@@ -378,18 +411,26 @@ export default class Sprint extends BaseView {
 
   setUserStatistics = async () => {
     const dateKey = moment(new Date()).format('DD_MM_YYYY');
-    const { correctAnswers, wrongAnswers, longestSeries, newWords } = this.state;
-    console.log(this.state);
+    const { correctAnswers, wrongAnswers, longestSeries, newWords, isEndGame } = this.state;
+    await getWordsLearned(isEndGame);
+    const { endLearnedWords } = store.getState().toolkit;
+    const { startLearnedWords } = store.getState().toolkit;
+    const learnedWords = endLearnedWords - startLearnedWords > 0 ? endLearnedWords - startLearnedWords : 0;
     const gameStat = {
       wrongAnswers: wrongAnswers.length,
       correctAnswers: correctAnswers.length,
       dateKey,
       game: 'sprint',
-      learnedWords: 0,
+      learnedWords,
       newWords,
       longestSeries
     };
-    console.log(gameStat);
-    updateGameStatistic(gameStat);
+    await updateGameStatistic(gameStat);
+    this.resetLearnedWordsState();
+  };
+
+  resetLearnedWordsState = () => {
+    store.dispatch(setEndLearnedWords(0));
+    store.dispatch(setStartLearnedWords(0));
   };
 }

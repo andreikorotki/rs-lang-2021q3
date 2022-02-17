@@ -10,6 +10,8 @@ import { renderHeader } from './renderHeader';
 import { getItemResultTable } from './getItemResultTable';
 import { getResultTable } from './getResultTable';
 import { getGameBoard } from './getGameBoard';
+import { getWordsLearned } from './getWordsLearned';
+import { getAttemptsCount } from './getAttemptsCount';
 
 export {
   getWordsData,
@@ -23,5 +25,7 @@ export {
   renderHeader,
   getItemResultTable,
   getResultTable,
-  getGameBoard
+  getGameBoard,
+  getWordsLearned,
+  getAttemptsCount
 };

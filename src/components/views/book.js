@@ -16,7 +16,7 @@ import {
   setUserWords,
   addUserWords
 } from '../store/toolkitReducer';
-import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP, WORDS_LEARNED } from '../constants';
+import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP } from '../constants';
 import { getWordsData } from '../utils';
 import { getState } from '../services';
 import { getUserWords, createUserWord, updateUserWord, getUserWord } from '../api/users';
@@ -161,6 +161,7 @@ export default class Book extends BaseView {
       this.renderCardWord(word, index);
     });
     this.buttonsClicks();
+    this.setPageColorAllLearned();
   }
 
   renderCardWord = async (
@@ -179,29 +180,10 @@ export default class Book extends BaseView {
     },
     index
   ) => {
-    let isHard = difficulty === DIFFICULTIES.hard;
-    let { isLearned } = optional;
+    const isHard = difficulty === DIFFICULTIES.hard;
+    const { isLearned } = optional;
     const { attempts } = optional;
     const { isLogin, group } = this.state;
-    const isAttempts = attempts.trim().slice(-1) === WORDS_LEARNED.error;
-    const attemptsCount =
-      attempts.length > 3 ? Array.from(attempts.trim().slice(-5)).reduce((acc, prev) => Number(acc) + Number(prev)) : 0;
-    if (isAttempts) {
-      const modifiedOptional = { ...optional, isLearned: false };
-      isLearned = false;
-      this.updateUserWordData(id, { difficulty, optional: modifiedOptional });
-    }
-    if (!isHard && attemptsCount >= WORDS_LEARNED.easy) {
-      const modifiedOptional = { ...optional, isLearned: true };
-      isLearned = true;
-      this.updateUserWordData(id, { difficulty, optional: modifiedOptional });
-    }
-    if (isHard && attemptsCount === WORDS_LEARNED.hard) {
-      const modifiedOptional = { ...optional, isLearned: true };
-      isHard = false;
-      isLearned = true;
-      this.updateUserWordData(id, { difficulty: DIFFICULTIES.easy, optional: modifiedOptional });
-    }
     const buttonLearned = `
       <button
         class="button-word button-word_learned ${isLearned ? 'learned' : ''}"
@@ -355,7 +337,6 @@ export default class Book extends BaseView {
   }
 
   updateUserWordData = async (id, userWordProperty) => {
-    console.log(userWordProperty);
     const { userId } = getState();
     const isUserWordCreated = (await getUserWord({ userId, wordId: id })).success;
     if (isUserWordCreated) {
