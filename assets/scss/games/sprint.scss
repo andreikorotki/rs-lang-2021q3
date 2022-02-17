@@ -2,11 +2,9 @@
   &-container.sprint {
     background: none;
     background-image: url(#{$assets-path}images/sprint.jpg);
-    width: 100%;
-    height: 100vh;
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: bottom center;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -14,7 +12,7 @@
   }
 
   &-content {
-    margin-top: var(--spacing-unit-20);
+    margin-top: var(--spacing-unit-10);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -97,11 +95,12 @@
 
 .buttons-container_answers {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  width: 55%;
 }
 
 .button-answer {
-  width: 150px;
+  width: 130px;
   padding: var(--spacing-unit-1);
   border-radius: 5px;
   border: none;
@@ -115,12 +114,10 @@
 
 .button-answer.false {
   background-color: var(--active-color-1);
-  margin-right: var(--spacing-unit-10);
 }
 
 .button-answer.true {
   background-color: var(--active-color-2);
-  margin-left: var(--spacing-unit-10);
 }
 
 .button-answer:hover {
@@ -143,6 +140,7 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: var(--spacing-unit-1);
+    overflow-y: hidden;
   }
   &-content {
     width: 100%;
@@ -166,7 +164,7 @@
   &-english_result,
   &-russian_result,
   &-transcription {
-    width: 150px;
+    width: 165px;
     color: var(--text-primary-color);
   }
 }

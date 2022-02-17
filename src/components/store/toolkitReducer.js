@@ -48,7 +48,6 @@ const toolkitReducer = createSlice({
     updateWordProperty(state, action) {
       const index = state.words.findIndex(({ id }) => id === action.payload.id);
       state.words[index] = action.payload;
-      console.log(action.payload, index);
     },
     addLearnedPages(state, action) {
       state.learnedPages.push(action.payload);

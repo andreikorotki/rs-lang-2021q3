@@ -1,5 +1,6 @@
-import { createUser, loginUser } from '../api/users';
+import { createUser, loginUser, setUserStatistics } from '../api/users';
 import User from '../models/user';
+import UserStatistic from '../models/user-statistic';
 import { updateState, filterObject, redirect } from '../services';
 import { tokenExpirationPeriodMs } from '../services/settings';
 
@@ -22,7 +23,11 @@ export async function createUserController(userName, userEmail, userPassword) {
   const filteredUser = filterObject(newUser, required);
   const response = await createUser(filteredUser);
   if (response.success) {
-    redirect('#/login');
+    const loginData = await loginUserController(userEmail, userPassword);
+    if (loginData.success) {
+      const userStat = new UserStatistic();
+      await setUserStatistics(loginData.content.userId, userStat);
+    }
   }
   return response;
 }

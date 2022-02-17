@@ -1,4 +1,4 @@
-@import "./loader.scss";
+@import './loader.scss';
 
 .book {
   min-height: 100%;
@@ -175,11 +175,11 @@
 }
 
 .bar-item_green {
-  background-color: var(--active-color-1);
+  background-color: var(--active-color-2);
 }
 
 .bar-item_red {
-  background-color: var(--active-color-2);
+  background-color: var(--active-color-1);
 }
 
 .button-word {

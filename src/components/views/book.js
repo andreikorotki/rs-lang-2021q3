@@ -16,7 +16,7 @@ import {
   setUserWords,
   addUserWords
 } from '../store/toolkitReducer';
-import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP } from '../constants';
+import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP, WORDS_LEARNED } from '../constants';
 import { getWordsData } from '../utils';
 import { getState } from '../services';
 import { getUserWords, createUserWord, updateUserWord, getUserWord } from '../api/users';
@@ -155,8 +155,8 @@ export default class Book extends BaseView {
     this.buttons[group - 1].classList.add('active');
   }
 
-  renderWords() {
-    const { words } = store.getState().toolkit;
+  async renderWords() {
+    const { words } = await store.getState().toolkit;
     words.forEach((word, index) => {
       this.renderCardWord(word, index);
     });
@@ -179,9 +179,29 @@ export default class Book extends BaseView {
     },
     index
   ) => {
-    const isHard = difficulty === DIFFICULTIES.hard;
-    const { isLearned } = optional;
-    const { isLogin } = this.state;
+    let isHard = difficulty === DIFFICULTIES.hard;
+    let { isLearned } = optional;
+    const { attempts } = optional;
+    const { isLogin, group } = this.state;
+    const attemptsCount =
+      attempts.length > 3 ? Array.from(attempts.trim().slice(-5)).reduce((acc, prev) => +acc + +prev) : 0;
+    if (attempts.trim().slice(-1) === '0') {
+      console.log('from learned');
+      const modifiedOptional = { ...optional, isLearned: false };
+      isLearned = false;
+      this.updateUserWordData(id, { difficulty, optional: modifiedOptional });
+    }
+    if (!isHard && attemptsCount >= WORDS_LEARNED.easy) {
+      const modifiedOptional = { ...optional, isLearned: true };
+      isLearned = true;
+      this.updateUserWordData(id, { difficulty, optional: modifiedOptional });
+    }
+    if (isHard && attemptsCount === WORDS_LEARNED.hard) {
+      const modifiedOptional = { ...optional, isLearned: true };
+      isHard = false;
+      isLearned = true;
+      this.updateUserWordData(id, { difficulty: DIFFICULTIES.easy, optional: modifiedOptional });
+    }
     const buttonLearned = `
       <button
         class="button-word button-word_learned ${isLearned ? 'learned' : ''}"
@@ -195,7 +215,7 @@ export default class Book extends BaseView {
         class="button-word button-word_hard ${isHard ? 'hard' : ''}"
         id="add-hard"
         data-card=${index}>
-          ${this.state.group === HARD_GROUP ? 'Из сложных' : 'В сложные'}
+          ${group === HARD_GROUP ? 'Из сложных' : 'В сложные'}
       </button>
     `;
     const html = `
@@ -205,7 +225,7 @@ export default class Book extends BaseView {
           ${isLogin ? buttonHard : ''}
           ${isLogin ? buttonLearned : ''}
           <ul class="progress-container" title="Прогресс обучения">
-          ${isLogin ? this.getProgressBar() : ''}
+          ${isLogin ? this.getProgressBar(attempts) : ''}
           </ul>
         </div>
         <div class="card-content">
@@ -231,19 +251,19 @@ export default class Book extends BaseView {
     await this.cardsContainer.element.insertAdjacentHTML('beforeend', html);
   };
 
-  getProgressBar = () => {
-    const answers = [1, 1, 1, 0, 0, 0, 1, 1, 1, 1];
+  getProgressBar = (attempts) => {
     let html = '';
-    answers.forEach((answer) => {
-      html += this.renderProgressBar(answer);
+    Array.from(attempts.trim().slice(-10)).forEach((attempt) => {
+      html += this.renderProgressBar(attempt);
     });
     return html;
   };
 
-  renderProgressBar = (answer) => {
+  renderProgressBar = (attempt) => {
+    const parsedAttempt = Boolean(Number(attempt));
     return `
       <li class="bar-item">
-        <div class="bar-item_${answer ? 'green' : 'red'}"></div>
+        <div class="bar-item_${parsedAttempt ? 'green' : 'red'}"></div>
       </li>
 `;
   };
@@ -290,7 +310,7 @@ export default class Book extends BaseView {
     const { card } = target.dataset;
     const { group } = this.state;
     const word = JSON.parse(JSON.stringify(store.getState().toolkit.words[card]));
-    const { optional } = word;
+    const { optional, id } = word;
     if (target.classList.contains(DIFFICULTIES.hard) && group !== HARD_GROUP) {
       return;
     }
@@ -304,7 +324,7 @@ export default class Book extends BaseView {
     }
     target.classList.add('hard');
     const userWordProperty = { difficulty: DIFFICULTIES.hard, optional };
-    this.updateUserWordData(word, userWordProperty);
+    this.updateUserWordData(id, userWordProperty);
   }
 
   removeDifficulty = ({ id, optional }) => {
@@ -326,24 +346,26 @@ export default class Book extends BaseView {
     }
     target.classList.add('learned');
     const word = JSON.parse(JSON.stringify(store.getState().toolkit.words[card]));
-    const { optional } = word;
+    const { optional, id } = word;
     optional.isLearned = true;
     const userWordProperty = { difficulty: DIFFICULTIES.easy, optional };
     store.dispatch(updateWordProperty(word, userWordProperty));
-    this.updateUserWordData(word, userWordProperty);
+    this.updateUserWordData(id, userWordProperty);
     this.setPageColorAllLearned();
   }
 
-  async updateUserWordData({ id }, userWordProperty) {
-    const isUserWordCreated = (await getUserWord({ userId: this.state.userId, wordId: id })).success;
+  updateUserWordData = async (id, userWordProperty) => {
+    console.log(userWordProperty);
+    const { userId } = getState();
+    const isUserWordCreated = (await getUserWord({ userId, wordId: id })).success;
     if (isUserWordCreated) {
-      updateUserWord(this.state.userId, id, userWordProperty);
+      updateUserWord(userId, id, userWordProperty);
       store.dispatch(updateUserWordProperty({ wordId: id, ...userWordProperty }));
     } else {
-      createUserWord(this.state.userId, id, userWordProperty);
+      createUserWord(userId, id, userWordProperty);
       store.dispatch(addUserWords({ wordId: id, ...userWordProperty }));
     }
-  }
+  };
 
   setPageColorAllLearned = () => {
     const isAllLearnedWords = document.querySelectorAll('.learned').length === wordsPerPageCount;

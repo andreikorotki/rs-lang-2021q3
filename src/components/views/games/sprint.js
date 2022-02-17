@@ -1,14 +1,24 @@
 import moment from 'moment';
 import { BaseView } from '..';
 import { BaseElement } from '../../common';
-import { getWordsData, getLevelGameButtons, gameTimer, playAudio, setResetActiveLink, getAudioUrl } from '../../utils';
+import {
+  getWordsData,
+  getLevelGameButtons,
+  gameTimer,
+  playAudio,
+  setResetActiveLink,
+  getAudioUrl,
+  getResultTable,
+  getGameBoard
+} from '../../utils';
 import { store } from '../../store';
 import failed from '../../../../assets/sounds/wrong.mp3';
 import success from '../../../../assets/sounds/correct.mp3';
-import { settings } from '../../templates';
+import { settings, gameContent } from '../../templates';
 import { setUserWords } from '../../store/toolkitReducer';
 import { pagesInGroupCount, wordsPerPageCount } from '../../services/settings';
-import { setUserStatistics } from '../../api/users';
+import { updateGameStatistic } from '../../controllers/statistics-controller';
+import { createUserWord, getUserWord, updateUserWord } from '../../api/users';
 import { getState } from '../../services';
 
 export default class Sprint extends BaseView {
@@ -20,6 +30,7 @@ export default class Sprint extends BaseView {
     contentElement.element.append(this.wrapper.element);
     this.state = {
       isStartGameFromMenu: store.getState().toolkit.isStartGameFromMenu,
+      isLogin: store.getState().toolkit.isLogin,
       group: store.getState().toolkit.group,
       page: store.getState().toolkit.page,
       wordsForGame: [],
@@ -32,10 +43,12 @@ export default class Sprint extends BaseView {
       indexEnglishWord: null,
       indexRussianWord: null,
       wrongAnswers: [],
-      successAnswers: [],
+      correctAnswers: [],
       wrongAnswersSeries: 0,
-      successAnswersSeries: 0,
+      correctAnswersSeries: 0,
+      longestSeries: 0,
       lastQuestion: wordsPerPageCount,
+      newWords: 0,
       isAudio: true
     };
   }
@@ -51,28 +64,6 @@ export default class Sprint extends BaseView {
   }
 
   render() {
-    const gameContent = `
-      <h2 class="game-title">
-        Спринт
-      </h2>
-      <p class="game-title_description">
-        "Спринт" - в этой игре Вам за определённое время необходимо угадать как можно больше слов.
-      </p>
-      <div class="game-options_container">
-         <p class="game-options">
-          Выберите уровень для начала игры
-        </p>
-        <p class="game-options">
-          Используйте мышь, чтобы выбрать вариант ответа
-        </p>
-        <p class="game-options">
-          Используйте стрелки влево или вправо для выбора ответа
-        </p>
-        <p class="game-options">
-          Используйте пробел для озвучивания текущего слова
-        </p>
-      </div>
-    `;
     const html = `
       <div class="game-container sprint">
         ${settings}
@@ -104,6 +95,8 @@ export default class Sprint extends BaseView {
   };
 
   async startGame() {
+    const { group, page } = this.state;
+    await getWordsData(group, page);
     const { words } = store.getState().toolkit;
     const noLearnedWords = words.filter((word) => word.optional.isLearned !== true);
     let wordsForGame = this.state.isStartGameFromMenu ? words : noLearnedWords;
@@ -165,30 +158,16 @@ export default class Sprint extends BaseView {
   };
 
   renderGameBoard = () => {
-    const html = `
-      <div class="game-board">
-        <div class="table timer">${this.state.countTime}</div>
-        <div class="table result">${this.state.result}</div>
-        <div class="answers-container_trues">
-          <div class="answer-led on" id="1"></div>
-          <div class="answer-led" id="2"></div>
-          <div class="answer-led" id="3"></div>
-        </div>
-        <div class="answer-content">
-        </div>
-        <div class="buttons-container_answers" id="answers">
-          <button class="button-answer false" id="0">Не верно</button>
-          <button class="button-answer true" id="1">Верно</button>
-        </div>
-      </div>
-    `;
+    const html = getGameBoard(this.state);
     this.gameContent.insertAdjacentHTML('beforeend', html);
     this.getQuestion();
   };
 
   getQuestion = () => {
     const answerContent = document.querySelector('.answer-content');
-    answerContent.innerHTML = '';
+    if (answerContent) {
+      answerContent.innerHTML = '';
+    }
     if (this.state.question > this.state.lastQuestion) {
       this.endGame();
     } else {
@@ -249,13 +228,20 @@ export default class Sprint extends BaseView {
     buttonsAnswers.addEventListener('click', (event) => {
       this.handleEvents(event);
     });
+    const close = document.querySelector('.close');
+    close.addEventListener('click', this.closeGame);
     document.addEventListener('keydown', this.keyboardEvents);
   }
 
-  keyboardEvents = ({ code }) => {
+  closeGame = () => {
+    document.removeEventListener('keydown', this.keyboardEvents);
+  };
+
+  keyboardEvents = (event) => {
     const audioButtons = document.querySelectorAll('.audio-button');
     const [{ id }] = audioButtons;
     const url = getAudioUrl(id);
+    const { code } = event;
     switch (code) {
       case 'ArrowLeft':
         this.getResult(false);
@@ -270,6 +256,7 @@ export default class Sprint extends BaseView {
         break;
       default:
     }
+    event.preventDefault();
   };
 
   handleEvents = ({ target: { id } }) => {
@@ -281,7 +268,7 @@ export default class Sprint extends BaseView {
     switch (result) {
       case true:
         if (this.state.indexEnglishWord === this.state.indexRussianWord) {
-          this.setNewResult();
+          this.setCorrectResult();
         }
         if (this.state.indexEnglishWord !== this.state.indexRussianWord) {
           this.setWrongResult();
@@ -289,7 +276,7 @@ export default class Sprint extends BaseView {
         break;
       case false:
         if (this.state.indexEnglishWord !== this.state.indexRussianWord) {
-          this.setNewResult();
+          this.setCorrectResult();
         }
         if (this.state.indexEnglishWord === this.state.indexRussianWord) {
           this.setWrongResult();
@@ -301,36 +288,60 @@ export default class Sprint extends BaseView {
     this.getQuestion();
   }
 
-  setNewResult() {
+  setCorrectResult() {
+    if (this.state.isLogin) {
+      this.updateUserWordData(true);
+    }
     if (this.state.isAudio) {
       playAudio(success);
     }
-    this.state.successAnswersSeries += 1;
+    this.state.correctAnswersSeries += 1;
     this.state.wrongAnswersSeries = 0;
-    const { successAnswersSeries } = this.state;
+    const { correctAnswersSeries } = this.state;
     switch (true) {
-      case successAnswersSeries > 5:
+      case correctAnswersSeries > 5:
         this.state.prize = 30;
         break;
-      case successAnswersSeries > 2:
+      case correctAnswersSeries > 2:
         this.state.prize = 20;
         break;
       default:
         this.state.prize = 10;
     }
+    const { prize, level, indexEnglishWord, result } = this.state;
     this.result = document.querySelector('.result');
-    this.state.result += this.state.prize * this.state.level;
-    this.state.successAnswers.push(this.state.indexEnglishWord);
-    this.result.textContent = this.state.result;
+    this.state.result += prize * level;
+    this.state.correctAnswers.push(indexEnglishWord);
+    this.result.textContent = result;
   }
 
+  updateUserWordData = async (result) => {
+    const words = this.state.wordsForGame[this.state.question - 1];
+    const attempts = words.optional.attempts + Number(result);
+    console.log(attempts);
+    const { id, difficulty } = words;
+    const optional = { ...words.optional, attempts };
+    const userWordProperty = { difficulty, optional };
+    const { userId } = getState();
+    const isUserWordCreated = (await getUserWord({ userId, wordId: id })).success;
+    if (isUserWordCreated) {
+      updateUserWord(userId, id, userWordProperty);
+    } else {
+      createUserWord(userId, id, userWordProperty);
+      this.state.newWords += 1;
+    }
+  };
+
   setWrongResult() {
+    if (this.state.isLogin) {
+      this.updateUserWordData(false);
+    }
     if (this.state.isAudio) {
       playAudio(failed);
     }
-    this.state.successAnswersSeries -= 3;
-    const isSuccessLessZero = this.state.successAnswersSeries < 0;
-    this.state.successAnswersSeries = isSuccessLessZero ? 0 : this.state.successAnswersSeries;
+    const { longestSeries, correctAnswersSeries } = this.state;
+    this.state.longestSeries = longestSeries < correctAnswersSeries ? correctAnswersSeries : longestSeries;
+    this.state.correctAnswersSeries = 0;
     this.state.wrongAnswersSeries += 1;
     this.state.wrongAnswers.push(this.state.indexEnglishWord);
   }
@@ -343,64 +354,42 @@ export default class Sprint extends BaseView {
     this.gameBoard = document.querySelector('.game-board');
     this.gameBoard.style.justifyContent = 'initial';
     this.gameBoard.innerHTML = '';
-    const { result, successAnswers, wrongAnswers } = this.state;
+    const { result, correctAnswers, wrongAnswers, isLogin } = this.state;
     const html = `
       <h2 class="result-game_title">Игра окончена!</h2>
       <h3 class="result-game_points">Вы набрали ${result} очков</h3>
       <div class="result-content">
         <h3 class="result-title success">Верно:</h3>
         <ul class="result-table_success" id="success">
-          ${this.getResultTable(successAnswers)}
+          ${getResultTable(correctAnswers)}
         </ul>
         <h3 class="result-title wrong">Не верно:</h3>
         <ul class="result-table_wrong" id="wrong">
-          ${this.getResultTable(wrongAnswers)}
+          ${getResultTable(wrongAnswers)}
         </ul>
       </div>
     `;
     this.gameBoard.insertAdjacentHTML('afterbegin', html);
     this.audioClick();
-    this.setUserStatistics();
+    if (isLogin) {
+      this.setUserStatistics();
+    }
   }
 
-  setUserStatistics = () => {
-    const { userId } = getState();
-    const dateStats = moment(new Date()).format('DD_MM_YYYY');
-    const gameStats = {
-      learnedWords: 10,
-      optional: {
-        sprint: {
-          [dateStats]: {
-            wrongAnswers: 10,
-            correctAnswers: 10,
-            learnedWords: 10,
-            newWords: 10,
-            longestSeries: 10
-          }
-        }
-      }
+  setUserStatistics = async () => {
+    const dateKey = moment(new Date()).format('DD_MM_YYYY');
+    const { correctAnswers, wrongAnswers, longestSeries, newWords } = this.state;
+    console.log(this.state);
+    const gameStat = {
+      wrongAnswers: wrongAnswers.length,
+      correctAnswers: correctAnswers.length,
+      dateKey,
+      game: 'sprint',
+      learnedWords: 0,
+      newWords,
+      longestSeries
     };
-    setUserStatistics(userId, gameStats);
-  };
-
-  getResultTable = (data) => {
-    let html = '';
-    data.forEach((wordIndex) => {
-      html += this.getItemResultTable(wordIndex);
-    });
-    return html;
-  };
-
-  getItemResultTable = (wordIndex) => {
-    const { id, word, wordTranslate, transcription } = store.getState().toolkit.words[wordIndex];
-    const html = `
-      <li class="result-item">
-        <button class="button audio-button" id="${id}" title="Прослушать..."></button>
-        <span class="word-english_result">${word}</span>
-        <span class="word-transcription">${transcription}</span>
-        <span class="word-russian_result">${wordTranslate}</span>
-      </li>
-    `;
-    return html;
+    console.log(gameStat);
+    updateGameStatistic(gameStat);
   };
 }

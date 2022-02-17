@@ -7,6 +7,9 @@ import { playAudio } from './playAudio';
 import { getAudioUrl } from './getAudioUrl';
 import { setResetActiveLink } from './setResetActiveLink';
 import { renderHeader } from './renderHeader';
+import { getItemResultTable } from './getItemResultTable';
+import { getResultTable } from './getResultTable';
+import { getGameBoard } from './getGameBoard';
 
 export {
   getWordsData,
@@ -17,5 +20,8 @@ export {
   playAudio,
   getAudioUrl,
   setResetActiveLink,
-  renderHeader
+  renderHeader,
+  getItemResultTable,
+  getResultTable,
+  getGameBoard
 };
