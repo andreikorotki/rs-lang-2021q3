@@ -73,6 +73,5 @@ export async function calculateUserWord(wordId, isSuccessAttempt) {
     updatedWord = await updateUserWord(userId, wordId, word);
     return { word: updatedWord.content, isNew, isNewLearned };
   }
-  redirect('#/login');
   return { word: updatedWord, isNew, isNewLearned };
 }

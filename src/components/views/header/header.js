@@ -33,7 +33,7 @@ export class Header extends BaseElement {
   getNavigationMenu = () => {
     const stats = `
             <li class="menu-item">
-              <a class="link stats-link" href="/#/stats">
+              <a class="link stats-link" href="#/stats">
                 Статистика
               </a>
             </li>
@@ -50,24 +50,24 @@ export class Header extends BaseElement {
 
       <ul class="nav-menu">
         <li class="menu-item">
-          <a class="link about-link" href="/#/about">О нас</a>
+          <a class="link about-link" href="#/about">О нас</a>
         </li>
         <li class="menu-item">
-          <a class="link book-link" href="/#/book" id="book">
+          <a class="link book-link" href="#/book" id="book">
             Электронный учебник
           </a>
         </li>
         <li class="menu-item">
-          <a class="link games-link" href="/#/games" id="games">
+          <a class="link games-link" href="#/games" id="games">
             Мини-игры
           </a>
         </li>
         ${this.state.isLogin ? stats : ''}
         <li class="menu-item ${this.state.isLogin ? 'item-hidden' : ''}">
-          <a class="link login-link" href="/#/login">Войти</a>
+          <a class="link login-link" href="#/login">Войти</a>
         </li>
         <li class="menu-item ${this.state.isLogin ? 'item-hidden' : ''}">
-          <a class="link register-link" href="/#/register">Регистрация</a>
+          <a class="link register-link" href="#/register">Регистрация</a>
         </li>
         <li class="menu-item ${this.state.isLogin ? '' : 'item-hidden'}">
           <a class="link register-link" href="#">Выйти</a>

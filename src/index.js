@@ -10,7 +10,6 @@ import { AudioCallStartView } from './components/views/games/audiocall/audiocall
 import { getWordsForGame } from './components/controllers/audiocall-controller';
 import AudioCallGameView from './components/views/games/audiocall/audiocall-game-view';
 import { NotEnoughWordsError } from './components/common/exceptions/not-enough-words-error';
-// import Audiocall from './components/views/games/audiocall';
 import Sprint from './components/views/games/sprint';
 
 const appPage = new App();
@@ -34,11 +33,6 @@ router.add(/games/, async () => {
   const games = new Games();
   games.run();
 });
-
-// router.add(/audiocall/, async () => {
-//   const audiocall = new Audiocall();
-//   audiocall.run();
-// });
 
 router.add(/sprint/, async () => {
   const sprint = new Sprint();

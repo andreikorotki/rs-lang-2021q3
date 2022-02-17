@@ -20,14 +20,14 @@ export default class Games extends BaseView {
     const html = `
     <div class="games-container">
       <div>
-        <a class="link" href="/#/audiocall-start" id="audiocall">
+        <a class="link" href="#/audiocall-start" id="audiocall">
           <div class="game-audiocall game">
           </div>
         </a>
         <p class="game-title">Аудиовызов</p>
       </div>
       <div>
-        <a class="link" href="/#/sprint" id="sprint">
+        <a class="link" href="#/sprint" id="sprint">
           <div class="game-sprint game">
           </div>
         </a>
