@@ -2,12 +2,26 @@ import { store } from '../store';
 
 export function getWordsProperty(words) {
   const { userWords } = store.getState().toolkit;
-  userWords.forEach((userWord, userWordIndex) => {
-    const index = words.findIndex((word) => word.id === userWord.wordId);
+  words.forEach((word, wordIndex) => {
+    const index = userWords.findIndex((userWord) => word.id === userWord.wordId);
     if (index !== -1) {
-      words[index].difficulty = userWords[userWordIndex].difficulty;
-      words[index].optional.isLearned = userWords[userWordIndex].optional.isLearned;
-      words[index].optional.startDate = userWords[userWordIndex].optional.startDate;
+      words[wordIndex].difficulty = userWords[index].difficulty;
+      words[wordIndex].optional = userWords[index].optional;
+    } else {
+      const date = new Date().toISOString();
+      words[wordIndex] = {
+        ...word,
+        difficulty: 'easy',
+        optional: {
+          attempts: ' ',
+          isLearned: false,
+          startDate: date,
+          successAttempts: 0,
+          failedAttempts: 0,
+          lastAttemptSuccess: false,
+          lastAttemptDate: date
+        }
+      };
     }
   });
   return words;

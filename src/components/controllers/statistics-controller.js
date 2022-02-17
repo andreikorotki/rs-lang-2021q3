@@ -1,7 +1,6 @@
 import moment from 'moment';
 import { Chart, registerables } from 'chart.js';
 import { getUserStatistics, setUserStatistics } from '../api/users';
-import UserStatistic from '../models/user-statistic';
 import { isAuthorized } from '../services';
 import { getState } from '../services/state';
 import { drawMessageInSelector } from '../utils/drawMessageInSelector';
@@ -41,11 +40,6 @@ export async function updateGameStatistic(gameStat) {
       dbStat = updateStatCounters(gameStat, dbStat);
       const updateStatResponse = await setUserStatistics(userId, dbStat);
       return updateStatResponse;
-    }
-    const userStat = new UserStatistic();
-    const createStatResponse = await setUserStatistics(userId, userStat);
-    if (createStatResponse.success) {
-      updateGameStatistic(gameStat);
     }
   }
   return { success: false, content: null };

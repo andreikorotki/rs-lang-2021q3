@@ -1,11 +1,10 @@
 export const serverUrl = 'https://rs-lang-vvk1978-app.herokuapp.com';
+export const NAME_LOCAL_STORAGE = 'rs-lang-user-state';
 export const tokenExpirationPeriodMs = 14400000; // 4 hours
 export const wordsPerPageCount = 20;
 export const gameRoundsMaxCount = 12;
 export const audioCallVariantsCount = 5; // each audiocall game round contains such options count to select
 export const pagesInGroupCount = 30;
-export const hardWordLearnedAttempts = 5;
-export const easyWordLearnedAttempts = 3;
 
 export const messages = {
   SUCCESS: 'Успешно',

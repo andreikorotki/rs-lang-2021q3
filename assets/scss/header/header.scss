@@ -1,9 +1,8 @@
-
-
 .header-container {
   margin: 0 auto;
   padding: var(--spacing-unit-1) 0;
   max-width: $wrapper-size-xxl;
+  width: 100%;
   height: 55px;
 
   @media (max-width: $screen-size-xl) {
@@ -70,4 +69,11 @@
 
 .link:hover {
   color: var(--hover-color);
+}
+
+.user-name {
+  font-family: $secondary-font-family;
+  font-size: var(--font-size-l);
+  font-weight: 200;
+  color: var(--word-english-color);
 }

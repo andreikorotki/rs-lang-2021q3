@@ -2,6 +2,9 @@ import { BaseElement } from '../../common';
 import { store } from '../../store';
 import { setAuthorized } from '../../store/toolkitReducer';
 import { getState } from '../../services';
+import { bgColors } from '../../constants';
+import { renderHeader } from '../../utils';
+import { NAME_LOCAL_STORAGE } from '../../services/settings';
 
 export class Header extends BaseElement {
   constructor() {
@@ -16,6 +19,7 @@ export class Header extends BaseElement {
       }
     }
     this.state = {
+      userName: authorized ? authorized.name : '',
       isLogin: store.getState().toolkit.isLogin
     };
   }
@@ -31,9 +35,10 @@ export class Header extends BaseElement {
   }
 
   getNavigationMenu = () => {
+    const { isLogin, userName } = this.state;
     const stats = `
             <li class="menu-item">
-              <a class="link stats-link" href="#/stats">
+              <a class="link stats-link" href="/#/stats">
                 Статистика
               </a>
             </li>
@@ -54,7 +59,7 @@ export class Header extends BaseElement {
         </li>
         <li class="menu-item">
           <a class="link book-link" href="#/book" id="book">
-            Электронный учебник
+            Учебник
           </a>
         </li>
         <li class="menu-item">
@@ -62,15 +67,18 @@ export class Header extends BaseElement {
             Мини-игры
           </a>
         </li>
-        ${this.state.isLogin ? stats : ''}
-        <li class="menu-item ${this.state.isLogin ? 'item-hidden' : ''}">
+        ${isLogin ? stats : ''}
+        <li class="menu-item ${isLogin ? 'item-hidden' : ''}">
           <a class="link login-link" href="#/login">Войти</a>
         </li>
-        <li class="menu-item ${this.state.isLogin ? 'item-hidden' : ''}">
+        <li class="menu-item ${isLogin ? 'item-hidden' : ''}">
           <a class="link register-link" href="#/register">Регистрация</a>
         </li>
-        <li class="menu-item ${this.state.isLogin ? '' : 'item-hidden'}">
-          <a class="link register-link" href="#">Выйти</a>
+        <li class="menu-item ${isLogin ? '' : 'item-hidden'}">
+          <a class="link unregister-link" href="#" id="exit">Выйти</a>
+        </li>
+        <li class="menu-item ${isLogin ? '' : 'item-hidden'}">
+          <span class="user-name">${userName}</span>
         </li>
       </ul>
     </nav>
@@ -79,20 +87,25 @@ export class Header extends BaseElement {
   };
 
   handleClicks() {
-    this.headerContainer.element.addEventListener('click', (event) => this.handleEvents(event));
+    this.headerContainer.element.addEventListener('click', this.handleEvents);
   }
 
   handleEvents = ({ target }) => {
+    const { id } = target;
     const footer = document.querySelector('.footer');
     if (target.classList.contains('link') || target.classList.contains('logo')) {
       this.setRemoveActiveLink(target);
-      if (target.id === 'games') {
+      if (id === 'games') {
         footer.style.display = 'none';
       } else {
         footer.style.display = 'block';
       }
-      if (target.id !== 'book') {
-        document.body.style.background = '#ffffff';
+      if (id !== 'book') {
+        const mainBgColor = bgColors[0];
+        document.body.style.background = `${mainBgColor}`;
+      }
+      if (id === 'exit') {
+        this.getUserExit();
       }
     }
   };
@@ -105,5 +118,11 @@ export class Header extends BaseElement {
       }
     });
     target.classList.add('active');
+  };
+
+  getUserExit = () => {
+    localStorage.clear(`${NAME_LOCAL_STORAGE}`);
+    store.dispatch(setAuthorized(false));
+    renderHeader();
   };
 }

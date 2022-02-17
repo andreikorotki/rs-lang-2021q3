@@ -2,11 +2,9 @@
   &-container.sprint {
     background: none;
     background-image: url(#{$assets-path}images/sprint.jpg);
-    width: 100%;
-    height: 100vh;
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: bottom center;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -14,11 +12,15 @@
   }
 
   &-content {
-    margin-top: var(--spacing-unit-20);
+    margin-top: var(--spacing-unit-10);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+  }
+
+  &-content * {
+    color: var(--text-secondary-color);
   }
 
   &-board {
@@ -27,8 +29,9 @@
     width: 100%;
     height: 450px;
     background: var(--bg-game-color-secondary);
-    border-radius: 10%;
-    padding: var(--spacing-unit-5);
+    border-radius: 5%;
+    padding: var(--spacing-unit-4);
+    margin-top: var(--spacing-unit-20);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -76,6 +79,10 @@
   align-items: center;
 }
 
+.answer-content * {
+  color: var(--text-primary-color);
+}
+
 .word {
   &-big {
     font-size: var(--font-size-xxl);
@@ -88,11 +95,12 @@
 
 .buttons-container_answers {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  width: 55%;
 }
 
 .button-answer {
-  width: 150px;
+  width: 130px;
   padding: var(--spacing-unit-1);
   border-radius: 5px;
   border: none;
@@ -106,12 +114,10 @@
 
 .button-answer.false {
   background-color: var(--active-color-1);
-  margin-right: var(--spacing-unit-10);
 }
 
 .button-answer.true {
   background-color: var(--active-color-2);
-  margin-left: var(--spacing-unit-10);
 }
 
 .button-answer:hover {
@@ -123,12 +129,18 @@
     margin-bottom: var(--spacing-unit-1);
     font-family: $secondary-font-family;
     text-align: center;
+    color: initial;
+  }
+  &-game_points {
+    color: initial;
+    margin-bottom: var(--spacing-unit-2);
   }
   &-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: var(--spacing-unit-1);
+    overflow-y: hidden;
   }
   &-content {
     width: 100%;
@@ -152,7 +164,8 @@
   &-english_result,
   &-russian_result,
   &-transcription {
-    width: 150px;
+    width: 165px;
+    color: var(--text-primary-color);
   }
 }
 

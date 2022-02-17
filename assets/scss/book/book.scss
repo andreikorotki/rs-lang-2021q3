@@ -24,7 +24,7 @@
 }
 
 .buttons-games_container {
-  display: flex;
+  display: none;
 }
 
 .button-game {
@@ -175,11 +175,11 @@
 }
 
 .bar-item_green {
-  background-color: var(--active-color-1);
+  background-color: var(--active-color-2);
 }
 
 .bar-item_red {
-  background-color: var(--active-color-2);
+  background-color: var(--active-color-1);
 }
 
 .button-word {

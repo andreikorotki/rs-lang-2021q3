@@ -2,7 +2,7 @@
 import { BaseView } from '.';
 import { Button, BaseElement } from '../common';
 import { getWord } from '../api/words';
-import { serverUrl } from '../services/settings';
+import { pagesInGroupCount, serverUrl, wordsPerPageCount } from '../services/settings';
 import { store } from '../store';
 import {
   setGroup,
@@ -11,12 +11,12 @@ import {
   prevPage,
   setWords,
   updateUserWordProperty,
-  addLearnedPages,
+  updateWordProperty,
   setGameStartFromMenu,
   setUserWords,
   addUserWords
 } from '../store/toolkitReducer';
-import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP } from '../constants';
+import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP, WORDS_LEARNED } from '../constants';
 import { getWordsData } from '../utils';
 import { getState } from '../services';
 import { getUserWords, createUserWord, updateUserWord, getUserWord } from '../api/users';
@@ -48,8 +48,8 @@ export default class Book extends BaseView {
 
   async run() {
     if (this.state.isLogin) {
-      this.getGamesButtons();
       await this.getUserWords();
+      this.getGamesButtons();
     }
     document.body.style.background = `${bgColors[this.state.group - 1]}`;
     this.loader = new BaseElement('div', ['loader']);
@@ -57,7 +57,6 @@ export default class Book extends BaseView {
     this.getGroupButtons();
     this.getWords();
     this.getPaginationButtons();
-    this.getPages();
   }
 
   getUserWords = async () => {
@@ -93,31 +92,30 @@ export default class Book extends BaseView {
   }
 
   gameClicks = () => {
-    this.buttonsGameContainer.element.addEventListener('click', () => this.startGame());
+    this.buttonsGameContainer.element.addEventListener('click', this.startGame);
   };
 
   startGame = () => {
     store.dispatch(setGameStartFromMenu(false));
   };
 
-  getGroup = (event) => {
-    const { id } = event.target;
+  getGroup = ({ target: { id } }) => {
     store.dispatch(initial());
     store.dispatch(setGroup(Number(id)));
     this.state.group = Number(id);
     this.state.page = 1;
-    document.body.style.background = `${bgColors[+id - 1]}`;
+    document.body.style.background = `${bgColors[this.state.group - 1]}`;
     if (id === HARD_GROUP.toString()) {
       this.paginationContainer.element.style.display = 'none';
       this.getHardWordsPage();
     } else {
       this.paginationContainer.element.style.display = 'flex';
       this.getWords();
-      this.getPages();
     }
   };
 
   getHardWordsPage() {
+    this.buttonsGameContainer.element.style.display = 'none';
     const words = store.getState().toolkit.userWords;
     const hardWords = words.map(async ({ wordId, difficulty, optional }) => {
       const word = await getWord(wordId);
@@ -147,6 +145,7 @@ export default class Book extends BaseView {
     this.cardsContainer.element.innerHTML = '';
     this.renderWords();
     this.setActiveGroup();
+    this.getPages();
   };
 
   async setActiveGroup() {
@@ -156,8 +155,8 @@ export default class Book extends BaseView {
     this.buttons[group - 1].classList.add('active');
   }
 
-  renderWords() {
-    const { words } = store.getState().toolkit;
+  async renderWords() {
+    const { words } = await store.getState().toolkit;
     words.forEach((word, index) => {
       this.renderCardWord(word, index);
     });
@@ -180,9 +179,29 @@ export default class Book extends BaseView {
     },
     index
   ) => {
-    const isHard = difficulty === DIFFICULTIES.hard;
-    const { isLearned } = optional;
-    const { isLogin } = this.state;
+    let isHard = difficulty === DIFFICULTIES.hard;
+    let { isLearned } = optional;
+    const { attempts } = optional;
+    const { isLogin, group } = this.state;
+    const isAttempts = attempts.trim().slice(-1) === WORDS_LEARNED.error;
+    const attemptsCount =
+      attempts.length > 3 ? Array.from(attempts.trim().slice(-5)).reduce((acc, prev) => Number(acc) + Number(prev)) : 0;
+    if (isAttempts) {
+      const modifiedOptional = { ...optional, isLearned: false };
+      isLearned = false;
+      this.updateUserWordData(id, { difficulty, optional: modifiedOptional });
+    }
+    if (!isHard && attemptsCount >= WORDS_LEARNED.easy) {
+      const modifiedOptional = { ...optional, isLearned: true };
+      isLearned = true;
+      this.updateUserWordData(id, { difficulty, optional: modifiedOptional });
+    }
+    if (isHard && attemptsCount === WORDS_LEARNED.hard) {
+      const modifiedOptional = { ...optional, isLearned: true };
+      isHard = false;
+      isLearned = true;
+      this.updateUserWordData(id, { difficulty: DIFFICULTIES.easy, optional: modifiedOptional });
+    }
     const buttonLearned = `
       <button
         class="button-word button-word_learned ${isLearned ? 'learned' : ''}"
@@ -196,7 +215,7 @@ export default class Book extends BaseView {
         class="button-word button-word_hard ${isHard ? 'hard' : ''}"
         id="add-hard"
         data-card=${index}>
-          ${this.state.group === HARD_GROUP ? 'Из сложных' : 'В сложные'}
+          ${group === HARD_GROUP ? 'Из сложных' : 'В сложные'}
       </button>
     `;
     const html = `
@@ -206,7 +225,7 @@ export default class Book extends BaseView {
           ${isLogin ? buttonHard : ''}
           ${isLogin ? buttonLearned : ''}
           <ul class="progress-container" title="Прогресс обучения">
-          ${isLogin ? this.getProgressBar() : ''}
+          ${isLogin ? this.getProgressBar(attempts) : ''}
           </ul>
         </div>
         <div class="card-content">
@@ -232,19 +251,19 @@ export default class Book extends BaseView {
     await this.cardsContainer.element.insertAdjacentHTML('beforeend', html);
   };
 
-  getProgressBar = () => {
-    const answers = [1, 1, 1, 0, 0, 0, 1, 1, 1, 1];
+  getProgressBar = (attempts) => {
     let html = '';
-    answers.forEach((answer) => {
-      html += this.renderProgressBar(answer);
+    Array.from(attempts.trim().slice(-10)).forEach((attempt) => {
+      html += this.renderProgressBar(attempt);
     });
     return html;
   };
 
-  renderProgressBar = (answer) => {
+  renderProgressBar = (attempt) => {
+    const parsedAttempt = Boolean(Number(attempt));
     return `
       <li class="bar-item">
-        <div class="bar-item_${answer ? 'green' : 'red'}"></div>
+        <div class="bar-item_${parsedAttempt ? 'green' : 'red'}"></div>
       </li>
 `;
   };
@@ -286,12 +305,12 @@ export default class Book extends BaseView {
     };
   }
 
-  async addRemoveDifficulty(event) {
-    const { target } = event;
+  async addRemoveDifficulty({ target }) {
+    this.setPageColorAllLearned();
     const { card } = target.dataset;
     const { group } = this.state;
     const word = JSON.parse(JSON.stringify(store.getState().toolkit.words[card]));
-    const { optional } = word;
+    const { optional, id } = word;
     if (target.classList.contains(DIFFICULTIES.hard) && group !== HARD_GROUP) {
       return;
     }
@@ -305,19 +324,17 @@ export default class Book extends BaseView {
     }
     target.classList.add('hard');
     const userWordProperty = { difficulty: DIFFICULTIES.hard, optional };
-    this.updateUserWordData(word, userWordProperty);
+    this.updateUserWordData(id, userWordProperty);
   }
 
-  removeDifficulty = (word) => {
-    const { id } = word;
-    const userWordData = { difficulty: DIFFICULTIES.easy, optional: word.optional };
+  removeDifficulty = ({ id, optional }) => {
+    const userWordData = { difficulty: DIFFICULTIES.easy, optional };
     updateUserWord(this.state.userId, id, userWordData);
     store.dispatch(updateUserWordProperty({ wordId: id, ...userWordData }));
     this.getHardWordsPage();
   };
 
-  async addLearnedWord(event) {
-    const { target } = event;
+  async addLearnedWord({ target }) {
     const { card } = target.dataset;
     const { group } = this.state;
     if (group === HARD_GROUP || target.classList.contains('learned')) {
@@ -329,32 +346,36 @@ export default class Book extends BaseView {
     }
     target.classList.add('learned');
     const word = JSON.parse(JSON.stringify(store.getState().toolkit.words[card]));
-    const { optional } = word;
+    const { optional, id } = word;
     optional.isLearned = true;
     const userWordProperty = { difficulty: DIFFICULTIES.easy, optional };
-    this.updateUserWordData(word, userWordProperty);
+    store.dispatch(updateWordProperty(word, userWordProperty));
+    this.updateUserWordData(id, userWordProperty);
     this.setPageColorAllLearned();
   }
 
-  async updateUserWordData(word, userWordProperty) {
-    const { id } = word;
-    const isUserWordCreated = (await getUserWord({ userId: this.state.userId, wordId: id })).success;
+  updateUserWordData = async (id, userWordProperty) => {
+    console.log(userWordProperty);
+    const { userId } = getState();
+    const isUserWordCreated = (await getUserWord({ userId, wordId: id })).success;
     if (isUserWordCreated) {
-      updateUserWord(this.state.userId, id, userWordProperty);
+      updateUserWord(userId, id, userWordProperty);
       store.dispatch(updateUserWordProperty({ wordId: id, ...userWordProperty }));
     } else {
-      createUserWord(this.state.userId, id, userWordProperty);
+      createUserWord(userId, id, userWordProperty);
       store.dispatch(addUserWords({ wordId: id, ...userWordProperty }));
     }
-  }
+  };
 
   setPageColorAllLearned = () => {
-    const isAllLearnedWords = document.querySelectorAll('.learned').length === 20;
+    const isAllLearnedWords = document.querySelectorAll('.learned').length === wordsPerPageCount;
+    const pageCurrent = document.querySelector('.page-current');
     if (isAllLearnedWords) {
-      const pageCurrent = document.querySelector('.page-current');
       pageCurrent.classList.add('learned');
-      const { group, page } = this.state;
-      store.dispatch(addLearnedPages({ group, page }));
+      this.buttonsGameContainer.element.style.display = 'none';
+    } else {
+      pageCurrent.classList.remove('learned');
+      this.buttonsGameContainer.element.style.display = 'flex';
     }
   };
 
@@ -366,20 +387,18 @@ export default class Book extends BaseView {
   }
 
   getPages() {
-    const { learnedPages } = store.getState().toolkit;
-    const isLearnedPages =
-      learnedPages.findIndex(({ group, page }) => this.state.group === group && this.state.page === page) !== -1;
     if (document.querySelector('.pages')) {
       document.querySelector('.pages').remove();
     }
     const { page } = this.state;
     const html = `
       <div class="pages">
-        <span class="page-current ${isLearnedPages ? 'learned' : ''}">
-          ${page}</span> / 30
+        <span class="page-current ">
+          ${page}</span> / ${pagesInGroupCount}
       </div>
     `;
     this.buttonPrev.element.insertAdjacentHTML('afterend', html);
+    this.setPageColorAllLearned();
   }
 
   getPrevPages = () => {
@@ -389,18 +408,16 @@ export default class Book extends BaseView {
       this.state.page = 1;
       return;
     }
-    this.getPages();
     this.getWords();
   };
 
   getNextPages = () => {
     store.dispatch(nextPage());
     this.state.page += 1;
-    if (this.state.page > 30) {
-      this.state.page = 30;
+    if (this.state.page > pagesInGroupCount) {
+      this.state.page = pagesInGroupCount;
       return;
     }
-    this.getPages();
     this.getWords();
   };
 }

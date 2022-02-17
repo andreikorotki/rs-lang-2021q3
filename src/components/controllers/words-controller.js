@@ -1,25 +1,26 @@
 import { getUserWord, updateUserWord, createUserWord } from '../api/users';
-import { Difficulties } from '../constants/Difficulties';
+import { DIFFICULTIES, WORDS_LEARNED } from '../constants';
 import Attempt from '../models/attempt';
 import UserWord from '../models/user-word';
 import { redirect } from '../services';
-import { easyWordLearnedAttempts, hardWordLearnedAttempts } from '../services/settings';
 import { getState, isAuthorized } from '../services/state';
 
 function setWordAttempt(word, attempt) {
-  if ('optional' in word) {
+  if (word?.optional) {
     word.optional.lastAttemptSuccess = attempt.success;
     word.optional.lastAttemptDate = attempt.date;
     if (attempt.success) {
+      const { attempts } = word.optional;
+      const trimmedAttempts = attempts.trim();
       word.optional.successAttempts += 1;
-      if (
-        word.optional.successAttempts >= hardWordLearnedAttempts ||
-        (word.difficulty === Difficulties.easy && word.optional.successAttempts >= easyWordLearnedAttempts)
-      ) {
+      word.optional.attempts += '1';
+      const requiredForLearnedAttempts = '1'.repeat(WORDS_LEARNED[word.difficulty]);
+      if (trimmedAttempts.endsWith(requiredForLearnedAttempts)) {
         word.optional.isLearned = true;
-        word.difficulty = Difficulties.easy;
+        word.difficulty = DIFFICULTIES.easy;
       }
     } else {
+      word.optional.attempts += '0';
       word.optional.failedAttempts += 1;
       word.optional.isLearned = false;
     }
