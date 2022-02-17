@@ -61,7 +61,7 @@ export default class Book extends BaseView {
 
   getUserWords = async () => {
     const userWords = await getUserWords(this.state.userId);
-    store.dispatch(setUserWords(userWords));
+    store.dispatch(setUserWords(userWords.content));
   };
 
   getGroupButtons() {
