@@ -1,7 +1,7 @@
 import '../assets/scss/base.scss';
 import { App } from './components/app';
 import { Router } from './components/services';
-import About from './components/views/about';
+import About from './components/views/about/about';
 import { getWords } from './components/api/words';
 import { Main, Book, Games, Stats } from './components/views';
 import { LoginView } from './components/views/login';

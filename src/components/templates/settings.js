@@ -1,5 +1,5 @@
 export const settings = `
-        <a href="/#/games">
+        <a href="#/games">
           <div class="close"></div>
         </a>
         <div class="settings">

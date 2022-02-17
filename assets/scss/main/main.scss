@@ -63,7 +63,7 @@
   background-position: center right;
   background-repeat: no-repeat;
   height: calc(100vh - var(--header-footer-height));
-  min-width: 55%;
+  min-width: 50%;
 
   @media (max-width: $screen-size-m) {
     width: 100%;
@@ -98,8 +98,8 @@
   align-items: center;
   justify-content: center;
   flex-wrap: nowrap;
-  width: 150px;
-  height: 180px;
+  width: 130px;
+  height: 160px;
   border-radius: $border-radius-2;
   background-color: var(--main-tile-color);
   border: 1px solid var(--button-border-color);
