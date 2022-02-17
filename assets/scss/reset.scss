@@ -4,14 +4,25 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: var(--bg-app-color-primary);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   color: var(--text-primary-color);
   text-decoration: none;
   list-style-type: none;
+}
+
+.root {
+  min-height: 86vh;
 }
 
 .wrapper {

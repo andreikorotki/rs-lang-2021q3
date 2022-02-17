@@ -1,4 +1,6 @@
 import { bgColors } from './bgColors';
-import { BUTTONS_GROUP, BUTTONS_GAME, HARD_GROUP, DIFFICULTIES } from './book';
+import { DIFFICULTIES } from './difficulties';
+import { WORDS_LEARNED } from './learned';
+import { BUTTONS_GROUP, BUTTONS_GAME, HARD_GROUP } from './book';
 
-export { bgColors, BUTTONS_GROUP, BUTTONS_GAME, HARD_GROUP, DIFFICULTIES };
+export { bgColors, BUTTONS_GROUP, BUTTONS_GAME, HARD_GROUP, DIFFICULTIES, WORDS_LEARNED };

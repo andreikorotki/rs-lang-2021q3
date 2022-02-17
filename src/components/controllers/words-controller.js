@@ -1,5 +1,5 @@
 import { getUserWord, updateUserWord, createUserWord } from '../api/users';
-import { Difficulties } from '../constants/Difficulties';
+import { DIFFICULTIES } from '../constants';
 import Attempt from '../models/attempt';
 import UserWord from '../models/user-word';
 import { redirect } from '../services';
@@ -14,10 +14,10 @@ function setWordAttempt(word, attempt) {
       word.optional.successAttempts += 1;
       if (
         word.optional.successAttempts >= hardWordLearnedAttempts ||
-        (word.difficulty === Difficulties.easy && word.optional.successAttempts >= easyWordLearnedAttempts)
+        (word.difficulty === DIFFICULTIES.easy && word.optional.successAttempts >= easyWordLearnedAttempts)
       ) {
         word.optional.isLearned = true;
-        word.difficulty = Difficulties.easy;
+        word.difficulty = DIFFICULTIES.easy;
       }
     } else {
       word.optional.failedAttempts += 1;

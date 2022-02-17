@@ -1,4 +1,4 @@
-export const Difficulties = {
+export const DIFFICULTIES = {
   easy: 'easy',
   hard: 'hard'
 };
