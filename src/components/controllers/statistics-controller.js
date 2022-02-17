@@ -142,7 +142,7 @@ export async function buildDailyCharts() {
   Chart.register(...registerables);
   const statsContent = await getStatisticsData();
 
-  if ('stats' in statsContent || 'words' in statsContent) {
+  if (statsContent?.stats || statsContent?.words) {
     buildGameChart('total', 'Игры', statsContent);
     buildGameChart('audiocall', 'Аудиовызов', statsContent);
     buildGameChart('sprint', 'Спринт', statsContent);

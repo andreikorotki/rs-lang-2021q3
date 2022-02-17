@@ -183,10 +183,10 @@ export default class Book extends BaseView {
     let { isLearned } = optional;
     const { attempts } = optional;
     const { isLogin, group } = this.state;
+    const isAttempts = attempts.trim().slice(-1) === WORDS_LEARNED.error;
     const attemptsCount =
-      attempts.length > 3 ? Array.from(attempts.trim().slice(-5)).reduce((acc, prev) => +acc + +prev) : 0;
-    if (attempts.trim().slice(-1) === '0') {
-      console.log('from learned');
+      attempts.length > 3 ? Array.from(attempts.trim().slice(-5)).reduce((acc, prev) => Number(acc) + Number(prev)) : 0;
+    if (isAttempts) {
       const modifiedOptional = { ...optional, isLearned: false };
       isLearned = false;
       this.updateUserWordData(id, { difficulty, optional: modifiedOptional });

@@ -4,6 +4,7 @@ import { setAuthorized } from '../../store/toolkitReducer';
 import { getState } from '../../services';
 import { bgColors } from '../../constants';
 import { renderHeader } from '../../utils';
+import { NAME_LOCAL_STORAGE } from '../../services/settings';
 
 export class Header extends BaseElement {
   constructor() {
@@ -120,7 +121,7 @@ export class Header extends BaseElement {
   };
 
   getUserExit = () => {
-    localStorage.clear('rs-lang-user-state');
+    localStorage.clear(`${NAME_LOCAL_STORAGE}`);
     store.dispatch(setAuthorized(false));
     renderHeader();
   };

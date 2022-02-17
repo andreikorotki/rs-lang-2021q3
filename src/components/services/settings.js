@@ -1,4 +1,5 @@
 export const serverUrl = 'https://rs-lang-vvk1978-app.herokuapp.com';
+export const NAME_LOCAL_STORAGE = 'rs-lang-user-state';
 export const tokenExpirationPeriodMs = 14400000; // 4 hours
 export const wordsPerPageCount = 20;
 export const gameRoundsMaxCount = 12;
