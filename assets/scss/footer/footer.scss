@@ -1,5 +1,14 @@
 .footer {
-  height: 30px;
+  margin: 0 auto;
+  height: 35px;
+  width: 100%;
+  max-width: 100%;
+
+  &-link {
+    @media (max-width: $screen-size-s) {
+      font-size: var(--font-size-xxs);
+    }
+  }
 }
 
 .footer-container {
@@ -12,6 +21,11 @@
     max-width: $wrapper-size-xl;
     padding: 0 var(--spacing-unit-4);
   }
+
+  @media (max-width: $screen-size-s) {
+    max-width: $wrapper-size-s;
+    padding: 0 var(--spacing-unit-1);
+  }
 }
 
 .nav-container.footer {
@@ -22,6 +36,10 @@
 
 .nav-menu_footer {
   display: flex;
+
+  @media (max-width: $screen-size-s) {
+    height: 16px;
+  }
 }
 
 .school-logo {
@@ -38,6 +56,6 @@
   position: relative;
   width: 120px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: space-evenly;
+  align-items: baseline;
 }

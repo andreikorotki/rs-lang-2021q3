@@ -2,16 +2,18 @@ import { BaseElement } from '../../common';
 import { store } from '../../store';
 import { setAuthorized } from '../../store/toolkitReducer';
 import { getState } from '../../services';
-import { bgColors } from '../../constants';
 import { getNavMenu, getUserExit, setResetActiveLink } from '../../utils';
-import { logo } from '../../templates';
+import { bgColors } from '../../constants';
 
-export class Header extends BaseElement {
+export class Burger extends BaseElement {
   constructor() {
-    super('header', ['header']);
-    this.headerContainer = new BaseElement('div', ['header-container']);
-    this.navContainer = new BaseElement('nav', ['nav-container']);
-    this.element.append(this.headerContainer.element);
+    super('aside', ['burger']);
+    this.burgerContainer = new BaseElement('div', ['burger-container']);
+    this.navContainer = new BaseElement('nav', ['nav-container_burger']);
+    this.burgerContainer.element.append(this.navContainer.element);
+    this.span = new BaseElement('span', ['burger-icon']);
+    this.element.append(this.span.element);
+    this.element.append(this.burgerContainer.element);
     const authorized = getState();
     if (authorized) {
       if (authorized.message === 'Authenticated') {
@@ -24,36 +26,35 @@ export class Header extends BaseElement {
     };
   }
 
+  run() {
+    this.handleClick();
+  }
+
   render() {
     this.getNavigationMenu();
     this.run();
     return this.element;
   }
 
-  run() {
-    this.handleClicks();
-
-    // setResetActiveLink(`.${currentPageHash.slice(2)}-link`);
-  }
-
   getNavigationMenu = () => {
-    const html = `
-    <nav class="nav-container">
-      ${logo}
-      ${getNavMenu(this.state)}
-    </nav>
-    `;
-    this.headerContainer.element.insertAdjacentHTML('beforeend', html);
+    this.navContainer.element.insertAdjacentHTML('afterbegin', getNavMenu(this.state));
   };
 
-  handleClicks() {
-    this.headerContainer.element.addEventListener('click', this.handleEvents);
+  handleClick() {
+    this.element.addEventListener('click', this.handleEvents);
   }
 
   handleEvents = ({ target }) => {
     const { id } = target;
     const [classLink] = target.classList;
     const footer = document.querySelector('.footer');
+    if (target.classList.contains('burger') || target.classList.contains('burger-icon')) {
+      this.span.element.classList.toggle('active');
+      this.burgerContainer.element.classList.toggle('open');
+    }
+    if (target.classList.contains('open')) {
+      this.closeBurger();
+    }
     if (target.classList.contains('link') || target.classList.contains('logo')) {
       setResetActiveLink(`.${classLink}`);
       if (id === 'games') {
@@ -68,6 +69,12 @@ export class Header extends BaseElement {
       if (id === 'exit') {
         getUserExit();
       }
+      this.closeBurger();
     }
   };
+
+  closeBurger() {
+    this.span.element.classList.toggle('active');
+    this.burgerContainer.element.classList.toggle('open');
+  }
 }

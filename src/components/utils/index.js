@@ -12,6 +12,8 @@ import { getResultTable } from './getResultTable';
 import { getGameBoard } from './getGameBoard';
 import { getWordsLearned } from './getWordsLearned';
 import { getAttemptsCount } from './getAttemptsCount';
+import { getNavMenu } from './getNavMenu';
+import { getUserExit } from './getUserExit';
 
 export {
   getWordsData,
@@ -27,5 +29,7 @@ export {
   getResultTable,
   getGameBoard,
   getWordsLearned,
-  getAttemptsCount
+  getAttemptsCount,
+  getNavMenu,
+  getUserExit
 };

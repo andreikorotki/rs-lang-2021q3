@@ -22,7 +22,7 @@ import { pagesInGroupCount, wordsPerPageCount } from '../../services/settings';
 import { updateGameStatistic } from '../../controllers/statistics-controller';
 import { createUserWord, getUserWord, getUserWords, updateUserWord } from '../../api/users';
 import { getState } from '../../services';
-import { DIFFICULTIES, WORDS_LEARNED } from '../../constants';
+import { DIFFICULTIES, SPRINT_STATE, SPRINT_LEVELS, PRIZE_POINTS, WORDS_LEARNED } from '../../constants';
 
 export default class Sprint extends BaseView {
   constructor() {
@@ -37,11 +37,11 @@ export default class Sprint extends BaseView {
       group: store.getState().toolkit.group,
       page: store.getState().toolkit.page,
       wordsForGame: [],
-      countTime: 30,
+      countTime: SPRINT_STATE.countTime,
       answers: null,
       question: 1,
       result: 0,
-      prize: 10,
+      prize: PRIZE_POINTS.ten,
       level: 1,
       indexEnglishWord: null,
       indexRussianWord: null,
@@ -110,7 +110,7 @@ export default class Sprint extends BaseView {
   };
 
   async startGame() {
-    const { group, page, isStartGameFromMenu, isEndGame } = this.state;
+    const { group, page, isStartGameFromMenu, isEndGame, isLogin } = this.state;
     await getWordsData(group, page);
     const { words } = store.getState().toolkit;
     const noLearnedWords = words.filter(({ optional }) => optional.isLearned !== true);
@@ -121,7 +121,9 @@ export default class Sprint extends BaseView {
     }
     const answers = this.state.wordsForGame.map((_, index) => this.getAnswers(index));
     this.state.answers = answers;
-    getWordsLearned(isEndGame);
+    if (isLogin) {
+      getWordsLearned(isEndGame);
+    }
     this.renderGame(answers);
   }
 
@@ -252,7 +254,9 @@ export default class Sprint extends BaseView {
   closeGame = () => {
     this.state.isEndGame = true;
     document.removeEventListener('keydown', this.keyboardEvents);
-    this.setUserStatistics();
+    if (this.state.isLogin) {
+      this.setUserStatistics();
+    }
   };
 
   keyboardEvents = (event) => {
@@ -283,6 +287,7 @@ export default class Sprint extends BaseView {
   };
 
   getResult(result) {
+    this.answersLed = document.querySelectorAll('.answer-led');
     switch (result) {
       case true:
         if (this.state.indexEnglishWord === this.state.indexRussianWord) {
@@ -303,11 +308,14 @@ export default class Sprint extends BaseView {
       default:
     }
     this.state.question += 1;
+    if (!this.state.isLogin) {
+      this.getQuestion();
+    }
   }
 
   setCorrectResult() {
     if (this.state.isLogin) {
-      this.updateUserWordData(true);
+      this.updateUserWord(true);
     }
     if (this.state.isAudio) {
       playAudio(success);
@@ -317,22 +325,26 @@ export default class Sprint extends BaseView {
     const { correctAnswersSeries } = this.state;
     switch (true) {
       case correctAnswersSeries > 5:
-        this.state.prize = 30;
+        this.state.level = SPRINT_LEVELS.third;
+        this.state.prize = PRIZE_POINTS.thirty;
         break;
       case correctAnswersSeries > 2:
-        this.state.prize = 20;
+        this.state.level = SPRINT_LEVELS.second;
+        this.state.prize = PRIZE_POINTS.twenty;
         break;
       default:
-        this.state.prize = 10;
+        this.state.level = SPRINT_LEVELS.first;
+        this.state.prize = PRIZE_POINTS.ten;
     }
-    const { prize, level, indexEnglishWord, result } = this.state;
+    const { prize, level, indexEnglishWord } = this.state;
     this.result = document.querySelector('.result');
-    this.state.result += prize * level;
+    this.answersLed[level - 1].classList.add('on');
+    this.state.result += prize;
     this.state.correctAnswers.push(indexEnglishWord);
-    this.result.textContent = result;
+    this.result.textContent = this.state.result;
   }
 
-  updateUserWordData = async (result) => {
+  updateUserWord = async (result) => {
     const word = this.state.wordsForGame[this.state.question - 1];
     const attempts = word.optional.attempts + Number(result);
     const { id } = word;
@@ -340,13 +352,12 @@ export default class Sprint extends BaseView {
     let { isLearned } = word.optional;
     const isHard = difficulty === DIFFICULTIES.easy;
     const correctAttemptsCount = getAttemptsCount(attempts);
-    console.log(correctAttemptsCount);
     if (correctAttemptsCount === WORDS_LEARNED.easy && isHard) {
       isLearned = true;
     }
     if (correctAttemptsCount === WORDS_LEARNED.hard && !isHard) {
       isLearned = true;
-      difficulty = 'easy';
+      difficulty = DIFFICULTIES.easy;
     }
     if (correctAttemptsCount.toString() === WORDS_LEARNED.error) {
       isLearned = false;
@@ -365,13 +376,16 @@ export default class Sprint extends BaseView {
   };
 
   setWrongResult() {
-    if (this.state.isLogin) {
-      this.updateUserWordData(false);
+    this.state.level = 1;
+    const { level, isLogin, isAudio, longestSeries, correctAnswersSeries } = this.state;
+    this.answersLed.forEach((led) => led.classList.remove('on'));
+    this.answersLed[level - 1].classList.add('on');
+    if (isLogin) {
+      this.updateUserWord(false);
     }
-    if (this.state.isAudio) {
+    if (isAudio) {
       playAudio(failed);
     }
-    const { longestSeries, correctAnswersSeries } = this.state;
     this.state.longestSeries = longestSeries < correctAnswersSeries ? correctAnswersSeries : longestSeries;
     this.state.correctAnswersSeries = 0;
     this.state.wrongAnswersSeries += 1;

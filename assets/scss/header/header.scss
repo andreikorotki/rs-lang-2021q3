@@ -1,5 +1,8 @@
+@import "./burger.scss";
+
 .header-container {
   margin: 0 auto;
+  margin-bottom: var(--spacing-unit-2);
   padding: var(--spacing-unit-1) 0;
   max-width: $wrapper-size-xxl;
   width: 100%;
@@ -7,6 +10,11 @@
 
   @media (max-width: $screen-size-xl) {
     max-width: $wrapper-size-xl;
+    padding: 0 var(--spacing-unit-4);
+  }
+
+  @media (max-width: $screen-size-l) {
+    max-width: $wrapper-size-l;
     padding: 0 var(--spacing-unit-4);
   }
 }
@@ -40,6 +48,14 @@
   justify-content: flex-end;
   align-items: center;
   height: 100%;
+
+  @media (max-width: $screen-size-l) {
+    display: none;
+  }
+}
+
+.menu {
+  margin-bottom: var(--spacing-unit-2);
 }
 
 .menu-item {
@@ -52,6 +68,8 @@
 }
 
 .link {
+  width: 100%;
+  max-width: 100%;
   font-size: var(--font-size-s);
   font-weight: 400;
   cursor: pointer;
@@ -65,6 +83,7 @@
 
 .link.active {
   color: var(--active-color-2);
+  font-weight: 800;
 }
 
 .link:hover {
