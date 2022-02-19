@@ -286,7 +286,7 @@ export default class Sprint extends BaseView {
   };
 
   getResult(result) {
-    this.answersLed = document.querySelectorAll('.answer-led');
+    this.levelsLed = document.querySelectorAll('.level-led');
     switch (result) {
       case true:
         if (this.state.indexEnglishWord === this.state.indexRussianWord) {
@@ -337,7 +337,7 @@ export default class Sprint extends BaseView {
     }
     const { prize, level, indexEnglishWord } = this.state;
     this.result = document.querySelector('.result');
-    this.answersLed[level - 1].classList.add('on');
+    this.levelsLed[level - 1].classList.add('on');
     this.state.result += prize;
     this.state.correctAnswers.push(indexEnglishWord);
     this.result.textContent = this.state.result;

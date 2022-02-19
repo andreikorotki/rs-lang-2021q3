@@ -4,9 +4,9 @@ export function getGameBoard({ countTime, result }) {
         <div class="table timer">${countTime}</div>
         <div class="table result">${result}</div>
         <div class="answers-container_trues">
-          <div class="answer-led on" id="1"></div>
-          <div class="answer-led" id="2"></div>
-          <div class="answer-led" id="3"></div>
+          <div class="level-led on" id="1"></div>
+          <div class="level-led" id="2"></div>
+          <div class="level-led" id="3"></div>
         </div>
         <div class="answer-content">
         </div>
