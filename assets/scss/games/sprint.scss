@@ -70,7 +70,7 @@
   justify-content: space-evenly;
 }
 
-.answer-led {
+.level-led {
   position: relative;
   width: 40px;
   height: 40px;
@@ -79,14 +79,14 @@
   font-size: var(--font-size-s);
 }
 
-.answer-led::after {
+.level-led::after {
   position: absolute;
   top: 50%;
   left: 45%;
   transform: translate(-50%, -50%);
   content: "+10";
 }
-.answer-led.on {
+.level-led.on {
   background-color: var(--active-color-2);
   animation: on 0.5s ease-in-out;
 }
