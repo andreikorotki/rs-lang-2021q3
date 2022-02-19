@@ -96,7 +96,7 @@ export default class Sprint extends BaseView {
     const group = Number(id);
     const page = Math.floor(Math.random() * pagesInGroupCount) + 1;
     this.state.group = group;
-    this.state.page = 1;
+    this.state.page = page;
     await getWordsData(group, page);
     this.startGame();
   };

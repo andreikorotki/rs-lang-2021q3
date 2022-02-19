@@ -1,7 +1,7 @@
 import { Header } from './views/header/header';
 import { Footer } from './views/footer/footer';
 import { Burger } from './views/header/burger';
-import { setResetActiveLink } from './utils';
+import { setResetActiveLink, hiddenFooter } from './utils';
 
 export class App {
   render() {
@@ -20,5 +20,6 @@ export class App {
   setStartActiveLink = () => {
     const currentPageHash = window.location.hash;
     setResetActiveLink(`.${currentPageHash.slice(2)}-link`);
+    hiddenFooter(currentPageHash);
   };
 }

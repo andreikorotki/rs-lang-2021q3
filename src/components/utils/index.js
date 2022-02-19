@@ -14,6 +14,7 @@ import { getWordsLearned } from './getWordsLearned';
 import { getAttemptsCount } from './getAttemptsCount';
 import { getNavMenu } from './getNavMenu';
 import { getUserExit } from './getUserExit';
+import { hiddenFooter } from './hiddenFooter';
 
 export {
   getWordsData,
@@ -31,5 +32,6 @@ export {
   getWordsLearned,
   getAttemptsCount,
   getNavMenu,
-  getUserExit
+  getUserExit,
+  hiddenFooter
 };
