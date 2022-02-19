@@ -2,6 +2,7 @@ import { BaseView } from '.';
 import { BaseElement } from '../common';
 import { store } from '../store';
 import { setGameStartFromMenu } from '../store/toolkitReducer';
+import { gamesContainer } from '../templates';
 
 export default class Games extends BaseView {
   constructor() {
@@ -17,25 +18,7 @@ export default class Games extends BaseView {
   }
 
   render() {
-    const html = `
-    <div class="games-container">
-      <div>
-        <a class="link" href="/#/audiocall-start" id="audiocall">
-          <div class="game-audiocall game">
-          </div>
-        </a>
-        <p class="game-title">Аудиовызов</p>
-      </div>
-      <div>
-        <a class="link" href="/#/sprint" id="sprint">
-          <div class="game-sprint game">
-          </div>
-        </a>
-        <p class="game-title">Спринт</p>
-      </div>
-    </div>
-  `;
-    this.wrapper.element.insertAdjacentHTML('beforeend', html);
+    this.wrapper.element.insertAdjacentHTML('beforeend', gamesContainer);
   }
 
   handleClicks() {

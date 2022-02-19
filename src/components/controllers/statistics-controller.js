@@ -50,6 +50,7 @@ export async function getStatisticsData() {
     const state = getState();
     const { userId } = state;
     const statResponse = await getUserStatistics(userId);
+    console.log(statResponse);
     if (statResponse.success) {
       return { stats: statResponse.content };
     }
@@ -257,7 +258,8 @@ export function buildCommonCharts(statsContent) {
 export async function buildCharts() {
   Chart.register(...registerables);
   const statsContent = await getStatisticsData();
-  if (statsContent?.stats || statsContent?.words) {
+  if (statsContent?.stats) {
+    buildCommonCharts(statsContent);
     buildGameChart('total', 'Игры', statsContent);
     buildGameChart('audiocall', 'Аудиовызов', statsContent);
     buildGameChart('sprint', 'Спринт', statsContent);

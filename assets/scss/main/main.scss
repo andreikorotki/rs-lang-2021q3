@@ -26,24 +26,34 @@
   justify-content: space-between;
   align-items: center;
 
-  @media (max-width: $screen-size-m) {
+  @media (max-width: $screen-size-l) {
     flex-direction: column;
+    width: 80%;
   }
-}
-
-.description-container {
-  display: block;
-  padding: var(--spacing-unit-6) 0;
 
   @media (max-width: $screen-size-m) {
-    padding: var(--spacing-unit-1) 0;
-    text-align: center;
+    width: 100%;
   }
 }
 
 .description {
   line-height: 1.5;
   font-size: var(--font-size-s);
+
+  @media (max-width: $screen-size-m) {
+    line-height: 1.3;
+    font-size: var(--font-size-xs);
+  }
+
+  &-container {
+    display: block;
+    padding: var(--spacing-unit-5) 0;
+
+    @media (max-width: $screen-size-l) {
+      padding: var(--spacing-unit-1) 0;
+      text-align: center;
+    }
+  }
 }
 
 .main-heading {
@@ -56,18 +66,28 @@
   }
 }
 
+.left-container {
+  @media (max-width: $screen-size-l) {
+    width: 100%;
+  }
+}
+
 .main-image-container {
   position: relative;
   background-image: url(#{$assets-path}images/learn.png);
   background-size: contain;
-  background-position: center right;
+  background-position: bottom center;
   background-repeat: no-repeat;
-  height: calc(100vh - var(--header-footer-height));
-  min-width: 55%;
+  height: calc(85vh - var(--header-footer-height));
+  flex: 1 1 60%;
+  @media (max-width: $screen-size-l) {
+    width: 100%;
+    height: calc(65vh - var(--header-footer-height));
+    flex: none;
+  }
 
   @media (max-width: $screen-size-m) {
-    width: 100%;
-    height: 100vw;
+    height: calc(60vh - var(--header-footer-height));
   }
 }
 
@@ -84,10 +104,6 @@
   @media (max-width: $screen-size-xl) {
     padding-top: var(--spacing-unit-1);
   }
-
-  @media (max-width: $screen-size-m) {
-    display: none;
-  }
 }
 
 .benefit-item {
@@ -103,6 +119,12 @@
   border-radius: $border-radius-2;
   background-color: var(--main-tile-color);
   border: 1px solid var(--button-border-color);
+  flex: 1 1 45%;
+
+  @media (max-width: $screen-size-m) {
+    width: 120px;
+    height: 120px;
+  }
 }
 
 .benefit-text {
