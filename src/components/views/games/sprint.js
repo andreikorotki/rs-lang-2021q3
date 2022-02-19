@@ -98,7 +98,6 @@ export default class Sprint extends BaseView {
     this.state.group = group;
     this.state.page = 1;
     await getWordsData(group, page);
-    // this.setUsersWords();
     this.startGame();
   };
 
@@ -378,8 +377,8 @@ export default class Sprint extends BaseView {
   setWrongResult() {
     this.state.level = 1;
     const { level, isLogin, isAudio, longestSeries, correctAnswersSeries } = this.state;
-    this.answersLed.forEach((led) => led.classList.remove('on'));
-    this.answersLed[level - 1].classList.add('on');
+    this.levelsLed.forEach((levelLed) => levelLed.classList.remove('on'));
+    this.levelsLed[level - 1].classList.add('on');
     if (isLogin) {
       this.updateUserWord(false);
     }
@@ -427,8 +426,7 @@ export default class Sprint extends BaseView {
     const dateKey = moment(new Date()).format('DD_MM_YYYY');
     const { correctAnswers, wrongAnswers, longestSeries, newWords, isEndGame } = this.state;
     await getWordsLearned(isEndGame);
-    const { endLearnedWords } = store.getState().toolkit;
-    const { startLearnedWords } = store.getState().toolkit;
+    const { endLearnedWords, startLearnedWords } = store.getState().toolkit;
     const learnedWords = endLearnedWords - startLearnedWords > 0 ? endLearnedWords - startLearnedWords : 0;
     const gameStat = {
       wrongAnswers: wrongAnswers.length,

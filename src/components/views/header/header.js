@@ -13,10 +13,8 @@ export class Header extends BaseElement {
     this.navContainer = new BaseElement('nav', ['nav-container']);
     this.element.append(this.headerContainer.element);
     const authorized = getState();
-    if (authorized) {
-      if (authorized.message === 'Authenticated') {
-        store.dispatch(setAuthorized(true));
-      }
+    if (authorized && authorized.message === 'Authenticated') {
+      store.dispatch(setAuthorized(true));
     }
     this.state = {
       userName: authorized ? authorized.name : '',
@@ -32,8 +30,6 @@ export class Header extends BaseElement {
 
   run() {
     this.handleClicks();
-
-    // setResetActiveLink(`.${currentPageHash.slice(2)}-link`);
   }
 
   getNavigationMenu = () => {

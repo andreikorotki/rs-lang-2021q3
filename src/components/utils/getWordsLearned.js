@@ -10,8 +10,10 @@ export async function getWordsLearned(isEndGame) {
   const words = (await getUserWords(userId)).content;
   let learnedWords = 0;
   words.forEach((word) => {
-    const { attempts, isLearned } = word.optional;
-    const { difficulty } = word;
+    const {
+      difficulty,
+      optional: { attempts, isLearned }
+    } = word;
     const isHard = difficulty === DIFFICULTIES.easy;
     const correctAttemptsCount = getAttemptsCount(attempts);
     if (

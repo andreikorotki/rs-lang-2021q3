@@ -15,10 +15,8 @@ export class Burger extends BaseElement {
     this.element.append(this.span.element);
     this.element.append(this.burgerContainer.element);
     const authorized = getState();
-    if (authorized) {
-      if (authorized.message === 'Authenticated') {
-        store.dispatch(setAuthorized(true));
-      }
+    if (authorized && authorized.message === 'Authenticated') {
+      store.dispatch(setAuthorized(true));
     }
     this.state = {
       userName: authorized ? authorized.name : '',
