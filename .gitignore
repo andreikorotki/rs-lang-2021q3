@@ -2,3 +2,4 @@ node_modules/prettier/parser-markdown.js
 dist/favicon.ico
 dist/
 node_modules/
+.idea/
