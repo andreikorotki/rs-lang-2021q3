@@ -2,7 +2,6 @@ import '../assets/scss/base.scss';
 import { App } from './components/app';
 import { Router } from './components/services';
 import About from './components/views/about/about';
-import { getWords } from './components/api/words';
 import { Main, Book, Games, Stats } from './components/views';
 import { LoginView } from './components/views/login';
 import RegisterView from './components/views/register/register-view';
@@ -72,10 +71,6 @@ router.add(/stats/, async () => {
 router.add(/register/, async () => {
   const registerView = new RegisterView();
   registerView.render();
-});
-
-router.add(/words\?group=(.*)&page=(.*)/, async (group, page) => {
-  await getWords(group, page);
 });
 
 router.add('', async () => {
