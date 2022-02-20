@@ -263,7 +263,9 @@ export async function buildCharts() {
     buildGameChart('audiocall', 'Аудиовызов', statsContent);
     buildGameChart('sprint', 'Спринт', statsContent);
   } else {
-    const notEnoughData = 'Недостаточно данных для отображения статистики. Поиграйте в Аудиовызов или Спринт';
+    const notEnoughData = 'Для отображения статистики необходимо <a href="#/login">войти</a>';
     drawMessageInSelector('.daily-charts', notEnoughData);
+    drawMessageInSelector('.common-charts-heading', '');
+    drawMessageInSelector('.daily-charts-heading', '');
   }
 }

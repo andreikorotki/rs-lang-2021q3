@@ -1,8 +1,7 @@
 import '../assets/scss/base.scss';
 import { App } from './components/app';
 import { Router } from './components/services';
-import About from './components/views/about';
-import { getWords } from './components/api/words';
+import About from './components/views/about/about';
 import { Main, Book, Games, Stats } from './components/views';
 import { LoginView } from './components/views/login';
 import RegisterView from './components/views/register/register-view';
@@ -10,7 +9,6 @@ import { AudioCallStartView } from './components/views/games/audiocall/audiocall
 import { getWordsForGame } from './components/controllers/audiocall-controller';
 import AudioCallGameView from './components/views/games/audiocall/audiocall-game-view';
 import { NotEnoughWordsError } from './components/common/exceptions/not-enough-words-error';
-// import Audiocall from './components/views/games/audiocall';
 import Sprint from './components/views/games/sprint';
 
 const appPage = new App();
@@ -73,10 +71,6 @@ router.add(/stats/, async () => {
 router.add(/register/, async () => {
   const registerView = new RegisterView();
   registerView.render();
-});
-
-router.add(/words\?group=(.*)&page=(.*)/, async (group, page) => {
-  await getWords(group, page);
 });
 
 router.add('', async () => {

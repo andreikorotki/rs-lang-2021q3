@@ -1,4 +1,4 @@
-import About from './about';
+import About from './about/about';
 import BaseView from './base-view';
 import Book from './book';
 import Games from './games';
