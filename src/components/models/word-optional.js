@@ -3,6 +3,7 @@ export default class Optional {
     this.isLearned = isLearned;
     this.startDate = new Date(Date.now()).toString();
     this.successAttempts = 0;
+    this.attempts = ' ';
     this.failedAttempts = 0;
     if (lastAttempt) {
       this.lastAttemptSuccess = lastAttempt.success;

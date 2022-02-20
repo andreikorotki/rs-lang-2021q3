@@ -3,6 +3,7 @@ import User from '../models/user';
 import UserStatistic from '../models/user-statistic';
 import { updateState, filterObject, redirect } from '../services';
 import { tokenExpirationPeriodMs } from '../services/settings';
+import { renderHeader } from '../utils';
 
 export async function loginUserController(userEmail, userPassword) {
   let user = new User(userEmail);
@@ -11,6 +12,7 @@ export async function loginUserController(userEmail, userPassword) {
     user = { ...user, ...responseData.content, tokenExpireDate: new Date(Date.now() + tokenExpirationPeriodMs) };
     updateState(user);
     redirect('#');
+    renderHeader();
   }
   return responseData;
 }

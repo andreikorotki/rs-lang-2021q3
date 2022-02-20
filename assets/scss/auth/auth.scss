@@ -6,18 +6,19 @@
   display: flex;
   justify-content: center;
   flex-wrap: nowrap;
-  background-color: var(--light-form-color);
+  background-color: var(--bg-app-color-primary);
 }
 
 .register__wrapper,
 .login__wrapper {
   position: relative;
-  background-color: var(--light-form-color);
+  background-color: var(--main-tile-color);
   height: 310px;
   max-width: 500px;
   width: 100%;
   padding: var(--spacing-unit-4) var(--spacing-unit-4);
   border-radius: $border-radius-1;
+  border: 1px solid var(--button-border-color);
 }
 
 .login__wrapper {

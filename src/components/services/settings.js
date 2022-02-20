@@ -5,8 +5,6 @@ export const wordsPerPageCount = 20;
 export const gameRoundsMaxCount = 12;
 export const audioCallVariantsCount = 5; // each audiocall game round contains such options count to select
 export const pagesInGroupCount = 30;
-export const hardWordLearnedAttempts = 5;
-export const easyWordLearnedAttempts = 3;
 
 export const messages = {
   SUCCESS: 'Успешно',
@@ -17,7 +15,8 @@ export const messages = {
   TOKEN_NOT_FOUND: 'Токен не найден. Выполните вход',
   USER_ALREADY_EXISTS: 'Пользователь с данным email уже существует',
   USER_NOT_FOUND: 'Пользователь с данным адресом электронной почты не существует',
-  FILL_REQUIRED: 'Пожалуйста, заполните необходимые поля'
+  FILL_REQUIRED: 'Пожалуйста, заполните необходимые поля',
+  PASS_LENGTH: 'Пароль должен созержать не менее 8 символов'
 };
 
 export const ResponseStatus = {
