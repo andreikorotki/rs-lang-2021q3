@@ -7,6 +7,7 @@ import BaseView from '../../base-view';
 import failed from '../../../../../assets/sounds/wrong.mp3';
 import success from '../../../../../assets/sounds/correct.mp3';
 import { settings } from '../../../templates';
+import { hiddenFooter } from '../../../utils';
 
 export default class AudioCallGameView extends BaseView {
   constructor(words) {
@@ -21,6 +22,7 @@ export default class AudioCallGameView extends BaseView {
     this.roundAnswered = false;
     this.totalRounds = this.controller.calculateRoundsCount();
     this.addKeyboardListeners();
+    hiddenFooter();
   }
 
   settingsClick = () => {

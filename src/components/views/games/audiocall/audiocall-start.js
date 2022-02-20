@@ -1,6 +1,7 @@
 import { GameStartView } from './game-start';
 import BaseElement from '../../../common/base-element';
 import { getLevelGameButtons } from '../../../controllers/audiocall-controller';
+import { hiddenFooter } from '../../../utils';
 
 export class AudioCallStartView extends GameStartView {
   constructor() {
@@ -43,6 +44,7 @@ export class AudioCallStartView extends GameStartView {
   }
 
   render() {
+    hiddenFooter();
     this.setDescription();
     this.settingsClick();
     return this.element;

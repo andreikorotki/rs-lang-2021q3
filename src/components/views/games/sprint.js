@@ -11,7 +11,8 @@ import {
   getResultTable,
   getGameBoard,
   getWordsLearned,
-  getAttemptsCount
+  getAttemptsCount,
+  hiddenFooter
 } from '../../utils';
 import { store } from '../../store';
 import failed from '../../../../assets/sounds/wrong.mp3';
@@ -58,6 +59,7 @@ export default class Sprint extends BaseView {
   }
 
   run() {
+    hiddenFooter();
     setResetActiveLink('.games-link');
     this.render();
     const { isLogin, isStartGameFromMenu } = this.state;
@@ -96,7 +98,7 @@ export default class Sprint extends BaseView {
     const group = Number(id);
     const page = Math.floor(Math.random() * pagesInGroupCount) + 1;
     this.state.group = group;
-    this.state.page = 1;
+    this.state.page = page;
     await getWordsData(group, page);
     this.startGame();
   };
@@ -154,8 +156,10 @@ export default class Sprint extends BaseView {
     this.gameContent.append(this.loader.element);
     this.gameContent.innerHTML = '';
     this.renderGameBoard();
-    this.handleClick();
-    gameTimer(this.state.countTime, this.endGame);
+    if (this.state.wordsForGame.length !== 0) {
+      this.handleClick();
+      gameTimer(this.state.countTime, this.endGame);
+    }
   };
 
   getAnswers = (answerIndex) => {
@@ -177,7 +181,11 @@ export default class Sprint extends BaseView {
   renderGameBoard = () => {
     const html = getGameBoard(this.state);
     this.gameContent.insertAdjacentHTML('beforeend', html);
-    this.getQuestion();
+    if (this.state.wordsForGame.length === 0) {
+      this.endGame();
+    } else {
+      this.getQuestion();
+    }
   };
 
   getQuestion = () => {
@@ -347,8 +355,10 @@ export default class Sprint extends BaseView {
     const word = this.state.wordsForGame[this.state.question - 1];
     const attempts = word.optional.attempts + Number(result);
     const { id } = word;
-    let { difficulty } = word;
-    let { isLearned } = word.optional;
+    let {
+      difficulty,
+      optional: { isLearned }
+    } = word;
     const isHard = difficulty === DIFFICULTIES.easy;
     const correctAttemptsCount = getAttemptsCount(attempts);
     if (correctAttemptsCount === WORDS_LEARNED.easy && isHard) {
@@ -417,7 +427,7 @@ export default class Sprint extends BaseView {
     `;
     this.gameBoard.insertAdjacentHTML('afterbegin', html);
     this.audioClick();
-    if (isLogin) {
+    if (isLogin && this.state.wordsForGame.length !== 0) {
       this.setUserStatistics();
     }
   }

@@ -16,8 +16,8 @@ import {
   setUserWords,
   addUserWords
 } from '../store/toolkitReducer';
-import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP } from '../constants';
-import { getWordsData } from '../utils';
+import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP, WORDS_LEARNED } from '../constants';
+import { getAttemptsCount, getWordsData } from '../utils';
 import { getState } from '../services';
 import { getUserWords, createUserWord, updateUserWord, getUserWord } from '../api/users';
 
@@ -181,8 +181,16 @@ export default class Book extends BaseView {
     index
   ) => {
     const isHard = difficulty === DIFFICULTIES.hard;
-    const { isLearned } = optional;
     const { attempts } = optional;
+    const isAttemptsEmpty = attempts === ' ';
+    let { isLearned } = optional;
+    const correctAttemptsCount = getAttemptsCount(attempts);
+    if (correctAttemptsCount.toString() === WORDS_LEARNED.error && !isAttemptsEmpty) {
+      isLearned = false;
+      const optionalUpdated = { ...optional, isLearned };
+      const userWordPropertyUpdated = { difficulty, optional: optionalUpdated };
+      this.updateUserWordData(id, userWordPropertyUpdated);
+    }
     const { isLogin, group } = this.state;
     const buttonLearned = `
       <button
@@ -305,8 +313,8 @@ export default class Book extends BaseView {
       return;
     }
     target.classList.add('hard');
-    const userWordProperty = { difficulty: DIFFICULTIES.hard, optional };
-    this.updateUserWordData(id, userWordProperty);
+    const userWordPropertyUpdated = { difficulty: DIFFICULTIES.hard, optional };
+    this.updateUserWordData(id, userWordPropertyUpdated);
   }
 
   removeDifficulty = ({ id, optional }) => {
@@ -330,21 +338,21 @@ export default class Book extends BaseView {
     const word = JSON.parse(JSON.stringify(store.getState().toolkit.words[card]));
     const { optional, id } = word;
     optional.isLearned = true;
-    const userWordProperty = { difficulty: DIFFICULTIES.easy, optional };
-    store.dispatch(updateWordProperty(word, userWordProperty));
-    this.updateUserWordData(id, userWordProperty);
+    const userWordPropertyUpdated = { difficulty: DIFFICULTIES.easy, optional };
+    store.dispatch(updateWordProperty(word, userWordPropertyUpdated));
+    this.updateUserWordData(id, userWordPropertyUpdated);
     this.setPageColorAllLearned();
   }
 
-  updateUserWordData = async (id, userWordProperty) => {
+  updateUserWordData = async (id, userWordPropertyUpdated) => {
     const { userId } = getState();
     const isUserWordCreated = (await getUserWord({ userId, wordId: id })).success;
     if (isUserWordCreated) {
-      updateUserWord(userId, id, userWordProperty);
-      store.dispatch(updateUserWordProperty({ wordId: id, ...userWordProperty }));
+      updateUserWord(userId, id, userWordPropertyUpdated);
+      store.dispatch(updateUserWordProperty({ wordId: id, ...userWordPropertyUpdated }));
     } else {
-      createUserWord(userId, id, userWordProperty);
-      store.dispatch(addUserWords({ wordId: id, ...userWordProperty }));
+      createUserWord(userId, id, userWordPropertyUpdated);
+      store.dispatch(addUserWords({ wordId: id, ...userWordPropertyUpdated }));
     }
   };
 
