@@ -3,6 +3,7 @@ import { BaseElement } from '../common';
 import { store } from '../store';
 import { setGameStartFromMenu } from '../store/toolkitReducer';
 import { gamesContainer } from '../templates';
+import { hiddenFooter } from '../utils';
 
 export default class Games extends BaseView {
   constructor() {
@@ -13,6 +14,7 @@ export default class Games extends BaseView {
   }
 
   run() {
+    hiddenFooter();
     this.render();
     this.handleClicks();
   }

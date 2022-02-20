@@ -6,6 +6,6 @@ export function getAttemptsCount(attempts) {
       return 0;
     }
     return Number(prev) + Number(curr);
-  });
+  }, 0);
   return correctAttemptsCount;
 }

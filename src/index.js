@@ -35,11 +35,6 @@ router.add(/games/, async () => {
   games.run();
 });
 
-// router.add(/audiocall/, async () => {
-//   const audiocall = new Audiocall();
-//   audiocall.run();
-// });
-
 router.add(/sprint/, async () => {
   const sprint = new Sprint();
   sprint.run();

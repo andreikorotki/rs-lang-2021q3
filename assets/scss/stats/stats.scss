@@ -12,6 +12,11 @@
     max-width: $wrapper-size-xl;
     padding: 0 var(--spacing-unit-4);
   }
+
+  @media (max-width: $screen-size-s) {
+    max-width: $wrapper-size-s;
+    padding: 0;
+  }
 }
 
 .stats-heading {
@@ -34,13 +39,18 @@
   padding-top: var(--spacing-unit-1);
 }
 
-
 .daily-charts {
   position: relative;
   width: 100%;
+  max-width: 100%;
   display: flex;
   justify-content: flex-start;
   padding-bottom: var(--spacing-unit-2);
+
+  @media (max-width: $screen-size-l) {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .chart-item-wrapper {
@@ -48,6 +58,14 @@
   padding: 0 var(--spacing-unit-2);
   width: 33%;
   height: auto;
+
+  @media (max-width: $screen-size-l) {
+    width: 75%;
+  }
+
+  @media (max-width: $screen-size-s) {
+    width: 100%;
+  }
 }
 
 .game-daily-info {
@@ -70,7 +88,6 @@
   text-align: center;
 }
 
-
 .notification-message {
   position: relative;
   padding-top: var(--spacing-unit-1);
@@ -81,10 +98,19 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+
+  @media (max-width: $screen-size-l) {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .common-chart-item {
   position: relative;
   width: 48%;
   height: auto;
+
+  @media (max-width: $screen-size-l) {
+    width: 100%;
+  }
 }

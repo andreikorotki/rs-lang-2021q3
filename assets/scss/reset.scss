@@ -16,7 +16,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   color: var(--text-primary-color);
   text-decoration: none;
   list-style-type: none;
@@ -42,4 +42,7 @@ body {
     max-width: $wrapper-size-s;
     padding: 0 var(--spacing-unit-1);
   }
+}
+.root {
+  margin-bottom: var(--spacing-unit-2);
 }
