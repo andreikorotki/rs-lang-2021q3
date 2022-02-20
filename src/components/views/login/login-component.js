@@ -1,7 +1,6 @@
 import { Form, Button, Input, BaseElement } from '../../common';
 import { loginUserController } from '../../controllers/user-controller';
 import { messages } from '../../services/settings';
-import { renderHeader } from '../../utils';
 
 export default class LoginComponent {
   constructor() {
@@ -63,7 +62,6 @@ export default class LoginComponent {
       if (!loginData.success) {
         loginMessage.innerText = loginData.message;
       }
-      renderHeader();
     } else if (!this.userLoginInput.element.validity.valid && !this.userPasswordInput.element.validity.valid) {
       loginMessage.innerText = messages.FILL_REQUIRED;
     } else if (this.userLoginInput.element.validity.valid && !this.userPasswordInput.element.validity.valid) {
