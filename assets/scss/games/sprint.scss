@@ -36,6 +36,12 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+
+    @media (max-width: $screen-size-s) {
+      margin-top: var(--spacing-unit-10);
+      padding: var(--spacing-unit-3);
+      height: 350px;
+    }
   }
 }
 
@@ -58,19 +64,42 @@
 .answers-container_trues {
   max-width: 100%;
   width: 100%;
+  min-height: 55px;
   display: flex;
+  align-items: center;
   justify-content: space-evenly;
 }
 
-.answer-led {
-  width: 24px;
-  height: 24px;
+.level-led {
+  position: relative;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background-color: var(--text-secondary-color);
+  font-size: var(--font-size-s);
 }
 
-.answer-led.on {
+.level-led::after {
+  position: absolute;
+  top: 50%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  content: "+10";
+}
+.level-led.on {
   background-color: var(--active-color-2);
+  animation: on 0.5s ease-in-out;
+}
+
+@keyframes on {
+  0% {
+  }
+  50% {
+    font-size: var(--font-size-xxl);
+    font-weight: 800;
+  }
+  100% {
+  }
 }
 
 .answer-content {
@@ -86,10 +115,18 @@
 .word {
   &-big {
     font-size: var(--font-size-xxl);
+
+    @media (max-width: $screen-size-s) {
+      font-size: var(--font-size-xl);
+    }
   }
   &-small {
     font-size: var(--font-size-xl);
     font-family: $secondary-font-family;
+
+    @media (max-width: $screen-size-s) {
+      font-size: var(--font-size-l);
+    }
   }
 }
 
@@ -97,6 +134,11 @@
   display: flex;
   justify-content: space-between;
   width: 55%;
+
+  @media (max-width: $screen-size-s) {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 .button-answer {
@@ -110,6 +152,10 @@
   font-weight: 500;
   transition: 0.2s ease-in-out;
   font-family: $secondary-font-family;
+
+  @media (max-width: $screen-size-s) {
+    width: 115px;
+  }
 }
 
 .button-answer.false {
@@ -147,6 +193,16 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+  }
+  &-content::-webkit-scrollbar {
+    width: 4px;
+    background-color: var(--bg-game-color-secondary);
+  }
+  &-content::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    width: 15px;
+    height: 5px;
+    background-color: var(--active-color-2);
   }
   &-title.success {
     font-size: var(--font-size-l);

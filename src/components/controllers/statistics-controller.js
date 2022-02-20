@@ -50,6 +50,7 @@ export async function getStatisticsData() {
     const state = getState();
     const { userId } = state;
     const statResponse = await getUserStatistics(userId);
+    console.log(statResponse);
     if (statResponse.success) {
       return { stats: statResponse.content };
     }

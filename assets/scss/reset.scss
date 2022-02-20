@@ -9,6 +9,7 @@ body {
   display: grid;
   grid-template-rows: auto 1fr auto;
   background: var(--bg-app-color-primary);
+  position: relative;
 }
 
 * {
@@ -21,16 +22,24 @@ body {
   list-style-type: none;
 }
 
-.root {
-  min-height: 86vh;
-}
-
 .wrapper {
+  margin: 0 auto;
   position: relative;
+  max-width: $wrapper-size-xxl;
+  width: 100%;
+
   @media (max-width: $screen-size-xl) {
     max-width: $wrapper-size-xl;
-    width: 100%;
-    margin: 0 auto;
     padding: 0 var(--spacing-unit-2);
+  }
+
+  @media (max-width: $screen-size-m) {
+    max-width: $wrapper-size-m;
+    padding: 0 var(--spacing-unit-1);
+  }
+
+  @media (max-width: $screen-size-s) {
+    max-width: $wrapper-size-s;
+    padding: 0 var(--spacing-unit-1);
   }
 }

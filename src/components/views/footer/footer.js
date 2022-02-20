@@ -18,23 +18,23 @@ export class Footer extends BaseElement {
       <nav class="nav-container footer">
         <ul class="nav-menu_footer">
           <li class="menu-item">
-            <a class="link" href="https://github.com/andreikorotki">
+            <a class="link footer-link" href="https://github.com/andreikorotki">
               Andrei
             </a>
           </li>
           <li class="menu-item">
-            <a class="link" href="https://github.com/VVK1978">
+            <a class="link footer-link" href="https://github.com/VVK1978">
               Viktar
             </a>
           </li>
           <li class="menu-item">
-            <a class="link" href="#">
+            <a class="link footer-link" href="#">
               Anton
             </a>
           </li>
         </ul>
         <div class="school-year">
-        <p class="app-year">2022</p>
+        <p class="app-year footer-link">2022</p>
         <a class="link" href="https://rs.school/js/">
           <img src="${logo}" class="school-logo"/>
         </a>

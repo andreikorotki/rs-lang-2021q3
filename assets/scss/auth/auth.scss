@@ -14,7 +14,8 @@
   position: relative;
   background-color: var(--main-tile-color);
   height: 310px;
-  width: 500px;
+  max-width: 500px;
+  width: 100%;
   padding: var(--spacing-unit-4) var(--spacing-unit-4);
   border-radius: $border-radius-1;
   border: 1px solid var(--button-border-color);
@@ -131,7 +132,6 @@
 .form-link:hover {
   color: var(--hover-color);
 }
-
 
 .register-message,
 .login-message {

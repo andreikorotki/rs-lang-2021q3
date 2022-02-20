@@ -5,6 +5,9 @@ export function setResetActiveLink(linkClass) {
       link.classList.remove('active');
     }
   });
-  const linkActive = document.querySelector(`${linkClass}`);
-  linkActive.classList.add('active');
+  const [linkActiveMenu, linkActiveBurger] = document.querySelectorAll(`${linkClass}`);
+  if (linkActiveMenu) {
+    linkActiveMenu.classList.add('active');
+    linkActiveBurger.classList.add('active');
+  }
 }
