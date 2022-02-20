@@ -82,7 +82,7 @@ export default class Book extends BaseView {
 
   getGamesButtons() {
     const games = ['Аудиовызов', 'Спринт'];
-    const href = ['/#/audiocall', '/#/sprint'];
+    const href = ['#/audiocall', '#/sprint'];
     [...Array(BUTTONS_GAME).keys()].forEach((button, index) => {
       this.button = new BaseElement('a', ['button-game'], `${games[index]}`, `${button + 1}`);
       this.button.element.href = `${href[index]}`;
