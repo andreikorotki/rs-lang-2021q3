@@ -1,3 +1,126 @@
 .about {
-  min-height: calc(100vh - var(--header-footer-height));  
+  min-height: calc(100vh - var(--header-footer-height));
+}
+
+.about-wrapper {
+  position: relative;
+  margin: 0 auto;
+  padding: var(--spacing-unit-1) 0;
+  max-width: $wrapper-size-xxl;
+
+  @media (max-width: $screen-size-xl) {
+    max-width: $wrapper-size-xl;
+    padding: 0 var(--spacing-unit-4);
+  }
+}
+
+.about-heading {
+  font-family: $secondary-font-family;
+  font-size: var(--font-size-xl);
+  font-weight: 100;
+  text-align: center;
+}
+
+.about-project {
+  margin: var(--spacing-unit-1) auto;
+  width: 80%;
+  text-align: center;
+}
+
+.team {
+  position: relative;
+  width: 100%;
+  padding: var(--spacing-unit-5) 0;
+  display: flex;
+  max-width: 800px;
+  margin: 0 auto;
+  justify-content: space-around;
+
+  @media (max-width: $screen-size-m) {
+    flex-direction: column;
+    align-items: center;
+    row-gap: var(--spacing-unit-3);
+  }
+}
+
+.team-member {
+  position: relative;
+  width: 300px;
+  padding: var(--spacing-unit-1) 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin: var(--spacing-unit-1);
+  border-radius: $border-radius-2;
+  border: 1px solid var(--button-border-color);
+  background-color: var(--main-tile-color);
+}
+
+
+
+.member-avatar img {
+  position: relative;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: $border-radius-4;
+}
+
+.member-role {
+  position: relative;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.member-name {
+  font-size: var(--font-size-m);
+  font-family: $secondary-font-family;
+  font-weight: 100;
+}
+
+.member-role-name {
+  font-size: var(--font-size-xs);
+}
+
+.gh-link {
+  margin-top: var(--spacing-unit-1);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 25px;
+}
+
+.gh-link img {
+  width: 25px;
+  height: 25px;
+  margin: 0 var(--spacing-unit-1);
+}
+
+.gh-link span {
+  line-height: 25px;
+}
+
+.action-item {
+  margin: var(--spacing-unit-1) var(--spacing-unit-2);
+  list-style-type: disc;
+}
+
+.actions {
+  position: relative;
+  margin: 0 var(--spacing-unit-1);
+}
+
+.gh-link:hover {
+  color: var(--hover-color);
+  transition: 0.2s ease-in-out;
+}
+
+.gh-link img:hover {
+  color: var(--hover-color);
 }
