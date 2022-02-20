@@ -33,6 +33,7 @@ export default class LoginComponent {
     this.userLoginInput.element.placeholder = 'E-mail';
     this.userPasswordLabel.element.htmlFor = 'password';
     this.userPasswordInput.element.required = true;
+    this.userPasswordInput.element.minLength = 8;
     this.userPasswordInput.element.autocomplete = 'current-password';
     this.userPasswordInput.element.placeholder = 'Пароль';
     this.build();
@@ -59,11 +60,14 @@ export default class LoginComponent {
         this.userLoginInput.element.value,
         this.userPasswordInput.element.value
       );
-      loginMessage.innerText = loginData.success ? '' : loginData.message;
       if (!loginData.success) {
-        loginMessage.innerText = messages.FILL_REQUIRED;
+        loginMessage.innerText = loginData.message;
       }
       renderHeader();
+    } else if (!this.userLoginInput.element.validity.valid && !this.userPasswordInput.element.validity.valid) {
+      loginMessage.innerText = messages.FILL_REQUIRED;
+    } else if (this.userLoginInput.element.validity.valid && !this.userPasswordInput.element.validity.valid) {
+      loginMessage.innerText = messages.PASS_LENGTH;
     }
   }
 }
