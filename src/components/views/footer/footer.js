@@ -28,7 +28,7 @@ export class Footer extends BaseElement {
             </a>
           </li>
           <li class="menu-item">
-            <a class="link footer-link" href="#">
+            <a class="link footer-link" href="https://github.com/Judex66">
               Anton
             </a>
           </li>
