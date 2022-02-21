@@ -12,13 +12,14 @@ import {
   getGameBoard,
   getWordsLearned,
   getAttemptsCount,
-  hiddenFooter
+  hiddenFooter,
+  resetLearnedWordsState
 } from '../../utils';
 import { store } from '../../store';
 import failed from '../../../../assets/sounds/wrong.mp3';
 import success from '../../../../assets/sounds/correct.mp3';
 import { settings, gameContent } from '../../templates';
-import { setEndLearnedWords, setStartLearnedWords, setUserWords } from '../../store/toolkitReducer';
+import { setEndGame, setUserWords } from '../../store/toolkitReducer';
 import { pagesInGroupCount, wordsPerPageCount } from '../../services/settings';
 import { updateGameStatistic } from '../../controllers/statistics-controller';
 import { createUserWord, getUserWord, getUserWords, updateUserWord } from '../../api/users';
@@ -259,9 +260,9 @@ export default class Sprint extends BaseView {
   }
 
   closeGame = () => {
-    this.state.isEndGame = true;
     document.removeEventListener('keydown', this.keyboardEvents);
-    if (this.state.isLogin) {
+    if (this.state.isLogin && !this.state.isEndGame) {
+      this.state.isEndGame = true;
       this.setUserStatistics();
     }
   };
@@ -403,6 +404,7 @@ export default class Sprint extends BaseView {
 
   endGame = () => {
     this.state.isEndGame = true;
+    store.dispatch(setEndGame(true));
     this.renderFinalResult();
   };
 
@@ -448,11 +450,6 @@ export default class Sprint extends BaseView {
       longestSeries
     };
     await updateGameStatistic(gameStat);
-    this.resetLearnedWordsState();
-  };
-
-  resetLearnedWordsState = () => {
-    store.dispatch(setEndLearnedWords(0));
-    store.dispatch(setStartLearnedWords(0));
+    resetLearnedWordsState();
   };
 }

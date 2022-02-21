@@ -15,6 +15,7 @@ import { getAttemptsCount } from './getAttemptsCount';
 import { getNavMenu } from './getNavMenu';
 import { getUserExit } from './getUserExit';
 import { hiddenFooter } from './hiddenFooter';
+import { resetLearnedWordsState } from './resetLearnedWordsState';
 
 export {
   getWordsData,
@@ -33,5 +34,6 @@ export {
   getAttemptsCount,
   getNavMenu,
   getUserExit,
-  hiddenFooter
+  hiddenFooter,
+  resetLearnedWordsState
 };
