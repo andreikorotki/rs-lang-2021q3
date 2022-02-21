@@ -1,3 +1,5 @@
+import { store } from '../store';
+
 export function gameTimer(countTime, endGameFunction) {
   const timer = document.querySelector('.timer');
   setTimeout(() => {
@@ -5,9 +7,13 @@ export function gameTimer(countTime, endGameFunction) {
       const newCountTime = countTime - 1;
       timer.textContent = newCountTime;
       if (newCountTime === 0) {
-        endGameFunction();
+        const { isEndGame } = store.getState().toolkit;
+        if (!isEndGame) {
+          endGameFunction();
+        }
+      } else {
+        gameTimer(newCountTime, endGameFunction);
       }
-      gameTimer(newCountTime, endGameFunction);
     }
   }, 1000);
 }

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { BaseView } from '.';
 import { Button, BaseElement } from '../common';
 import { getWord } from '../api/words';
@@ -16,9 +15,17 @@ import {
   setUserWords,
   addUserWords
 } from '../store/toolkitReducer';
-import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP, WORDS_LEARNED } from '../constants';
+import {
+  bgColors,
+  BOOK_INITIAL_STATE,
+  BUTTONS_GAME,
+  BUTTONS_GROUP,
+  DIFFICULTIES,
+  HARD_GROUP,
+  WORDS_LEARNED
+} from '../constants';
 import { getAttemptsCount, getWordsData } from '../utils';
-import { getState, isAuthorized } from '../services';
+import { getGroupPage, getState, setGroupPage } from '../services';
 import { getUserWords, createUserWord, updateUserWord, getUserWord } from '../api/users';
 
 export default class Book extends BaseView {
@@ -37,9 +44,10 @@ export default class Book extends BaseView {
     this.paginationContainer = new BaseElement('div', ['pagination-container']);
     this.wrapper.element.append(this.paginationContainer.element);
     this.authorized = getState();
+    this.groupPage = getGroupPage();
     this.state = {
-      group: store.getState().toolkit.group,
-      page: store.getState().toolkit.page,
+      group: this.groupPage ? this.groupPage.group : store.getState().toolkit.group,
+      page: this.groupPage ? this.groupPage.page : store.getState().toolkit.page,
       isLogin: store.getState().toolkit.isLogin,
       isHardGroup: false,
       userId: this.authorized ? this.authorized.userId : ''
@@ -141,6 +149,7 @@ export default class Book extends BaseView {
 
   getWords = async () => {
     const { group, page } = this.state;
+    setGroupPage({ group, page });
     await getWordsData(group, page);
     this.cardsContainer.element.innerHTML = '';
     this.renderWords();
@@ -248,7 +257,7 @@ export default class Book extends BaseView {
         html += this.renderProgressBar(attempt);
       });
     } catch (error) {
-      html += '';
+      html = '';
     }
     return html;
   };
@@ -366,8 +375,10 @@ export default class Book extends BaseView {
     if (isAllLearnedWords) {
       pageCurrent.classList.add('learned');
       this.buttonsGameContainer.element.style.display = 'none';
+      this.cardsContainer.element.classList.add('learned');
     } else {
       pageCurrent.classList.remove('learned');
+      this.cardsContainer.element.classList.remove('learned');
       this.buttonsGameContainer.element.style.display = 'flex';
     }
   };
@@ -397,8 +408,8 @@ export default class Book extends BaseView {
   getPrevPages = () => {
     store.dispatch(prevPage());
     this.state.page -= 1;
-    if (this.state.page < 1) {
-      this.state.page = 1;
+    if (this.state.page < BOOK_INITIAL_STATE.startPage) {
+      this.state.page = BOOK_INITIAL_STATE.startPage;
       return;
     }
     this.getWords();
@@ -407,8 +418,8 @@ export default class Book extends BaseView {
   getNextPages = () => {
     store.dispatch(nextPage());
     this.state.page += 1;
-    if (this.state.page > pagesInGroupCount) {
-      this.state.page = pagesInGroupCount;
+    if (this.state.page > BOOK_INITIAL_STATE.endPage) {
+      this.state.page = BOOK_INITIAL_STATE.endPage;
       return;
     }
     this.getWords();

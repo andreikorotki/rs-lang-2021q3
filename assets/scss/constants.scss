@@ -1,5 +1,5 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
 :root {
   --bg-color: #ffffff;
@@ -58,13 +58,15 @@
   --header-height: 55px;
 
   font-size: var(--font-size-xs);
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
-$primary-font-family: "Roboto", sans-serif;
-$secondary-font-family: "Pacifico", sans-serif;
+$primary-font-family: 'Roboto', sans-serif;
+$secondary-font-family: 'Pacifico', sans-serif;
 
-$assets-path: "../";
+$bg-color-all-learned-words: rgb(127, 255, 212, 0.5);
+
+$assets-path: '../';
 $screen-size-xl: 1599px;
 $screen-size-l: 1023px;
 $screen-size-m: 767px;

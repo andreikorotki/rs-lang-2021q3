@@ -1,7 +1,7 @@
 import { BaseElement } from '../../common';
 import { store } from '../../store';
 import { setAuthorized } from '../../store/toolkitReducer';
-import { getState } from '../../services';
+import { getState, setGroupPage } from '../../services';
 import { bgColors } from '../../constants';
 import { getNavMenu, getUserExit, setResetActiveLink } from '../../utils';
 import { logo } from '../../templates';
@@ -60,6 +60,7 @@ export class Header extends BaseElement {
       if (id !== 'book') {
         const [mainBgColor] = bgColors;
         document.body.style.background = `${mainBgColor}`;
+        setGroupPage({ group: 1, page: 1 });
       }
       if (id === 'exit') {
         getUserExit();

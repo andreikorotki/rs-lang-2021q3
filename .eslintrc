@@ -20,7 +20,7 @@
   ],
   "rules": {
     "no-plusplus": "off",
-    "no-console": "off",
+    "no-console": "warn",
     "prettier/prettier": 2,
     "import/no-cycle": "off",
     "max-len": ["warn", { "code": 120, "ignoreTemplateLiterals": true }],
