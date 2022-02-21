@@ -1,7 +1,7 @@
 .register__section,
 .login__section {
   position: relative;
-  min-height: calc(100vh - var(--header-footer-height));
+  min-height: calc(100vh - var(--header-footer-height) - var(--spacing-unit-2));
   padding: var(--spacing-unit-10) 0;
   display: flex;
   justify-content: center;

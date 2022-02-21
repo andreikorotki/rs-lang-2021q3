@@ -15,7 +15,7 @@
 }
 
 .main-content {
-  min-height: calc(100vh - var(--header-footer-height));
+  min-height: calc(100vh - var(--header-footer-height) - var(--spacing-unit-2));
 }
 
 .start-group {
