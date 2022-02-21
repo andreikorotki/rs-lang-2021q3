@@ -37,3 +37,12 @@ export function isAuthorized() {
   }
   return false;
 }
+
+export function setGroupPage(state) {
+  localStorage.setItem('book', JSON.stringify(state));
+}
+
+export function getGroupPage() {
+  const state = localStorage.getItem('book');
+  return state ? JSON.parse(state) : undefined;
+}

@@ -1,12 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { BOOK_INITIAL_STATE } from '../constants';
 
 const initialState = {
-  group: 1,
-  page: 1,
+  group: BOOK_INITIAL_STATE.startGroup,
+  page: BOOK_INITIAL_STATE.startPage,
   words: [],
   userWords: [],
   isStartGameFromMenu: true,
   isLogin: false,
+  isEndGame: false,
   startLearnedWords: 0,
   endLearnedWords: 0
 };
@@ -26,8 +28,8 @@ const toolkitReducer = createSlice({
     },
     nextPage(state) {
       state.page += 1;
-      if (state.page > 30) {
-        state.page = 30;
+      if (state.page > BOOK_INITIAL_STATE.endPage) {
+        state.page = BOOK_INITIAL_STATE.endPage;
       }
     },
     setGroup(state, action) {
@@ -59,6 +61,10 @@ const toolkitReducer = createSlice({
     setAuthorized(state, action) {
       state.isLogin = action.payload;
     },
+    setEndGame(state, action) {
+      state.isEndGame = action.payload;
+    },
+
     setStartLearnedWords(state, action) {
       state.startLearnedWords = action.payload;
     },
@@ -82,6 +88,7 @@ export const {
   updateWordProperty,
   setGameStartFromMenu,
   setAuthorized,
+  setEndGame,
   setStartLearnedWords,
   setEndLearnedWords
 } = toolkitReducer.actions;
