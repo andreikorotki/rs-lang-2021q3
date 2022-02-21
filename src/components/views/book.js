@@ -18,7 +18,7 @@ import {
 } from '../store/toolkitReducer';
 import { bgColors, BUTTONS_GAME, BUTTONS_GROUP, DIFFICULTIES, HARD_GROUP, WORDS_LEARNED } from '../constants';
 import { getAttemptsCount, getWordsData } from '../utils';
-import { getState } from '../services';
+import { getState, isAuthorized } from '../services';
 import { getUserWords, createUserWord, updateUserWord, getUserWord } from '../api/users';
 
 export default class Book extends BaseView {
@@ -243,9 +243,13 @@ export default class Book extends BaseView {
 
   getProgressBar = (attempts) => {
     let html = '';
-    Array.from(attempts.trim().slice(-10)).forEach((attempt) => {
-      html += this.renderProgressBar(attempt);
-    });
+    try {
+      Array.from(attempts.trim().slice(-10)).forEach((attempt) => {
+        html += this.renderProgressBar(attempt);
+      });
+    } catch (error) {
+      html += '';
+    }
     return html;
   };
 
