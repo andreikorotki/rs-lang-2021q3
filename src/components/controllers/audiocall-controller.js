@@ -16,6 +16,8 @@ import GameStatistic from '../models/game-statistic';
 import { updateGameStatistic } from './statistics-controller';
 import { Button } from '../common';
 import AudioCallGameView from '../views/games/audiocall/audiocall-game-view';
+import { getUserWords } from '../api/users';
+import { getState, isAuthorized } from '../services';
 
 export async function getWordsForGame(groupNum = 0) {
   // how many times we need to query api words for full rounds setup
@@ -35,20 +37,26 @@ export async function getWordsForGame(groupNum = 0) {
     }
     wordsPromises = randomPages.map((pageNum) => getWords(groupNum, pageNum));
   } else {
-    // get group and page from store
+    // get group and page from store, reduce 1 due to store logic
     const { group, page } = store.getState().toolkit;
-    let pageCounter = page;
+    let pageCounter = page - 1;
     let queryCounter = 0;
-    while (pageCounter > 0 && queryCounter < queryTimes) {
-      wordsPromises.push(getWords(group, pageCounter));
+    while (pageCounter >= 0 && queryCounter < queryTimes) {
+      wordsPromises.push(getWords(group - 1, pageCounter));
       queryCounter++;
       pageCounter--;
     }
   }
   const responses = await Promise.all(wordsPromises);
   responses.forEach((response) => queriedWords.push(response.items));
-  // TODO filter learned words
-  return Array.prototype.concat.apply([], queriedWords);
+  const gameWords = Array.prototype.concat.apply([], queriedWords);
+  if (isAuthorized()) {
+    const { userId } = getState();
+    const learnedWords = (await getUserWords(userId)).content.filter((word) => word.optional.isLearned);
+    const learnedWordIds = learnedWords.map((word) => word.wordId);
+    return gameWords.filter((word) => !learnedWordIds.includes(word.wordId));
+  }
+  return gameWords;
 }
 
 export function getLevelGameButtons(buttonsGroupContainer) {
