@@ -2,11 +2,10 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  height: 100vh;
 }
 
 body {
-  height: 100vh;
+  min-height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
   background: var(--bg-app-color-primary);
